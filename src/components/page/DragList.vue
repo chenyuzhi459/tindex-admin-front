@@ -5,7 +5,7 @@
                 <el-breadcrumb-item><i class="el-icon-upload2"></i> 拖拽排序</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
-        <div class="drag-box-left">
+         <div class="drag-box-left">
             <div class="drag-title">拖动排序</div>
             <div class="drag-list" draggable="true" 
                 v-for="list in data1" 
@@ -16,7 +16,7 @@
                 @dragleave="dragleaveEvent"
                 @dragover="dragoverEvent"
             >{{list.title}}</div>
-        </div>
+        </div> 
     </section>
 </template>
 

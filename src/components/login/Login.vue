@@ -11,8 +11,10 @@
                 </el-form-item>
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+                    
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填。</p>
+                <template v-if="hasError"><span style="color: red">用户名或密码错误</span></template>
+                <p style="font-size:12px;line-height:30px;color:#999;"></p>
             </el-form>
         </div>
     </div>
@@ -33,21 +35,34 @@
                     password: [
                         { required: true, message: '请输入密码', trigger: 'blur' }
                     ]
-                }
+                },
+                hasError: false
             }
         },
         methods: {
             submitForm(formName) {
-                const self = this;
-                self.$refs[formName].validate((valid) => {
+                this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        localStorage.setItem('ms_username',self.ruleForm.username);
-                        self.$router.push('/readme');
+                       this.login(this.ruleForm)
                     } else {
-                        console.log('error submit!!');
                         return false;
                     }
                 });
+            },
+            login(formObject){
+                this.$http.post(this.$common.apis.login,formObject,
+                                            {
+                                                header:{ContentType:"application/json"}
+                                            }
+                ).then(
+                    response =>{
+                        localStorage.setItem('ms_username',formObject.username);
+                        this.$router.push('/readme');
+                    },
+                    response =>{
+                        this.hasError = true
+                    }
+                )
             }
         }
     }

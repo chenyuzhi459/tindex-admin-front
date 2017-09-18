@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
 Vue.use(Router);
 
 export default new Router({
@@ -17,6 +16,19 @@ export default new Router({
                     path: '/',
                     component: resolve => require(['../components/page/Readme.vue'], resolve)
                 },
+                {
+                    path: '/status',
+                    component: resolve => require(['../components/info/SystemStatus.vue'], resolve)
+                },
+                {
+                    path: '/serversInfo',
+                    component: resolve => require(['../components/info/ServersInfo.vue'], resolve)
+                },
+                {
+                    path: '/taskManager',
+                    component: resolve => require(['../components/data/access/TaskManager.vue'], resolve)
+                },
+                
                 {
                     path: '/basetable',
                     component: resolve => require(['../components/page/BaseTable.vue'], resolve)
@@ -53,7 +65,7 @@ export default new Router({
         },
         {
             path: '/login',
-            component: resolve => require(['../components/page/Login.vue'], resolve)
+            component: resolve => require(['../components/login/Login.vue'], resolve)
         },
     ]
 })

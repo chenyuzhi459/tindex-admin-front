@@ -30,6 +30,34 @@
                         title: '自述'
                     },
                     {
+                        index: 'dataAccess',
+                        title: '数据接入',
+                         subs: [
+                            {
+                                index: '/supervisorManage',
+                                title: 'supervisor管理'
+                            },
+                            {
+                                index: '/taskManager',
+                                title: 'task管理'
+                            }
+                        ]
+                    },
+                    {
+                        index: 'info',
+                        title: '系统信息',
+                         subs: [
+                            {
+                                index: '/status',
+                                title: '系统状态'
+                            },
+                            {
+                                index: '/serversInfo',
+                                title: '节点信息'
+                            }
+                        ]
+                    },
+                    {
                         icon: 'el-icon-menu',
                         index: '2',
                         title: '表格',
