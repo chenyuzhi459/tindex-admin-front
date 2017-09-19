@@ -51,7 +51,6 @@
 
 
 <script>
-
 export default {
   data () {
     return {
@@ -68,11 +67,6 @@ export default {
 
     }
   },
-//   computed:{
-//      taskInfoJson(){
-//          return JSON.stringify(this.taskInfo,null,2)
-//      }
-//   },
   created:function(){
     this.init()
   },
@@ -145,6 +139,7 @@ export default {
                 response => {
                     window.setTimeout(this.init,200)
                     //this.init()
+                    this.$common.eventBus.$emit('updataCompleteTasks')
                     this.$message({
                         type: 'success',
                         message: '删除成功!'
@@ -159,9 +154,12 @@ export default {
   },
   mounted(){
       var self = this
-      EventBus.$on("updataAllTasks",function(){
+      this.$common.eventBus.$on("updataAllTasks",()=>{
           self.init()
-      });
+      })
+      this.$common.eventBus.$on("updataRunningTasks",()=>{
+          self.init()
+      })
   }
 }
 </script>

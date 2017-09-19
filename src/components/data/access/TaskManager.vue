@@ -1,7 +1,8 @@
 <<template>
 <div>
     <running-tasks></running-tasks>
-
+    <br>
+    <complete-tasks></complete-tasks>
     <div style=" margin-left:20px;">
         <el-button type="primary" size="small" @click="showCreateTaskDialog">Create Task</el-button>
     </div>
@@ -22,7 +23,7 @@
 <<script>
 
 import RunningTasks from './taskmanager/RunningTasks'
-
+import CompleteTasks from './taskmanager/CompleteTasks'
 export default {
   data () {
     return {
@@ -32,7 +33,8 @@ export default {
     }
   },
   components:{
-      'running-tasks':RunningTasks
+      'running-tasks':RunningTasks,
+      'complete-tasks':CompleteTasks
   },
   methods:{
     format(){
@@ -61,10 +63,8 @@ export default {
                                             }
                         ).then(response =>{
                             this.createTaskDialogVisible = false
-                            EventBus.$emit('updataAllTasks')
+                            this.$common.eventBus.$emit('updataRunningTasks')
                             //this.init()
-                            var successMessage = 'create successfully, taskId:' + response.data.task
-                            console.log("successMessage:",successMessage)
                             this.$message({
                                 showClose: true,
                                 message: successMessage,

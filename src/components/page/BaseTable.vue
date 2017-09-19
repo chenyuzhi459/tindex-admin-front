@@ -93,6 +93,7 @@
                 };
                 self.$axios.post(self.url, {page:self.cur_page}).then((res) => {
                     self.tableData = res.data.list;
+                    console.log("tableData.size:",self.tableData.length)
                 })
             },
             search(){

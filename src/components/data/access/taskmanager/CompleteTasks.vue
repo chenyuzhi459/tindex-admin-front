@@ -1,10 +1,15 @@
 <template>
-    <div style=" margin-left:20px;">
-        <span style="color: #242f42;font-size:20px;" ><b>Complete Tasks - Tasks recently completed</b></span>
+<div>
+  <div style=" margin-left:20px;">
+        <span style="color: #242f42;font-size:20px;" ><b>Complete Tasks - Tasks recently completed</b>
+        </span>
         <br></br>
     </div>
+    <div style=" margin-left:20px;"> <el-button type="primary" size="small" @click="init">刷新</el-button>
+        <br></br>
+    </div> 
      <div class="table" style=" margin-left:20px;">
-        <el-table :data="completeTasks" border stripe style="width: 100%">
+        <el-table :data="showTableData" border stripe style="width: 100%">
             <el-table-column prop="id" label="id" min-width="400"></el-table-column>
             <el-table-column prop="status" label="status" width="110"></el-table-column>
             <el-table-column sortable prop="createdTime" label="createdTime" width="207"></el-table-column>
@@ -22,6 +27,18 @@
                 </template>
             </el-table-column>
         </el-table>
+        <div class="pagination">
+            <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-sizes="[5,10, 25, 50, 100]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="completeTasks.length">
+            </el-pagination>
+        </div>
+        
         <br>
     </div> 
 
@@ -43,6 +60,8 @@
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
     </span>
     </el-dialog>
+</div>
+  
 </template>
 
 <script>
@@ -50,29 +69,22 @@
 export default {
   data () {
     return {
-      runnigTasks:[],
       completeTasks:[],
+      showTableData:[],
       taskInfo:{},
       taskStatus:{},
       taskLog:'',
       dialogMessage:'',
       dialogTitle:'',
       dialogSize:'full',
-      //autosize="{ minRows: 15, maxRows: 25}"
       dialogInputAutosize:{},
       dialogVisible:false,
-      canFormatted:false,
-      jsonSyntaxError: false,
       loading:false,
-      createTaskDialogVisible:false,
-      taskJson:''
+      currentPage:1,
+      pageSize:10
     }
   },
-//   computed:{
-//      taskInfoJson(){
-//          return JSON.stringify(this.taskInfo,null,2)
-//      }
-//   },
+
   created:function(){
     this.init()
   },
@@ -119,28 +131,40 @@ export default {
       getCompleteTasks(){
         this.$http.get(this.$common.apis.completeTasks).then(
             response => {
+                var convertData = response.data.map(s=>{
+                    // if()
+                    // console.log('topic:',s.topic)
+                })
                 this.completeTasks = []
                 this.$common.methods.pushData(response.data,this.completeTasks)
-                console.log('completeTasks:',this.completeTasks)
+                this.fillShowTableData()
         })
       },
-      format(){
-          var jsonObject
-          try{
-            jsonObject = JSON.parse(this.taskJson);
-          }catch(e){
-            if(e.name ==="SyntaxError"){
-                this.jsonSyntaxError = true
-            }
-            return
-          }
-          if(typeof jsonObject === "object"){
-            this.taskJson = JSON.stringify(jsonObject,null,2);
-            this.jsonSyntaxError = false
-          }
-          //console.log('format:',this.dialogMessage)
+      handleCurrentChange(newValue){
+        this.currentPage = newValue
+        this.fillShowTableData()
+      },
+      handleSizeChange(newValue){
+        this.pageSize = newValue
+        this.fillShowTableData()
+      },
+      fillShowTableData(){ 
+        this.showTableData = []
+        var position = (this.currentPage -1) * this.pageSize 
+        var limit = (position + this.pageSize) >=　this.completeTasks.length ? this.completeTasks.length - position : this.pageSize;
+        for(var i=0;i<limit;i++){
+            this.showTableData.push(this.completeTasks[position + i ])
+        }
       }
-   
+  },
+   mounted(){
+      var self = this
+      this.$common.eventBus.$on("updataAllTasks",()=>{
+          self.init()
+      })
+      this.$common.eventBus.$on("updataCompleteTasks",()=>{
+          self.init()
+      })
   }
 }
 </script>
