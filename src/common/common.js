@@ -3,7 +3,17 @@ const pushData = (fromData,toData) =>{
                 toData.push(fromData[index])
             }
       }
-
+const  StringFormat = () =>{
+         if (arguments.length == 0)
+             return null;
+         var str = arguments[0];
+         for (var i = 1; i < arguments.length; i++) {
+             var re = new RegExp('\\\\{' + (i - 1) + '\\\\}', 'gm');
+             str = str.replace(re, arguments[i]);
+         }
+         return str;
+}
 export default {
-   pushData
+   pushData,
+   StringFormat
 }

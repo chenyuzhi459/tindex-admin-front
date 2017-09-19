@@ -109,17 +109,19 @@ export default {
         })
       },
       getTasklog(taskId, offset){     
-        this.dialogVisible = true
-        this.loading = true
-        var url = this.$common.apis.baseTaskUrl + "/" + taskId + "/log"
-        this.$http.get(url,{params: {offset: offset}}).then(response => {
-            this.taskLog = response.data
-            var title = "Log(" + taskId  + ")"
-            this.configDialog(title,this.taskLog,true,"full",{minRows: 15, maxRows: 37})
-            this.loading = false
-        },response => {
-            this.loading = false
-        })
+        //this.dialogVisible = true
+        //this.loading = true
+        //var url = StringFormat('{0}/{1}/log?offset={1}', this.$common.apis.baseTaskUrl,taskId,offset)
+       // var url = this.$common.apis.baseTaskUrl + "/" + taskId + "/log?" + "offset=" + offset
+        window.open(url)
+        // this.$http.get(url,{params: {offset: offset}}).then(response => {
+        //     this.taskLog = response.data
+        //     var title = "Log(" + taskId  + ")"
+        //     this.configDialog(title,this.taskLog,true,"full",{minRows: 15, maxRows: 37})
+        //     this.loading = false
+        // },response => {
+        //     this.loading = false
+        // })
       },
       configDialog(dialogTitle,dialogMessage,dialogVisible,dialogSize,dialogInputAutosize){
         this.dialogTitle = dialogTitle
@@ -132,8 +134,10 @@ export default {
         this.$http.get(this.$common.apis.completeTasks).then(
             response => {
                 var convertData = response.data.map(s=>{
-                    // if()
-                    // console.log('topic:',s.topic)
+                    if(null === s.topic){
+                        console.log('topic:',s.topic)
+                        s.topic = 'null'
+                    }
                 })
                 this.completeTasks = []
                 this.$common.methods.pushData(response.data,this.completeTasks)
