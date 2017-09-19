@@ -111,7 +111,7 @@ export default {
       getTasklog(taskId, offset){     
         //this.dialogVisible = true
         //this.loading = true
-        //var url = StringFormat('{0}/{1}/log?offset={1}', this.$common.apis.baseTaskUrl,taskId,offset)
+        var url = this.$common.methods.stringFormat('{0}/{1}/log?offset={1}', this.$common.apis.baseTaskUrl,taskId,offset)
        // var url = this.$common.apis.baseTaskUrl + "/" + taskId + "/log?" + "offset=" + offset
         window.open(url)
         // this.$http.get(url,{params: {offset: offset}}).then(response => {

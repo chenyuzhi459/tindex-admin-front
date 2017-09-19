@@ -3,7 +3,7 @@ const pushData = (fromData,toData) =>{
                 toData.push(fromData[index])
             }
       }
-const  StringFormat = () =>{
+const  stringFormat = () =>{
          if (arguments.length == 0)
              return null;
          var str = arguments[0];
@@ -15,5 +15,5 @@ const  StringFormat = () =>{
 }
 export default {
    pushData,
-   StringFormat
+   stringFormat
 }
