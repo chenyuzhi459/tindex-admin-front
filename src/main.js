@@ -12,6 +12,13 @@ Vue.use(VueResource)
 Vue.use(ElementUI);
 Vue.prototype.$axios = axios;
 Vue.prototype.$common = common
+String.prototype.format=function()  
+{  
+  if(arguments.length==0) return this;  
+  for(var s=this, i=0; i<arguments.length; i++)  
+    s=s.replace(new RegExp("\\{"+i+"\\}","g"), arguments[i]);  
+  return s;  
+};  
 new Vue({
     router,
     render: h => h(App)

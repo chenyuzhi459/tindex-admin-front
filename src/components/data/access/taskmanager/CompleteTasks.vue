@@ -1,13 +1,21 @@
 <template>
-<div>
+<div class="table">
   <div style=" margin-left:20px;">
         <span style="color: #242f42;font-size:20px;" ><b>Complete Tasks - Tasks recently completed</b>
         </span>
         <br></br>
     </div>
-    <div style=" margin-left:20px;"> <el-button type="primary" size="small" @click="init">刷新</el-button>
-        <br></br>
-    </div> 
+     <!-- <div class="handle-box" style=" margin-left:20px;">
+        <el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">
+                <el-option key="1" label="id" value="id"></el-option>
+                <el-option key="2" label="status" value="status"></el-option>
+        </el-select>
+        <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10" width="100px"></el-input>
+        <el-button type="primary" icon="search" @click="search">搜索</el-button>
+    </div>  -->
+     <div style=" margin-left:20px;"> <el-button type="primary" size="small" @click="init">刷新</el-button>
+            <br></br>
+        </div>  
      <div class="table" style=" margin-left:20px;">
         <el-table :data="showTableData" border stripe style="width: 100%">
             <el-table-column prop="id" label="id" min-width="400"></el-table-column>
@@ -51,9 +59,7 @@
                 {{dialogTitle}}
             </div>       
         </template> 
-    <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage" 
-            v-loading="loading"
-                element-loading-text="拼命加载中"  >
+    <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage" >
     </el-input>
     <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button> 
@@ -73,13 +79,11 @@ export default {
       showTableData:[],
       taskInfo:{},
       taskStatus:{},
-      taskLog:'',
       dialogMessage:'',
       dialogTitle:'',
       dialogSize:'full',
       dialogInputAutosize:{},
       dialogVisible:false,
-      loading:false,
       currentPage:1,
       pageSize:10
     }
@@ -109,19 +113,8 @@ export default {
         })
       },
       getTasklog(taskId, offset){     
-        //this.dialogVisible = true
-        //this.loading = true
-        var url = this.$common.methods.stringFormat('{0}/{1}/log?offset={1}', this.$common.apis.baseTaskUrl,taskId,offset)
-       // var url = this.$common.apis.baseTaskUrl + "/" + taskId + "/log?" + "offset=" + offset
+        var url = "{0}/{1}/log?offset={2}".format(this.$common.apis.baseTaskUrl,taskId,offset)
         window.open(url)
-        // this.$http.get(url,{params: {offset: offset}}).then(response => {
-        //     this.taskLog = response.data
-        //     var title = "Log(" + taskId  + ")"
-        //     this.configDialog(title,this.taskLog,true,"full",{minRows: 15, maxRows: 37})
-        //     this.loading = false
-        // },response => {
-        //     this.loading = false
-        // })
       },
       configDialog(dialogTitle,dialogMessage,dialogVisible,dialogSize,dialogInputAutosize){
         this.dialogTitle = dialogTitle
@@ -135,29 +128,28 @@ export default {
             response => {
                 var convertData = response.data.map(s=>{
                     if(null === s.topic){
-                        console.log('topic:',s.topic)
                         s.topic = 'null'
                     }
                 })
                 this.completeTasks = []
                 this.$common.methods.pushData(response.data,this.completeTasks)
-                this.fillShowTableData()
+                this.fillShowTableData(this.completeTasks)
         })
       },
       handleCurrentChange(newValue){
         this.currentPage = newValue
-        this.fillShowTableData()
+        this.fillShowTableData(this.completeTasks)
       },
       handleSizeChange(newValue){
         this.pageSize = newValue
-        this.fillShowTableData()
+        this.fillShowTableData(this.completeTasks)
       },
-      fillShowTableData(){ 
+      fillShowTableData(originData){ 
         this.showTableData = []
         var position = (this.currentPage -1) * this.pageSize 
-        var limit = (position + this.pageSize) >=　this.completeTasks.length ? this.completeTasks.length - position : this.pageSize;
+        var limit = (position + this.pageSize) >=　originData.length ? originData.length - position : this.pageSize;
         for(var i=0;i<limit;i++){
-            this.showTableData.push(this.completeTasks[position + i ])
+            this.showTableData.push(originData[position + i ])
         }
       }
   },
