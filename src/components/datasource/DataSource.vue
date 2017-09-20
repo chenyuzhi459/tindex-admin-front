@@ -14,7 +14,7 @@
         <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
             <el-table-column prop="name" label="name" sortable width="310"></el-table-column>
             <el-table-column label="segments" align="center">
-              <el-table-column prop="properties.segments.count" label="count" width="150"></el-table-column>
+              <el-table-column prop="properties.segments.count" label="count" width="150" ></el-table-column>
               <el-table-column prop="properties.segments.size" label="size" width="150"></el-table-column>
               <el-table-column prop="properties.segments.maxTime" label="maxTime" width="250"></el-table-column>
               <el-table-column prop="properties.segments.minTime" label="minTime" width="250"></el-table-column>
@@ -26,9 +26,9 @@
 
             <el-table-column label="操作">
                 <template scope="scope">
+                    <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">info</el-button>
                     <el-button size="mini" @click="getIntervals(scope.row.name)">intervals</el-button>
                     <el-button size="mini" @click="getSegments(scope.row.name)">segments</el-button>
-                    <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">message</el-button>
                     <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">delete</el-button>
                 </template>
             </el-table-column>
@@ -77,7 +77,7 @@
                 showTableData: [],
                 dialogMessage:'',
                 dialogTitle:'',
-                dialogSize:'full',
+                dialogSize:'large',
                 dialogInputAutosize:{},
                 dialogVisible:false,
                 pageSize:15,

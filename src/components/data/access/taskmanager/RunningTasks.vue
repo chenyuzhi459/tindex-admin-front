@@ -7,7 +7,7 @@
     </div>
      <div class="table" style=" margin-left:20px;">
         <el-table :data="runnigTasks" border stripe style="width: 100%">
-            <el-table-column prop="id" label="id" min-width="150"></el-table-column>
+            <el-table-column prop="id" label="id" min-width="150" @click="alter(scope.row.id)"></el-table-column>
             <el-table-column prop="createdTime" label="createdTime" width="207"></el-table-column>
             <el-table-column prop="queueInsertionTime" label="queueInsertionTime" width="207"></el-table-column>
             <el-table-column prop="location" label="location" width="175"></el-table-column>
