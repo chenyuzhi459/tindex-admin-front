@@ -60,6 +60,21 @@ export default new Router({
                 {
                     path: '/drag',
                     component: resolve => require(['../components/page/DragList.vue'], resolve)    // 拖拽列表组件
+                },
+
+
+
+                {
+                    path: '/dataSource',
+                    component: resolve => require(['../components/datasource/DataSource.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                  path: '/interval',
+                  component: resolve => require(['../components/datasource/Interval.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                  path: '/segment',
+                  component: resolve => require(['../components/datasource/Segment.vue'], resolve)    // 拖拽列表组件
                 }
             ]
         },

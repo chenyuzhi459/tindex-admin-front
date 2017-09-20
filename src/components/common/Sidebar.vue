@@ -58,6 +58,20 @@
                         ]
                     },
                     {
+                        index: 'datasource',
+                        title: '数据源管理',
+                         subs: [
+                            {
+                                index: 'dataSource',
+                                title: '数据源'
+                            },
+                            {
+                                index: 'serversInfo',
+                                title: '节点信息'
+                            }
+                        ]
+                    },
+                    {
                         icon: 'el-icon-menu',
                         index: '2',
                         title: '表格',

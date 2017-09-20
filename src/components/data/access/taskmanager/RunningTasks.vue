@@ -64,7 +64,6 @@ export default {
       dialogInputAutosize:{},
       dialogVisible:false,
       loading:false
-
     }
   },
   created:function(){
@@ -84,8 +83,7 @@ export default {
                                                     }))
             this.runnigTasks = []
             this.$common.methods.pushData(convertData,this.runnigTasks)
-            console.log('running Tasks:',this.runnigTasks)
-            
+            //console.log('running Tasks:',this.runnigTasks)
         })
       },
       getTaskInfo(taskId){
@@ -93,12 +91,14 @@ export default {
         this.$http.get(url).then(response => {
             this.taskInfo = response.data
             var message = JSON.stringify(this.taskInfo,null,2)
+            // alert(message)
             this.configDialog("Task Payload",message,true,"small",{minRows: 15, maxRows: 25})
         })
       },
       getTaskStatus(taskId){
         var url = this.$common.apis.baseTaskUrl + "/" + taskId + "/status"
         this.$http.get(url).then(response => {
+            alert(response.data)
             this.taskStatus = response.data
             var message = JSON.stringify(this.taskStatus,null,2)
             this.configDialog("Task Status",message,true,"small",{})
