@@ -17,10 +17,12 @@
             <br></br>
         </div>  
      <div class="table" style=" margin-left:20px;">
-        <el-table :data="showTableData" border stripe style="width: 100%">
+        <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
             <el-table-column prop="id" label="id" min-width="400"></el-table-column>
             <el-table-column prop="status" label="status" width="110"></el-table-column>
-            <el-table-column sortable prop="createdTime" label="createdTime" width="207"></el-table-column>
+            <el-table-column sortable="custom" prop="createdTime" 
+                             label="createdTime" width="207">
+            </el-table-column>
             <el-table-column prop="duration" label="duration" width="110"></el-table-column>
             
             <el-table-column prop="topic" label="topic" width="207"></el-table-column>
@@ -43,7 +45,7 @@
             :page-sizes="[5,10, 25, 50, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="completeTasks.length">
+            :total="totalNum">
             </el-pagination>
         </div>
         
@@ -84,8 +86,11 @@ export default {
       dialogSize:'full',
       dialogInputAutosize:{},
       dialogVisible:false,
+      sortDimension:'createdTime',
+      isDescending:true,
       currentPage:1,
-      pageSize:10
+      pageSize:10,
+      totalNum:0
     }
   },
 
@@ -124,6 +129,7 @@ export default {
         this.dialogInputAutosize = dialogInputAutosize
       }, 
       getCompleteTasks(){
+
         this.$http.get(this.$common.apis.completeTasks).then(
             response => {
                 var convertData = response.data.map(s=>{
@@ -133,16 +139,46 @@ export default {
                 })
                 this.completeTasks = []
                 this.$common.methods.pushData(response.data,this.completeTasks)
+                this.totalNum = this.completeTasks.length
                 this.fillShowTableData(this.completeTasks)
         })
       },
+      getShowTasks(currentPage,pageSize,sortDimension,isDescending){
+          var offset = (currentPage - 1) * pageSize
+          this.$http.get(this.$common.apis.completeTasks,{params: {
+                                                            offset: offset,
+                                                            size:pageSize,
+                                                            sortDimension,sortDimension,
+                                                            isDescending:isDescending
+                                                    }
+                                                    
+            }).then(
+                response =>{
+                    var convertData = response.data.map(s=>{
+                        if(null === s.topic){
+                            s.topic = 'null'
+                        }
+                     })
+                     this.showTableData = []
+                     this.$common.methods.pushData(response.data,this.showTableData)
+                }
+            )
+      },
+      sortChange(column, prop, order){
+         console.log("column:",column)  
+         this.sortDimension = column.prop
+         this.isDescending = column.order === "ascending" ? false : true
+         this.getShowTasks(this.currentPage,this.pageSize,this.sortDimension,this.isDescending)
+      },
       handleCurrentChange(newValue){
         this.currentPage = newValue
-        this.fillShowTableData(this.completeTasks)
+        this.getShowTasks(this.currentPage,this.pageSize,this.sortDimension,this.isDescending)
+        //this.getShowTasks(this.completeTasks)
       },
       handleSizeChange(newValue){
         this.pageSize = newValue
-        this.fillShowTableData(this.completeTasks)
+        this.getShowTasks(this.currentPage,this.pageSize,this.sortDimension,this.isDescending)
+        //this.fillShowTableData(this.completeTasks)
       },
       fillShowTableData(originData){ 
         this.showTableData = []
