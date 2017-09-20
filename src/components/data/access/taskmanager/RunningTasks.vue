@@ -36,9 +36,7 @@
                 {{dialogTitle}}
             </div>       
         </template> 
-        <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage" 
-                v-loading="loading"
-                  element-loading-text="拼命加载中"  >
+        <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage" >
         </el-input>
         <span slot="footer" class="dialog-footer">
              <el-button @click="dialogVisible = false">取 消</el-button> 
@@ -57,13 +55,11 @@ export default {
       runnigTasks:[],
       taskInfo:{},
       taskStatus:{},
-      taskLog:'',
       dialogMessage:'',
       dialogTitle:'',
       dialogSize:'full',
       dialogInputAutosize:{},
-      dialogVisible:false,
-      loading:false
+      dialogVisible:false
     }
   },
   created:function(){
@@ -83,7 +79,6 @@ export default {
                                                     }))
             this.runnigTasks = []
             this.$common.methods.pushData(convertData,this.runnigTasks)
-            //console.log('running Tasks:',this.runnigTasks)
         })
       },
       getTaskInfo(taskId){
@@ -104,18 +99,9 @@ export default {
             this.configDialog("Task Status",message,true,"small",{})
         })
       },
-      getTasklog(taskId, offset){     
-        this.dialogVisible = true
-        this.loading = true
-        var url = this.$common.apis.baseTaskUrl + "/" + taskId + "/log"
-        this.$http.get(url,{params: {offset: offset}}).then(response => {
-            this.taskLog = response.data
-            var title = "Log(" + taskId  + ")"
-            this.configDialog(title,this.taskLog,true,"full",{minRows: 15, maxRows: 37})
-            this.loading = false
-        },response => {
-            this.loading = false
-        })
+      getTasklog(taskId, offset){ 
+        var url = "{0}/{1}/log?offset={2}".format(this.$common.apis.baseTaskUrl,taskId,offset)
+        window.open(url) 
       },
       configDialog(dialogTitle,dialogMessage,dialogVisible,dialogSize,dialogInputAutosize){
         this.dialogTitle = dialogTitle

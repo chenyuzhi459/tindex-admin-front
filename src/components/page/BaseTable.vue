@@ -62,7 +62,7 @@
         computed: {
             data(){
                 const self = this;
-                return self.tableData.filter(function(d){
+                var newData = self.tableData.filter(function(d){
                     let is_del = false;
                     for (let i = 0; i < self.del_list.length; i++) {
                         if(d.name === self.del_list[i].name){
@@ -79,6 +79,9 @@
                         }
                     }
                 })
+                console.log("tableData:",self.tableData)
+                 console.log("newData:",newData)
+                return newData
             }
         },
         methods: {
