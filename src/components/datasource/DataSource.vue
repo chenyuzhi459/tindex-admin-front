@@ -14,7 +14,7 @@
 
         <div class="table" style=" margin-left:20px;">
 
-            <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
+            <<<<<<< HEAD <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="name" label="name" sortable width="310"></el-table-column>
                 <el-table-column label="segments" align="center">
                     <el-table-column prop="properties.segments.count" label="count" width="150"></el-table-column>
@@ -23,9 +23,9 @@
                     <el-table-column prop="properties.segments.minTime" label="minTime" width="250"></el-table-column>
                 </el-table-column>
                 <!-- <el-table-column prop="tiers" label="tiers">
-                  <el-table-column prop="size" label="size"></el-table-column>
-                  <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
-                </el-table-column> -->
+                      <el-table-column prop="size" label="size"></el-table-column>
+                      <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
+                    </el-table-column> -->
 
                 <el-table-column label="操作">
                     <template scope="scope">
@@ -35,20 +35,44 @@
                         <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">delete</el-button>
                     </template>
                 </el-table-column>
-            </el-table>
+                </el-table>
+                =======
+                <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
+                    <el-table-column prop="name" label="name" sortable width="310"></el-table-column>
+                    <el-table-column label="segments" align="center">
+                        <el-table-column prop="properties.segments.count" label="count" width="150"></el-table-column>
+                        <el-table-column prop="properties.segments.size" label="size" width="150"></el-table-column>
+                        <el-table-column prop="properties.segments.maxTime" label="maxTime" width="250"></el-table-column>
+                        <el-table-column prop="properties.segments.minTime" label="minTime" width="250"></el-table-column>
+                    </el-table-column>
+                    <!-- <el-table-column prop="tiers" label="tiers">
+                  <el-table-column prop="size" label="size"></el-table-column>
+                  <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
+                </el-table-column> -->
 
-            <div class="pagination">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="dataSources.length">
-                </el-pagination>
-            </div>
+                    <el-table-column label="操作">
+                        <template scope="scope">
+                            <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">info</el-button>
+                            <el-button size="mini" @click="getIntervals(scope.row.name)">intervals</el-button>
+                            <el-button size="mini" @click="getSegments(scope.row.name)">segments</el-button>
+                            <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">delete</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                >>>>>>> ed0e02c9952067448ed1d88f7cb86170f6cf7e7a
+
+                <div class="pagination">
+                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="dataSources.length">
+                    </el-pagination>
+                </div>
         </div>
 
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
                 <div style=" line-height: 1;
-                             font-size: 16px;
-                             font-weight: 700;
-                             color: #1f2d3d;">
+                                 font-size: 16px;
+                                 font-weight: 700;
+                                 color: #1f2d3d;">
                     {{dialogTitle}}
                 </div>
             </template>
@@ -64,6 +88,7 @@
 </template>
 
 <script>
+
 import _ from 'lodash'
 export default {
     data() {
@@ -84,6 +109,7 @@ export default {
     },
     methods: {
         init() {
+
             this.getDataSources()
         },
         getDataSources() {
@@ -164,7 +190,7 @@ export default {
         fillShowTableData() {
             this.showTableData = []
             var position = (this.currentPage - 1) * this.pageSize
-            var limit = (position + this.pageSize) >= 　this.dataSources.length ? this.dataSources.length - position : this.pageSize;
+            var limit = (position + this.pageSize) >= this.dataSources.length ? this.dataSources.length - position : this.pageSize;
             for (var i = 0; i < limit; i++) {
                 this.showTableData.push(this.dataSources[position + i])
             }

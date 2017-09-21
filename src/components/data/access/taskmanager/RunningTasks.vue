@@ -29,9 +29,9 @@
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
                 <div style=" line-height: 1;
-                             font-size: 16px;
-                             font-weight: 700;
-                             color: #1f2d3d;">
+                                 font-size: 16px;
+                                 font-weight: 700;
+                                 color: #1f2d3d;">
                     {{dialogTitle}}
                 </div>
             </template>

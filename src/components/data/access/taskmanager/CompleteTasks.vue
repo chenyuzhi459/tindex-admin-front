@@ -20,7 +20,7 @@
             </el-form-item>
             <el-form-item>
                 <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
-                <el-button type="primary" size="small" @click="init">刷新</el-button>
+                <!-- <el-button type="primary" size="small" @click="init">刷新</el-button> -->
             </el-form-item>
         </el-form>
 
@@ -101,6 +101,7 @@ export default {
     },
     methods: {
         init() {
+            console.log('init...')
             this.currentPage = 1
             this.isSearching = false
             this.getCompleteTasks()
@@ -169,9 +170,10 @@ export default {
             this.totalNum = this.completeTasks.length
             this.isSearching = true
             this.fillShowTableData(this.completeTasks)
-            console.log('searchdata:', this.completeTasks)
+            
         },
         onSearch() {
+            this.isSearching = true
             this.currentPage = 1
             this.searchCompleteTasks()
 
@@ -182,7 +184,6 @@ export default {
             if (this.isSearching) {
                 this.searchCompleteTasks()
             } else {
-
                 this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
             }
         },
@@ -194,7 +195,6 @@ export default {
             } else {
                 this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
             }
-            //this.getShowTasks(this.completeTasks)
         },
         handleSizeChange(newValue) {
             this.pageSize = newValue
@@ -203,7 +203,6 @@ export default {
             } else {
                 this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
             }
-            //this.fillShowTableData(this.completeTasks)
         },
         fillShowTableData(originData) {
             this.showTableData = []

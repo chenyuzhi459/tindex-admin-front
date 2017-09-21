@@ -13,6 +13,12 @@
 
         <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
             <el-table-column prop="name" label="name" sortable ></el-table-column>
+            <el-table-column label="操作" width="200">
+                <template scope="scope" >
+                    <el-button size="mini" @click="getSegmentInfo(scope.row.name)">info</el-button>
+                    <el-button size="mini" @click="deleteSegment(scope.row.name)">delete</el-button>
+                </template>
+            </el-table-column>
         </el-table>
 
         <div class="pagination">
@@ -26,6 +32,22 @@
               :total="segments.length">
             </el-pagination>
         </div>
+        <el-dialog  :visible.sync="dialogVisible" :size="dialogSize"  @close="dialogMessage = ''">
+         <template slot="title">
+            <div style=" line-height: 1;
+                         font-size: 16px;
+                         font-weight: 700;
+                         color: #1f2d3d;">
+                {{dialogTitle}}
+            </div>       
+        </template> 
+        <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
+        </el-input>
+        <span slot="footer" class="dialog-footer">
+             <el-button @click="dialogVisible = false">取 消</el-button> 
+            <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        </span>
+    </el-dialog>
     </div>
 
 
@@ -40,6 +62,11 @@
             return {
                 segments: [],
                 showTableData: [],
+                dialogMessage:'',
+                dialogTitle:'',
+                dialogSize:'full',
+                dialogInputAutosize:{},
+                dialogVisible:false,
                 pageSize:15,
                 currentPage:1
             }
@@ -66,11 +93,23 @@
               this.fillShowTableData()
             })
           },
-          // getSegments(dataSourceName){
-          //   this.$router.push(
-          //     {path: '/interval', query: {dataSourceName: dataSourceName}}
-          //   )
-          // },
+          getSegmentInfo(segmentName){
+            var url = this.$common.apis.dataSource + '/' + this.$route.query.dataSourceName + '/segments?full'
+            console.log(url)
+            this.$http.get(url).then(response => {
+                this.segmentInfo = response.data
+                console.log(this.segmentInfo)
+                var message = JSON.stringify(this.segmentInfo,null,2)
+                this.configDialog("Segment Info",message,true,"small",{minRows: 15, maxRows: 40})
+            })
+          },
+          configDialog(dialogTitle,dialogMessage,dialogVisible,dialogSize,dialogInputAutosize){
+            this.dialogTitle = dialogTitle
+            this.dialogMessage = dialogMessage
+            this.dialogVisible = dialogVisible
+            this.dialogSize = dialogSize
+            this.dialogInputAutosize = dialogInputAutosize
+          }, 
           fillShowTableData(){ 
             this.showTableData = []
             var position = (this.currentPage -1) * this.pageSize 

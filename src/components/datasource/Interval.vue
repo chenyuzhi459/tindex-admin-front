@@ -13,6 +13,11 @@
 
         <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
             <el-table-column prop="name" label="name" sortable ></el-table-column>
+            <el-table-column label="操作" width="200">
+                <template scope="scope" >
+                    <el-button size="mini" @click="getIntervalInfo(scope.row.name)">info</el-button>
+                </template>
+            </el-table-column>
         </el-table>
 
         <div class="pagination">
@@ -28,10 +33,7 @@
         </div>
     </div>
 
-
   </div>  
-
-
 </template>
 
 <script>
@@ -51,26 +53,28 @@
           init(){
             this.getIntervals()
           },
-          getIntervals(){
-            var url = this.$common.apis.dataSource + '/' + this.$route.query.dataSourceName + '/intervals'
-            console.log(url)
-            this.$http.get(url).then(response => {
-              var convertData = new Array()
-              for(var i=0,len=response.data.length; i<len; i++){
-                var map = new Map()
-                map['name'] = response.data[i]
-                convertData[i] = map
-              }
-              this.intervals = []
-              this.$common.methods.pushData(convertData,this.intervals)
-              this.fillShowTableData()
-            })
-          },
+
           // getSegments(dataSourceName){
           //   this.$router.push(
           //     {path: '/interval', query: {dataSourceName: dataSourceName}}
           //   )
           // },
+          getIntervals(){
+            var url = this.$common.apis.dataSource + "/" + this.$route.query.dataSourceName + "/intervals"
+            console.log(url)
+            this.$http.get(url).then(response => {
+                var convertData = new Array()
+                for(var i=0,len=response.data.length; i<len; i++){
+                  var map = new Map()
+                  map['name'] = response.data[i]
+                  convertData[i] = map
+                }
+                this.intervals = []
+                this.$common.methods.pushData(convertData,this.intervals)
+                this.fillShowTableData()
+            })
+          },
+
           fillShowTableData(){ 
             this.showTableData = []
             var position = (this.currentPage -1) * this.pageSize 
@@ -79,6 +83,7 @@
                 this.showTableData.push(this.intervals[position + i ])
             }
           },
+
           handleCurrentChange(newValue){
             this.currentPage = newValue
             this.fillShowTableData()
