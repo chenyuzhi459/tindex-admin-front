@@ -1,202 +1,228 @@
 <template>
-<div class="table">
-  <div style=" margin-left:20px;">
-        <span style="color: #242f42;font-size:20px;" ><b>Complete Tasks - Tasks recently completed</b>
-        </span>
-        <br></br>
-    </div>
-     <!-- <div class="handle-box" style=" margin-left:20px;">
-        <el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">
-                <el-option key="1" label="id" value="id"></el-option>
-                <el-option key="2" label="status" value="status"></el-option>
-        </el-select>
-        <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10" width="100px"></el-input>
-        <el-button type="primary" icon="search" @click="search">搜索</el-button>
-    </div>  -->
-     <div style=" margin-left:20px;"> <el-button type="primary" size="small" @click="init">刷新</el-button>
+    <div class="table">
+        <div style=" margin-left:20px;">
+            <span style="color: #242f42;font-size:20px;">
+                <b>Complete Tasks - Tasks recently completed</b>
+            </span>
             <br></br>
-        </div>  
-     <div class="table" style=" margin-left:20px;">
-        <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
-            <el-table-column prop="id" label="id" min-width="400"></el-table-column>
-            <el-table-column prop="status" label="status" width="110"></el-table-column>
-            <el-table-column sortable="custom" prop="createdTime" 
-                             label="createdTime" width="207">
-            </el-table-column>
-            <el-table-column prop="duration" label="duration" width="110"></el-table-column>
-            
-            <el-table-column prop="topic" label="topic" width="207"></el-table-column>
-            <el-table-column prop="offsets" label="offsets" width="150"></el-table-column>
-
-            <el-table-column label="操作" width="275">
-                <template scope="scope">
-                    <el-button size="mini" @click="getTaskInfo(scope.row.id)">payload</el-button>
-                    <el-button size="mini" @click="getTaskStatus(scope.row.id)">status</el-button>
-                    <el-button size="mini" @click="getTasklog(scope.row.id,0)">log(all)</el-button>
-                    <el-button size="mini" @click="getTasklog(scope.row.id,8192)">log(8kb)</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <div class="pagination">
-            <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage"
-            :page-sizes="[5,10, 25, 50, 100]"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="totalNum">
-            </el-pagination>
         </div>
-        
-        <br>
-    </div> 
+        <el-form :inline="true" :model="formInline" class="demo-form-inline" style=" margin-left:20px;">
 
-    <el-dialog  :visible.sync="dialogVisible" :size="dialogSize"  @close="dialogMessage = ''">
-        <template slot="title">
-            <div style=" line-height: 1;
-                            font-size: 16px;
-                            font-weight: 700;
-                            color: #1f2d3d;">
-                {{dialogTitle}}
-            </div>       
-        </template> 
-    <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage" >
-    </el-input>
-    <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button> 
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-    </span>
-    </el-dialog>
-</div>
-  
+            <el-form-item label="id">
+                <el-input size="small" v-model="formInline.searchValue1" placeholder="请输入id"></el-input>
+            </el-form-item>
+            <el-form-item label="status">
+                <el-select size="small" v-model="formInline.searchValue2" placeholder="请选择status">
+                    <el-option label="ALL" value="ALL"></el-option>
+                    <el-option label="SUCCESS" value="SUCCESS"></el-option>
+                    <el-option label="FAILED" value="FAILED"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
+                <el-button type="primary" size="small" @click="init">刷新</el-button>
+            </el-form-item>
+        </el-form>
+
+        <div class="table" style=" margin-left:20px;">
+            <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
+                <el-table-column prop="id" label="id" min-width="450"></el-table-column>
+                <el-table-column prop="status" label="status" width="110"></el-table-column>
+                <el-table-column sortable="custom" prop="createdTime" label="createdTime" width="207">
+                </el-table-column>
+                <el-table-column prop="duration" label="duration" width="110"></el-table-column>
+
+                <el-table-column prop="topic" label="topic" width="180"></el-table-column>
+                <el-table-column prop="offsets" label="offsets" width="150"></el-table-column>
+
+                <el-table-column label="操作" width="275">
+                    <template scope="scope">
+                        <el-button size="mini" @click="getTaskInfo(scope.row.id)">payload</el-button>
+                        <el-button size="mini" @click="getTaskStatus(scope.row.id)">status</el-button>
+                        <el-button size="mini" @click="getTasklog(scope.row.id,0)">log(all)</el-button>
+                        <el-button size="mini" @click="getTasklog(scope.row.id,8192)">log(8kb)</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
+                </el-pagination>
+            </div>
+
+            <br>
+        </div>
+
+        <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
+            <template slot="title">
+                <div style=" line-height: 1;
+                                                                        font-size: 16px;
+                                                                        font-weight: 700;
+                                                                        color: #1f2d3d;">
+                    {{dialogTitle}}
+                </div>
+            </template>
+            <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
+            </el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
 </template>
 
 <script>
 
 export default {
-  data () {
-    return {
-      completeTasks:[],
-      showTableData:[],
-      taskInfo:{},
-      taskStatus:{},
-      dialogMessage:'',
-      dialogTitle:'',
-      dialogSize:'full',
-      dialogInputAutosize:{},
-      dialogVisible:false,
-      sortDimension:'createdTime',
-      isDescending:true,
-      currentPage:1,
-      pageSize:10,
-      totalNum:0
-    }
-  },
-
-  created:function(){
-    this.init()
-  },
-  methods: { 
-      init(){
-        this.getCompleteTasks()
-      },
-      getTaskInfo(taskId){
-        var url = this.$common.apis.baseTaskUrl + "/" + taskId
-        this.$http.get(url).then(response => {
-            this.taskInfo = response.data
-            var message = JSON.stringify(this.taskInfo,null,2)
-            this.configDialog("Task Payload",message,true,"small",{minRows: 15, maxRows: 25})
-        })
-      },
-      getTaskStatus(taskId){
-        var url = this.$common.apis.baseTaskUrl + "/" + taskId + "/status"
-        this.$http.get(url).then(response => {
-            this.taskStatus = response.data
-            var message = JSON.stringify(this.taskStatus,null,2)
-            this.configDialog("Task Status",message,true,"small",{})
-        })
-      },
-      getTasklog(taskId, offset){     
-        var url = "{0}/{1}/log?offset={2}".format(this.$common.apis.baseTaskUrl,taskId,offset)
-        window.open(url)
-      },
-      configDialog(dialogTitle,dialogMessage,dialogVisible,dialogSize,dialogInputAutosize){
-        this.dialogTitle = dialogTitle
-        this.dialogMessage = dialogMessage
-        this.dialogVisible = dialogVisible
-        this.dialogSize = dialogSize
-        this.dialogInputAutosize = dialogInputAutosize
-      }, 
-      getCompleteTasks(){
-
-        this.$http.get(this.$common.apis.completeTasks).then(
-            response => {
-                var convertData = response.data.map(s=>{
-                    if(null === s.topic){
-                        s.topic = 'null'
-                    }
-                })
-                this.completeTasks = []
-                this.$common.methods.pushData(response.data,this.completeTasks)
-                this.totalNum = this.completeTasks.length
-                this.fillShowTableData(this.completeTasks)
-        })
-      },
-      getShowTasks(currentPage,pageSize,sortDimension,isDescending){
-          var offset = (currentPage - 1) * pageSize
-          this.$http.get(this.$common.apis.completeTasks,{params: {
-                                                            offset: offset,
-                                                            size:pageSize,
-                                                            sortDimension,sortDimension,
-                                                            isDescending:isDescending
-                                                    }
-                                                    
-            }).then(
-                response =>{
-                    var convertData = response.data.map(s=>{
-                        if(null === s.topic){
-                            s.topic = 'null'
-                        }
-                     })
-                     this.showTableData = []
-                     this.$common.methods.pushData(response.data,this.showTableData)
-                }
-            )
-      },
-      sortChange(column, prop, order){
-         console.log("column:",column)  
-         this.sortDimension = column.prop
-         this.isDescending = column.order === "ascending" ? false : true
-         this.getShowTasks(this.currentPage,this.pageSize,this.sortDimension,this.isDescending)
-      },
-      handleCurrentChange(newValue){
-        this.currentPage = newValue
-        this.getShowTasks(this.currentPage,this.pageSize,this.sortDimension,this.isDescending)
-        //this.getShowTasks(this.completeTasks)
-      },
-      handleSizeChange(newValue){
-        this.pageSize = newValue
-        this.getShowTasks(this.currentPage,this.pageSize,this.sortDimension,this.isDescending)
-        //this.fillShowTableData(this.completeTasks)
-      },
-      fillShowTableData(originData){ 
-        this.showTableData = []
-        var position = (this.currentPage -1) * this.pageSize 
-        var limit = (position + this.pageSize) >=　originData.length ? originData.length - position : this.pageSize;
-        for(var i=0;i<limit;i++){
-            this.showTableData.push(originData[position + i ])
+    data() {
+        return {
+            completeTasks: [],
+            showTableData: [],
+            dialogMessage: '',
+            dialogTitle: '',
+            dialogSize: 'full',
+            dialogInputAutosize: {},
+            dialogVisible: false,
+            sortDimension: 'createdTime',
+            isDescending: true,
+            currentPage: 1,
+            pageSize: 10,
+            totalNum: 0,
+            formInline: {
+                searchValue1: '',
+                searchValue2: 'ALL'
+            },
+            isSearching: false
         }
-      }
-  },
-   mounted(){
-      var self = this
-      this.$common.eventBus.$on("updataAllTasks",()=>{
-          self.init()
-      })
-      this.$common.eventBus.$on("updataCompleteTasks",()=>{
-          self.init()
-      })
-  }
+    },
+
+    created: function() {
+        this.init()
+    },
+    methods: {
+        init() {
+            this.currentPage = 1
+            this.isSearching = false
+            this.getCompleteTasks()
+        },
+        async getTaskInfo(taskId) {
+            const url = `${this.$common.apis.baseTaskUrl}/${taskId}`
+            const response = await this.$http.get(url)
+            const { data } = response
+            const message = this.$common.methods.JSONUtils.toString(data, null, 2)
+            this.configDialog("Task Payload", message, true, "small", { minRows: 15, maxRows: 25 })
+        },
+        async getTaskStatus(taskId) {
+            const url = `${this.$common.apis.baseTaskUrl}/${taskId}/status`
+            const response = await this.$http.get(url)
+            const { data } = response
+            const message = this.$common.methods.JSONUtils.toString(data, null, 2)
+            this.configDialog("Task Status", message, true, "small", {})
+
+        },
+        getTasklog(taskId, offset) {
+            const url = `${this.$common.apis.baseTaskUrl}/${taskId}/log?offset=${offset}`
+            window.open(url)
+        },
+        configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
+            this.dialogTitle = dialogTitle
+            this.dialogMessage = dialogMessage
+            this.dialogVisible = dialogVisible
+            this.dialogSize = dialogSize
+            this.dialogInputAutosize = dialogInputAutosize
+        },
+        async getCompleteTasks() {
+            const { data } = await this.$http.get(this.$common.apis.completeTasks)
+            this.completeTasks = []
+            this.$common.methods.pushData(data, this.completeTasks)
+            this.totalNum = this.completeTasks.length
+            this.fillShowTableData(this.completeTasks)
+
+        },
+        async getShowTasks(currentPage, pageSize, sortDimension, isDescending) {
+            const offset = (currentPage - 1) * pageSize
+            const response = await this.$http.get(this.$common.apis.completeTasks, {
+                params: {
+                    offset: offset,
+                    size: pageSize,
+                    sortDimension, sortDimension,
+                    isDescending: isDescending
+                }
+            })
+            this.showTableData = []
+            this.$common.methods.pushData(response.data, this.showTableData)
+
+        },
+        async searchCompleteTasks() {
+            const { data } = await this.$http.get(this.$common.apis.searchCompleteTasks, {
+                params: {
+                    searchDimension1: 'id',
+                    searchValue1: this.formInline.searchValue1,
+                    searchDimension2: 'status_payload',
+                    searchValue2: this.formInline.searchValue2 === "ALL" ? "" : this.formInline.searchValue2,
+                    sortDimension: this.sortDimension === 'createdTime' ? 'created_date' : this.sortDimension,
+                    isDescending: this.isDescending
+                }
+            })
+            this.completeTasks = []
+            this.$common.methods.pushData(data, this.completeTasks)
+            this.totalNum = this.completeTasks.length
+            this.isSearching = true
+            this.fillShowTableData(this.completeTasks)
+            console.log('searchdata:', this.completeTasks)
+        },
+        onSearch() {
+            this.currentPage = 1
+            this.searchCompleteTasks()
+
+        },
+        sortChange(column, prop, order) {
+            this.sortDimension = column.prop
+            this.isDescending = column.order === "ascending" ? false : true
+            if (this.isSearching) {
+                this.searchCompleteTasks()
+            } else {
+
+                this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
+            }
+        },
+        handleCurrentChange(newValue) {
+            this.currentPage = newValue
+            console.log("isSearching", this.isSearching)
+            if (this.isSearching) {
+                this.fillShowTableData(this.completeTasks)
+            } else {
+                this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
+            }
+            //this.getShowTasks(this.completeTasks)
+        },
+        handleSizeChange(newValue) {
+            this.pageSize = newValue
+            if (this.isSearching) {
+                this.fillShowTableData(this.completeTasks)
+            } else {
+                this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
+            }
+            //this.fillShowTableData(this.completeTasks)
+        },
+        fillShowTableData(originData) {
+            this.showTableData = []
+            var position = (this.currentPage - 1) * this.pageSize
+            var limit = (position + this.pageSize) >= originData.length ? originData.length - position : this.pageSize;
+            for (var i = 0; i < limit; i++) {
+                this.showTableData.push(originData[position + i])
+            }
+        }
+
+    },
+    mounted() {
+        var self = this
+        this.$common.eventBus.$on("updataAllTasks", () => {
+            self.init()
+        })
+        this.$common.eventBus.$on("updataCompleteTasks", () => {
+            self.init()
+        })
+    }
 }
 </script>

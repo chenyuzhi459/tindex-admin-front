@@ -12,6 +12,7 @@ export default {
     login:`${base}/login`,
     runnigTasks:`${base}/druid/indexer/v1/runningTasks`,
     completeTasks:`${base}/druid/indexer/v1/completeTasks`,
+    searchCompleteTasks:`${base}/druid/indexer/v1/search/completeTasks`,
     baseTaskUrl:`${base}/druid/indexer/v1/task`,
     dataSource:`${base}/druid/coordinator/v1/datasources`,
 }
