@@ -16,7 +16,7 @@
             <el-table-column label="操作" width="200">
                 <template scope="scope" >
                     <el-button size="mini" @click="getSegmentInfo(scope.row.name)">info</el-button>
-                    <el-button size="mini" @click="deleteSegment(scope.row.name)">delete</el-button>
+                    <el-button size="mini" @click="deleteSegment(scope.row.name)" type="danger">delete</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -79,7 +79,7 @@
             this.getSegments()
           },
           getSegments(){
-            var url = this.$common.apis.dataSource + '/' + this.$route.query.dataSourceName + '/segments'
+            const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments`
             console.log(url)
             this.$http.get(url).then(response => {
               var convertData = new Array()
@@ -94,13 +94,41 @@
             })
           },
           getSegmentInfo(segmentName){
-            var url = this.$common.apis.dataSource + '/' + this.$route.query.dataSourceName + '/segments?full'
+            const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments?full` 
             console.log(url)
             this.$http.get(url).then(response => {
                 this.segmentInfo = response.data
                 console.log(this.segmentInfo)
                 var message = JSON.stringify(this.segmentInfo,null,2)
                 this.configDialog("Segment Info",message,true,"small",{minRows: 15, maxRows: 40})
+            })
+          },
+
+          deleteSegment(segmentName){
+            var remindMessage = "Do you really want to delete:" + "\n" + segmentName
+            this.$confirm(remindMessage, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                closeOnClickModal: false,
+                type: 'warning'
+            }).then(() => {
+                const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}` 
+                console.log(url)
+                this.$http.delete(url).then(
+                    response => {
+                        window.setTimeout(this.init,200)
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        })            
+                    },response =>{
+                        this.$message({
+                            type: 'warning',
+                            message: '删除失败!'
+                        }) 
+                    })
+            }).catch(() => {
+                    
             })
           },
           configDialog(dialogTitle,dialogMessage,dialogVisible,dialogSize,dialogInputAutosize){

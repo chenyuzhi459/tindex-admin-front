@@ -13,11 +13,6 @@
 
         <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
             <el-table-column prop="name" label="name" sortable ></el-table-column>
-            <el-table-column label="操作" width="200">
-                <template scope="scope" >
-                    <el-button size="mini" @click="getIntervalInfo(scope.row.name)">info</el-button>
-                </template>
-            </el-table-column>
         </el-table>
 
         <div class="pagination">
@@ -60,7 +55,7 @@
           //   )
           // },
           getIntervals(){
-            var url = this.$common.apis.dataSource + "/" + this.$route.query.dataSourceName + "/intervals"
+            const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/intervals`
             console.log(url)
             this.$http.get(url).then(response => {
                 var convertData = new Array()
