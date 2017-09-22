@@ -1,5 +1,4 @@
 <template>
-
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
@@ -9,23 +8,23 @@
     </div>
 
     <!-- <div style=" margin-left:20px;"> 
-          <br></br>
-      </div>  -->
+            <br></br>
+        </div>  -->
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="name">
           <el-input v-model="formInline.name" placeholder="name" size="small"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="select">查询</el-button>
+          <el-button type="primary" size="small" @click="onSearch">查询</el-button>
           <el-button type="primary" size="small" @click="init">刷新</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="table" style=" margin-left:20px;">
 
-      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
-        <el-table-column prop="name" label="name" sortable width="310"></el-table-column>
+      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+        <el-table-column prop="name" label="name" sortable="custom" width="310"></el-table-column>
         <el-table-column label="segments" align="center">
           <el-table-column prop="properties.segments.count" label="count" width="150"></el-table-column>
           <el-table-column prop="properties.segments.size" label="size" width="150"></el-table-column>
@@ -33,9 +32,9 @@
           <el-table-column prop="properties.segments.minTime" label="minTime" width="250"></el-table-column>
         </el-table-column>
         <!-- <el-table-column prop="tiers" label="tiers">
-                <el-table-column prop="size" label="size"></el-table-column>
-                <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
-              </el-table-column> -->
+                  <el-table-column prop="size" label="size"></el-table-column>
+                  <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
+                </el-table-column> -->
 
         <el-table-column label="操作">
           <template scope="scope">
@@ -56,9 +55,9 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
       <template slot="title">
         <div style=" line-height: 1;
-                           font-size: 16px;
-                           font-weight: 700;
-                           color: #1f2d3d;">
+                             font-size: 16px;
+                             font-weight: 700;
+                             color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -74,7 +73,6 @@
 </template>
 
 <script>
-import _ from 'lodash'
 export default {
   data() {
     return {
@@ -89,7 +87,9 @@ export default {
         name: '',
       },
       pageSize: 15,
-      currentPage: 1
+      currentPage: 1,
+      isAscending:"ascending",
+      isSearching: false
     }
   },
   created: function() {
@@ -97,22 +97,17 @@ export default {
   },
   methods: {
     init() {
-      this.getDataSources()
+      this.getDataSources("true")
     },
-    getDataSources() {
+    getDataSources(isAscending) {
       const url = `${this.$common.apis.dataSource}?full`
-      this.$http.get(url).then(response => {
-        var convertData = (response.data.map(s => {
-          if (undefined != s.properties.tiers._default_tier.size) {
-            s.size = s.properties.tiers._default_tier.size
-            if (undefined != s.properties.tiers._default_tier.segmentCount) {
-              s.segmentCount = s.properties.tiers._default_tier.segmentCount
-            }
-            return s
-          }
-        }))
+      this.$http.get(url, {
+        params: {
+          isAscending: isAscending
+        }
+      }).then(response => {
         this.dataSources = []
-        this.$common.methods.pushData(convertData, this.dataSources)
+        this.$common.methods.pushData(response.data, this.dataSources)
         this.fillShowTableData()
       })
     },
@@ -174,7 +169,7 @@ export default {
     fillShowTableData() {
       this.showTableData = []
       var position = (this.currentPage - 1) * this.pageSize
-      var limit = (position + this.pageSize) >= 　this.dataSources.length ? this.dataSources.length - position : this.pageSize;
+      var limit = (position + this.pageSize) >= this.dataSources.length ? this.dataSources.length - position : this.pageSize;
       for (var i = 0; i < limit; i++) {
         this.showTableData.push(this.dataSources[position + i])
       }
@@ -187,11 +182,24 @@ export default {
       this.pageSize = newValue
       this.fillShowTableData()
     },
-    select() {
-
-    }
+    handleSort(column) {
+      this.isAscending = column.order === "ascending" ? true : false
+      this.getDataSources(this.isAscending)
+    },
+    onSearch() {
+      const url = `${this.$common.apis.dataSource}?full`
+      this.$http.get(url, {
+        params: {
+          isAscending: this.isAscending,
+          searchString: this.formInline.name
+        }
+      }).then(response => {
+        this.dataSources = []
+        this.$common.methods.pushData(response.data, this.dataSources)
+        this.fillShowTableData()
+      })
+    },
+    
   }
-
 }
 </script>
-
