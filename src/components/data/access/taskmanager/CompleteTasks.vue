@@ -7,7 +7,6 @@
             <br></br>
         </div>
         <el-form :inline="true" :model="formInline" class="demo-form-inline" style=" margin-left:20px;">
-
             <el-form-item label="id">
                 <el-input size="small" v-model="formInline.searchValue1" placeholder="请输入id"></el-input>
             </el-form-item>
@@ -20,19 +19,18 @@
             </el-form-item>
             <el-form-item>
                 <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
-                <!-- <el-button type="primary" size="small" @click="init">刷新</el-button> -->
+                <el-button type="primary" size="small" @click="init">刷新</el-button>
             </el-form-item>
         </el-form>
 
         <div class="table" style=" margin-left:20px;">
             <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
-                <el-table-column prop="id" label="id" min-width="450"></el-table-column>
-                <el-table-column prop="status" label="status" width="110"></el-table-column>
+                <el-table-column prop="id" label="id" min-width="472"></el-table-column>
+                <el-table-column prop="status" label="status" width="108"></el-table-column>
                 <el-table-column sortable="custom" prop="createdTime" label="createdTime" width="207">
                 </el-table-column>
                 <el-table-column prop="duration" label="duration" width="110"></el-table-column>
-
-                <el-table-column prop="topic" label="topic" width="180"></el-table-column>
+                <el-table-column prop="topic" label="topic" width="150"></el-table-column>
                 <el-table-column prop="offsets" label="offsets" width="150"></el-table-column>
 
                 <el-table-column label="操作" width="275">
@@ -45,7 +43,13 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
+                <el-pagination @size-change="handleSizeChange" 
+                @current-change="handleCurrentChange" 
+                :current-page="currentPage" 
+                :page-sizes="[5,10, 25, 50, 100]" 
+                :page-size="pageSize" 
+                layout="total, sizes, prev, pager, next, jumper" 
+                :total="totalNum">
                 </el-pagination>
             </div>
 
@@ -55,9 +59,9 @@
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
                 <div style=" line-height: 1;
-                                                                        font-size: 16px;
-                                                                        font-weight: 700;
-                                                                        color: #1f2d3d;">
+                            font-size: 16px;
+                            font-weight: 700;
+                            color: #1f2d3d;">
                     {{dialogTitle}}
                 </div>
             </template>
@@ -101,7 +105,6 @@ export default {
     },
     methods: {
         init() {
-            console.log('init...')
             this.currentPage = 1
             this.isSearching = false
             this.getCompleteTasks()
@@ -137,8 +140,9 @@ export default {
             this.completeTasks = []
             this.$common.methods.pushData(data, this.completeTasks)
             this.totalNum = this.completeTasks.length
-            this.fillShowTableData(this.completeTasks)
-
+            const resultData = this.$common.methods.fillShowTableData(this.completeTasks, this.currentPage, this.pageSize)
+            this.showTableData = []
+            this.$common.methods.pushData(resultData, this.showTableData)
         },
         async getShowTasks(currentPage, pageSize, sortDimension, isDescending) {
             const offset = (currentPage - 1) * pageSize
@@ -169,16 +173,22 @@ export default {
             this.$common.methods.pushData(data, this.completeTasks)
             this.totalNum = this.completeTasks.length
             this.isSearching = true
-            this.fillShowTableData(this.completeTasks)
-            
+            const resultData = this.$common.methods.fillShowTableData(this.completeTasks, this.currentPage, this.pageSize)
+            this.showTableData = []
+            this.$common.methods.pushData(resultData, this.showTableData)
+
         },
         onSearch() {
+            //注意此处一定要先加this.isSearching = true,否则触发handleCurrentChange的回调时会出错
             this.isSearching = true
             this.currentPage = 1
             this.searchCompleteTasks()
 
         },
-        sortChange(column, prop, order) {
+        sortChange(column,prop,order) {
+            if( null === column.order){
+                return
+            }
             this.sortDimension = column.prop
             this.isDescending = column.order === "ascending" ? false : true
             if (this.isSearching) {
@@ -189,9 +199,10 @@ export default {
         },
         handleCurrentChange(newValue) {
             this.currentPage = newValue
-            console.log("isSearching", this.isSearching)
             if (this.isSearching) {
-                this.fillShowTableData(this.completeTasks)
+                const resultData = this.$common.methods.fillShowTableData(this.completeTasks, this.currentPage, this.pageSize)
+                this.showTableData = []
+                this.$common.methods.pushData(resultData, this.showTableData)
             } else {
                 this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
             }
@@ -199,23 +210,16 @@ export default {
         handleSizeChange(newValue) {
             this.pageSize = newValue
             if (this.isSearching) {
-                this.fillShowTableData(this.completeTasks)
+                const resultData = this.$common.methods.fillShowTableData(this.completeTasks, this.currentPage, this.pageSize)
+                this.showTableData = []
+                this.$common.methods.pushData(resultData, this.showTableData)
             } else {
                 this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
             }
-        },
-        fillShowTableData(originData) {
-            this.showTableData = []
-            var position = (this.currentPage - 1) * this.pageSize
-            var limit = (position + this.pageSize) >= originData.length ? originData.length - position : this.pageSize;
-            for (var i = 0; i < limit; i++) {
-                this.showTableData.push(originData[position + i])
-            }
         }
-
     },
     mounted() {
-        var self = this
+        let self = this
         this.$common.eventBus.$on("updataAllTasks", () => {
             self.init()
         })

@@ -3,7 +3,7 @@
 
         <div style=" margin-left:20px;">
             <span style="color: #242f42;font-size:20px;">
-                <b>Running Tasks</b>
+                <b>Pending Tasks - Tasks waiting to be assigned to a worker</b>
             </span>
             <br></br>
         </div>
@@ -12,13 +12,6 @@
             <el-form-item label="id">
                 <el-input size="small" v-model="formInline.searchValue1" placeholder="请输入id"></el-input>
             </el-form-item>
-            <!-- <el-form-item label="status">
-                <el-select size="small" v-model="formInline.searchValue2" placeholder="请选择status">
-                    <el-option label="ALL" value="ALL"></el-option>
-                    <el-option label="SUCCESS" value="SUCCESS"></el-option>
-                    <el-option label="FAILED" value="FAILED"></el-option>
-                </el-select>
-            </el-form-item> -->
             <el-form-item>
                 <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
                 <el-button type="primary" size="small" @click="init">刷新</el-button>
@@ -71,7 +64,7 @@ import _ from 'lodash'
 export default {
     data() {
         return {
-            runnigTasks: [],
+            pendingTasks: [],
             showTableData: [],
             dialogMessage: '',
             dialogTitle: '',
@@ -94,20 +87,15 @@ export default {
     methods: {
         init() {
             this.currentPage = 1
-            this.getRunningTasks()
+            this.getPendingTasks()
         },
-        async getRunningTasks() {
-            const { data } = await this.$http.get(this.$common.apis.runnigTasks)
-            data.map(s => {
-                if (undefined !== s.location) {
-                    s.location = s.location.host + ":" + s.location.port
-                    return s
-                }
-            })
-            this.runnigTasks = []
-            this.$common.methods.pushData(data, this.runnigTasks)
-            this.totalNum = this.runnigTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.runnigTasks, this.currentPage, this.pageSize)
+        async getPendingTasks() {
+            const { data } = await this.$http.get(this.$common.apis.pendingTasks)
+           
+            this.pendingTasks = []
+            this.$common.methods.pushData(data, this.pendingTasks)
+            this.totalNum = this.pendingTasks.length
+            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
@@ -163,19 +151,15 @@ export default {
         },
         handleCurrentChange(newValue) {
             this.currentPage = newValue
-            const resultData = this.$common.methods.fillShowTableData(this.runnigTasks, this.currentPage, this.pageSize)
+            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
-            //this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
-
         },
         handleSizeChange(newValue) {
             this.pageSize = newValue
-            const resultData = this.$common.methods.fillShowTableData(this.runnigTasks, this.currentPage, this.pageSize)
+            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
-            //this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
-
         },
         sortChange(column) {
             if (null === column.order) {
@@ -190,46 +174,33 @@ export default {
                 this.isDescending = true
                 direction = 'desc'
             }
-            const sortedData = this.$common.methods.sortArray(this.runnigTasks, this.sortDimension, direction)
-            this.runnigTasks = []
-            this.$common.methods.pushData(sortedData,this.runnigTasks)
-            const resultData = this.$common.methods.fillShowTableData(this.runnigTasks, this.currentPage, this.pageSize)
+            const sortedData = this.$common.methods.sortArray(this.pendingTasks, this.sortDimension, direction)
+            this.pendingTasks = []
+            this.$common.methods.pushData(sortedData,this.pendingTasks)
+            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
-        // sortArray(array, field, direction) {
-        //     const sortedArray = _.orderBy(array, [field], [direction])
-        //     return sortedArray
-        // },
         onSearch(){
             if(_.isEqual(this.formInline.searchValue1,'')){
                 return
             } 
             this.currentPage = 1
-            const searchedData = this.$common.methods.searchArray(this.runnigTasks,'id',this.formInline.searchValue1)
-            this.runnigTasks = []
-            this.$common.methods.pushData(searchedData,this.runnigTasks)
-            this.totalNum = this.runnigTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.runnigTasks, this.currentPage, this.pageSize)
+            const searchedData = this.$common.methods.searchArray(this.pendingTasks,'id',this.formInline.searchValue1)
+            this.pendingTasks = []
+            this.$common.methods.pushData(searchedData,this.pendingTasks)
+            this.totalNum = this.pendingTasks.length
+            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
-        },
-        // searchArray(arry, field, keyword) {
-        //   let searchedArr = []
-        //   for(let index=0; index < arry.length; index++){
-        //       if(arry[index][field].indexOf(keyword) >= 0){
-        //         searchedArr.push(arry[index])
-        //       }
-        //   }
-        //   return searchedArr
-        // }
+        }
     },
     mounted() {
         let self = this
         this.$common.eventBus.$on('updataAllTasks', () => {
             self.init()
         })
-        this.$common.eventBus.$on('updataRunningTasks', () => {
+        this.$common.eventBus.$on('updataPendingTasks', () => {
             self.init()
         })
     }
