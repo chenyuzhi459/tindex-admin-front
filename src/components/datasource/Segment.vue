@@ -76,10 +76,32 @@
         },
         methods: {
           init(){
-            this.getSegments()
+            const preLocation = this.$route.query.preLocation
+            if(preLocation == "dataSource") {
+              this.getSegments()
+            } else if(preLocation == "interval") {
+              this.getSegmentsFromInterval()
+            }
           },
           getSegments(){
             const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments`
+            console.log(url)
+            this.$http.get(url).then(response => {
+              var convertData = new Array()
+              for(var i=0,len=response.data.length; i<len; i++){
+                var map = new Map()
+                map['name'] = response.data[i]
+                convertData[i] = map
+              }
+              this.segments = []
+              this.$common.methods.pushData(convertData,this.segments)
+              this.fillShowTableData()
+            })
+          },
+          getSegmentsFromInterval(){
+    
+            const intervalNameDeal = this.$route.query.intervalName.replace("/", "_")
+            const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/intervals/${intervalNameDeal}`
             console.log(url)
             this.$http.get(url).then(response => {
               var convertData = new Array()

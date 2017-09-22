@@ -8,8 +8,8 @@
     </div>
 
     <!-- <div style=" margin-left:20px;"> 
-            <br></br>
-        </div>  -->
+                <br></br>
+            </div>  -->
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="name">
@@ -32,9 +32,9 @@
           <el-table-column prop="properties.segments.minTime" label="minTime" width="250"></el-table-column>
         </el-table-column>
         <!-- <el-table-column prop="tiers" label="tiers">
-                  <el-table-column prop="size" label="size"></el-table-column>
-                  <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
-                </el-table-column> -->
+                      <el-table-column prop="size" label="size"></el-table-column>
+                      <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
+                    </el-table-column> -->
 
         <el-table-column label="操作">
           <template scope="scope">
@@ -55,9 +55,9 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
       <template slot="title">
         <div style=" line-height: 1;
-                             font-size: 16px;
-                             font-weight: 700;
-                             color: #1f2d3d;">
+                                 font-size: 16px;
+                                 font-weight: 700;
+                                 color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -88,7 +88,7 @@ export default {
       },
       pageSize: 15,
       currentPage: 1,
-      isAscending:"ascending",
+      isAscending: "ascending",
       isSearching: false
     }
   },
@@ -157,12 +157,12 @@ export default {
     },
     getIntervals(dataSourceName) {
       this.$router.push(
-        { path: '/interval', query: { dataSourceName: dataSourceName } }
+        { path: '/interval', query: { preLocation: "dataSource", dataSourceName: dataSourceName } }
       )
     },
     getSegments(dataSourceName) {
       this.$router.push(
-        { path: '/segment', query: { dataSourceName: dataSourceName } }
+        { path: '/segment', query: { preLocation: "dataSource",dataSourceName: dataSourceName } }
       )
     },
 
@@ -199,7 +199,7 @@ export default {
         this.fillShowTableData()
       })
     },
-    
+
   }
 }
 </script>
