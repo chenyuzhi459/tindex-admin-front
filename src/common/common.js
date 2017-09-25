@@ -5,12 +5,16 @@ const pushData = (fromData, toData) => {
 }
 
 const JSONUtils = {
-  toString(data) {
-      if (!data) {
-          return null
-      }
-      return JSON.stringify(data, null, 2)
-  }
+
+    toString(data) {
+        if (!data) {
+            return null
+        }
+        return JSON.stringify(data, null, 2)
+    },
+    toJsonObject(data) {
+        return JSON.parse(data)
+    }
 }
 
 const fillShowTableData = (originData, currentPage, pageSize) => {
@@ -37,11 +41,36 @@ const searchArray = (arry, field, keyword) => {
   return searchedArr
 }
 
+const setCookie = (c_name, value, expiredays) => {
+    let exdate = new Date()
+    exdate.setDate(exdate.getDate() + expiredays)
+    document.cookie = c_name + '=' + escape(value) +
+        ((expiredays === null) ? '' : ';expires=' + exdate.toGMTString())
+}
+
+const getCookie = (name) => {
+    let arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+    if (arr = document.cookie.match(reg))
+        return (arr[2]);
+    else
+        return null;
+}
+const delCookie = (name) => {
+    let exp = new Date();
+    exp.setTime(exp.getTime() - 1);
+    const cval = getCookie(name);
+    if (cval != null) {
+        document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+    }
+}
 
 export default {
-  pushData,
-  JSONUtils,
-  fillShowTableData,
-  sortArray,
-  searchArray
+    pushData,
+    JSONUtils,
+    fillShowTableData,
+    sortArray,
+    searchArray,
+    setCookie,
+    getCookie,
+    delCookie
 }

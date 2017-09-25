@@ -3,7 +3,7 @@
 
         <div style=" margin-left:20px;">
             <span style="color: #242f42;font-size:20px;">
-                <b>{{$t('message.tasks.pendingTasksTitle')}}</b>
+                <b>{{$t('message.tasks.waitingTasksTitle')}}</b>
             </span>
             <br></br>
         </div>
@@ -21,9 +21,8 @@
         <div class="table" style=" margin-left:20px;">
             <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
                 <el-table-column prop="id" label="id" min-width="150"></el-table-column>
-                <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207"></el-table-column>
-                <el-table-column prop="queueInsertionTime" :label="$t('message.tasks.queueInsertTime')" width="207"></el-table-column>
-                <el-table-column prop="location" :label="$t('message.tasks.location')" width="175"></el-table-column>
+                <el-table-column prop="location.host" :label="$t('message.tasks.locationHost')" width="175"></el-table-column>
+                <el-table-column prop="location.port" :label="$t('message.tasks.locationPort')" width="175"></el-table-column>
                 <el-table-column :label="$t('message.tasks.operation')" width="320">
                     <template scope="scope">
                         <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
@@ -63,8 +62,9 @@
 import _ from 'lodash'
 export default {
     data() {
+
         return {
-            pendingTasks: [],
+            waitingTasks: [],
             showTableData: [],
             dialogMessage: '',
             dialogTitle: '',
@@ -83,24 +83,26 @@ export default {
     },
     created: function() {
         this.init()
+        //console.log(this._i18n.locale = 'en', 'this._i18n');
     },
     methods: {
         init() {
             this.currentPage = 1
-            this.getPendingTasks()
+            this.getWaitingTasks()
         },
-        async getPendingTasks() {
-            const { data } = await this.$http.get(this.$common.apis.pendingTasks)
+        async getWaitingTasks() {
+            const { data } = await this.$http.get(this.$common.apis.waitingTasks)
             data.map(s => {
+                //console.log('11location:',s.location)
                 if (undefined !== s.location) {
-                    s.location = _.isNull(s.location.host) ? 'null' : s.location.host + ":" + s.location.port
+                    s.location.host = _.isNull(s.location.host) ? 'null' : s.location.host
                     return s
                 }
             })
-            this.pendingTasks = []
-            this.$common.methods.pushData(data, this.pendingTasks)
-            this.totalNum = this.pendingTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
+            this.waitingTasks = []
+            this.$common.methods.pushData(data, this.waitingTasks)
+            this.totalNum = this.waitingTasks.length
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
@@ -133,7 +135,7 @@ export default {
             const killTips = this.$t('message.tasks.killTips')
             const remindMessage = `${killTips}:\n${taskId.substring(0, 45)}\n${taskId.substring(45)}`
             try {
-                const res = await this.$confirm(remindMessage,  this.$t('message.tasks.killConfirmTitle'), {
+                const res = await this.$confirm(remindMessage, this.$t('message.tasks.killConfirmTitle'), {
                     confirmButtonText: this.$t('message.tasks.dialogConfirm'),
                     cancelButtonText: this.$t('message.tasks.dialogCancel'),
                     closeOnClickModal: false,
@@ -157,13 +159,13 @@ export default {
         },
         handleCurrentChange(newValue) {
             this.currentPage = newValue
-            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
         handleSizeChange(newValue) {
             this.pageSize = newValue
-            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
@@ -180,10 +182,10 @@ export default {
                 this.isDescending = true
                 direction = 'desc'
             }
-            const sortedData = this.$common.methods.sortArray(this.pendingTasks, this.sortDimension, direction)
-            this.pendingTasks = []
-            this.$common.methods.pushData(sortedData, this.pendingTasks)
-            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
+            const sortedData = this.$common.methods.sortArray(this.waitingTasks, this.sortDimension, direction)
+            this.waitingTasks = []
+            this.$common.methods.pushData(sortedData, this.waitingTasks)
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
@@ -192,11 +194,11 @@ export default {
                 return
             }
             this.currentPage = 1
-            const searchedData = this.$common.methods.searchArray(this.pendingTasks, 'id', this.formInline.searchValue1)
-            this.pendingTasks = []
-            this.$common.methods.pushData(searchedData, this.pendingTasks)
-            this.totalNum = this.pendingTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
+            const searchedData = this.$common.methods.searchArray(this.waitingTasks, 'id', this.formInline.searchValue1)
+            this.waitingTasks = []
+            this.$common.methods.pushData(searchedData, this.waitingTasks)
+            this.totalNum = this.waitingTasks.length
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         }
@@ -206,7 +208,7 @@ export default {
         this.$common.eventBus.$on('updateAllTasks', () => {
             self.init()
         })
-        this.$common.eventBus.$on('updatePendingTasks', () => {
+        this.$common.eventBus.$on('updateWaitingTasks', () => {
             self.init()
         })
     }

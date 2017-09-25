@@ -2,43 +2,43 @@
     <div class="table">
         <div style=" margin-left:20px;">
             <span style="color: #242f42;font-size:20px;">
-                <b>Complete Tasks - Tasks recently completed</b>
+                <b>{{$t('message.tasks.completeTasksTitle')}}</b>
             </span>
             <br></br>
         </div>
         <el-form :inline="true" :model="formInline" class="demo-form-inline" style=" margin-left:20px;">
             <el-form-item label="id">
-                <el-input size="small" v-model="formInline.searchValue1" placeholder="请输入id"></el-input>
+                <el-input size="small" v-model="formInline.searchValue1" :placeholder="$t('message.tasks.searchTips')"></el-input>
             </el-form-item>
             <el-form-item label="status">
-                <el-select size="small" v-model="formInline.searchValue2" placeholder="请选择status">
-                    <el-option label="ALL" value="ALL"></el-option>
-                    <el-option label="SUCCESS" value="SUCCESS"></el-option>
-                    <el-option label="FAILED" value="FAILED"></el-option>
+                <el-select size="small" v-model="formInline.searchValue2" :placeholder="$t('message.tasks.selectStatus')">
+                    <el-option :label="$t('message.tasks.statusItem1')" value="ALL"></el-option>
+                    <el-option :label="$t('message.tasks.statusItem2')" value="SUCCESS"></el-option>
+                    <el-option :label="$t('message.tasks.statusItem3')" value="FAILED"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
-                <el-button type="primary" size="small" @click="init">刷新</el-button>
+                <el-button size="small" type="primary" @click="onSearch">{{$t('message.tasks.search')}}</el-button>
+                <el-button type="primary" size="small" @click="init">{{$t('message.tasks.refresh')}}</el-button>
             </el-form-item>
         </el-form>
 
         <div class="table" style=" margin-left:20px;">
             <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
                 <el-table-column prop="id" label="id" min-width="472"></el-table-column>
-                <el-table-column prop="status" label="status" width="108"></el-table-column>
-                <el-table-column sortable="custom" prop="createdTime" label="createdTime" width="207">
+                <el-table-column prop="status" :label="$t('message.tasks.status')" width="108"></el-table-column>
+                <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207">
                 </el-table-column>
-                <el-table-column prop="duration" label="duration" width="110"></el-table-column>
-                <el-table-column prop="topic" label="topic" width="150"></el-table-column>
-                <el-table-column prop="offsets" label="offsets" width="150"></el-table-column>
+                <el-table-column prop="duration" :label="$t('message.tasks.duration')" width="110"></el-table-column>
+                <el-table-column prop="topic" :label="$t('message.tasks.topic')" width="150"></el-table-column>
+                <el-table-column prop="offsets" :label="$t('message.tasks.offsets')" width="150"></el-table-column>
 
-                <el-table-column label="操作" width="275">
+                <el-table-column :label="$t('message.tasks.operation')" width="275">
                     <template scope="scope">
-                        <el-button size="mini" @click="getTaskInfo(scope.row.id)">payload</el-button>
-                        <el-button size="mini" @click="getTaskStatus(scope.row.id)">status</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,0)">log(all)</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,8192)">log(8kb)</el-button>
+                         <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
+                        <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
+                        <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
+                        <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -68,8 +68,8 @@
             <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
             </el-input>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                <el-button @click="dialogVisible = false">{{$t('message.tasks.dialogCancel')}}</el-button>
+                <el-button type="primary" @click="dialogVisible = false">{{$t('message.tasks.dialogConfirm')}}</el-button>
             </span>
         </el-dialog>
     </div>
@@ -114,14 +114,14 @@ export default {
             const response = await this.$http.get(url)
             const { data } = response
             const message = this.$common.methods.JSONUtils.toString(data, null, 2)
-            this.configDialog("Task Payload", message, true, "small", { minRows: 15, maxRows: 25 })
+            this.configDialog(this.$t('message.tasks.taskPayloadTitle'), message, true, "small", { minRows: 15, maxRows: 25 })
         },
         async getTaskStatus(taskId) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}/status`
             const response = await this.$http.get(url)
             const { data } = response
             const message = this.$common.methods.JSONUtils.toString(data, null, 2)
-            this.configDialog("Task Status", message, true, "small", {})
+            this.configDialog(this.$t('message.tasks.taskStatusTitle'), message, true, "small", {})
 
         },
         getTasklog(taskId, offset) {
@@ -220,10 +220,10 @@ export default {
     },
     mounted() {
         let self = this
-        this.$common.eventBus.$on("updataAllTasks", () => {
+        this.$common.eventBus.$on("updateAllTasks", () => {
             self.init()
         })
-        this.$common.eventBus.$on("updataCompleteTasks", () => {
+        this.$common.eventBus.$on("updateCompleteTasks", () => {
             self.init()
         })
     }

@@ -13,6 +13,7 @@ export default {
     runnigTasks: `${base}/druid/indexer/v1/runningTasks`,
     completeTasks: `${base}/druid/indexer/v1/completeTasks`,
     pendingTasks: `${base}/druid/indexer/v1/pendingTasks`,
+    waitingTasks: `${base}/druid/indexer/v1/waitingTasks`,
     searchCompleteTasks:`${base}/druid/indexer/v1/search/completeTasks`,
     baseTaskUrl:`${base}/druid/indexer/v1/task`,
     dataSource:`${base}/druid/coordinator/v1/datasources`,
