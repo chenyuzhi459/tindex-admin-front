@@ -16,4 +16,5 @@ export default {
     searchCompleteTasks:`${base}/druid/indexer/v1/search/completeTasks`,
     baseTaskUrl:`${base}/druid/indexer/v1/task`,
     dataSource:`${base}/druid/coordinator/v1/datasources`,
+    intervals: `${base}/druid/coordinator/v1/intervals`
 }

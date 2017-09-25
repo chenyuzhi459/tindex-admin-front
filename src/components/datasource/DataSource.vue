@@ -2,14 +2,14 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b>DataSources</b>
+        <b @click="getDataSources">DataSources</b>
       </span>
       <br></br>
     </div>
 
     <!-- <div style=" margin-left:20px;"> 
-                <br></br>
-            </div>  -->
+                  <br></br>
+              </div>  -->
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="name">
@@ -32,9 +32,9 @@
           <el-table-column prop="properties.segments.minTime" label="minTime" width="250"></el-table-column>
         </el-table-column>
         <!-- <el-table-column prop="tiers" label="tiers">
-                      <el-table-column prop="size" label="size"></el-table-column>
-                      <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
-                    </el-table-column> -->
+                        <el-table-column prop="size" label="size"></el-table-column>
+                        <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
+                      </el-table-column> -->
 
         <el-table-column label="操作">
           <template scope="scope">
@@ -55,9 +55,9 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
       <template slot="title">
         <div style=" line-height: 1;
-                                 font-size: 16px;
-                                 font-weight: 700;
-                                 color: #1f2d3d;">
+                                   font-size: 16px;
+                                   font-weight: 700;
+                                   color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -89,18 +89,26 @@ export default {
       pageSize: 15,
       currentPage: 1,
       isAscending: "ascending",
-      isSearching: false
+      isSearching: false,
     }
   },
   created: function() {
+    this.dataSourceName = this.$route.query.dataSourceName
     this.init()
   },
   methods: {
     init() {
-      this.getDataSources("true")
+      if (this.$route.query.preLocation === 'interval') {
+        this.getDataSourceByName(this.$route.query.dataSourceName)
+      } else if (this.$route.query.preLocation === 'segment') {
+        this.getDataSourceByName(this.$route.query.dataSourceName)
+      } else {
+        this.getDataSources("true")
+      }
     },
     getDataSources(isAscending) {
       const url = `${this.$common.apis.dataSource}?full`
+      console.log(url)
       this.$http.get(url, {
         params: {
           isAscending: isAscending
@@ -162,7 +170,7 @@ export default {
     },
     getSegments(dataSourceName) {
       this.$router.push(
-        { path: '/segment', query: { preLocation: "dataSource",dataSourceName: dataSourceName } }
+        { path: '/segment', query: { preLocation: "dataSource", dataSourceName: dataSourceName } }
       )
     },
 
@@ -199,7 +207,19 @@ export default {
         this.fillShowTableData()
       })
     },
-
+    getDataSourceByName(dataSourceName) {
+      const url = `${this.$common.apis.dataSource}?full`
+      this.$http.get(url, {
+        params: {
+          isAscending: this.isAscending,
+          searchString: dataSourceName
+        }
+      }).then(response => {
+        this.dataSources = []
+        this.$common.methods.pushData(response.data, this.dataSources)
+        this.fillShowTableData()
+      })
+    }
   }
 }
 </script>
