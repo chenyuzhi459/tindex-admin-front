@@ -31,29 +31,29 @@
                     },
                     {
                         index: 'dataAccess',
-                        title: '数据接入',
+                        title: this.$t('message.sideBar.dataAccess.title'),
                          subs: [
                             {
-                                index: '/supervisorManage',
-                                title: 'supervisor管理'
+                                index: '/supervisorManager',
+                                title: this.$t('message.sideBar.dataAccess.supervisor')
                             },
                             {
                                 index: '/taskManager',
-                                title: 'task管理'
+                                title: this.$t('message.sideBar.dataAccess.task')
                             }
                         ]
                     },
                     {
                         index: 'info',
-                        title: '系统信息',
+                        title:  this.$t('message.sideBar.info.title'),
                          subs: [
                             {
                                 index: '/status',
-                                title: '系统状态'
+                                title: this.$t('message.sideBar.info.status')
                             },
                             {
                                 index: '/serversInfo',
-                                title: '节点信息'
+                                title: this.$t('message.sideBar.info.serversInfo')
                             }
                         ]
                     },
@@ -66,7 +66,7 @@
                                 title: '数据源'
                             },
                             {
-                                index: 'serversInfo',
+                                index: '/serversInfo',
                                 title: '节点信息'
                             }
                         ]
