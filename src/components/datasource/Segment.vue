@@ -2,7 +2,7 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b>Segments</b>
+        <b>{{$t('message.segment.segmentTitle')}}</b>
       </span>
       <br></br>
     </div>
@@ -11,18 +11,18 @@
       <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
       <el-button type="text" @click="getInterval">{{this.intervalName}}</el-button>
       <br></br>
-      <el-button type="primary" size="small" @click="init">刷新</el-button>
+      <el-button type="primary" size="small" @click="init">{{$t('message.segment.refresh')}}</el-button>
       <br></br>
     </div>
 
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
-        <el-table-column prop="name" label="name"></el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column prop="name" :label="$t('message.segment.name')"></el-table-column>
+        <el-table-column :label="$t('message.segment.more')" width="200">
           <template scope="scope">
-            <el-button size="mini" @click="getSegmentInfo(scope.row.name)">info</el-button>
-            <el-button size="mini" @click="deleteSegment(scope.row.name)" type="danger">delete</el-button>
+            <el-button size="mini" @click="getSegmentInfo(scope.row.name)">{{$t('message.segment.info')}}</el-button>
+            <el-button size="mini" @click="deleteSegment(scope.row.name)" type="danger">{{$t('message.segment.delete')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -43,8 +43,8 @@
         <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
         </el-input>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+          <el-button @click="dialogVisible = false">{{$t('message.segment.confirm')}}</el-button>
+          <el-button type="primary" @click="dialogVisible = false">{{$t('message.segment.cancle')}}</el-button>
         </span>
       </el-dialog>
     </div>
@@ -123,7 +123,7 @@ export default {
         this.segmentInfo = response.data
         console.log(this.segmentInfo)
         var message = JSON.stringify(this.segmentInfo, null, 2)
-        this.configDialog("Segment Info", message, true, "small", { minRows: 15, maxRows: 40 })
+        this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "small", { minRows: 15, maxRows: 40 })
       })
     },
     getDataSource() {
@@ -139,10 +139,10 @@ export default {
       )
     },
     deleteSegment(segmentName) {
-      var remindMessage = "Do you really want to delete:" + "\n" + segmentName
-      this.$confirm(remindMessage, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      var remindMessage = "Do you really want to delete:" + "\n\r" + segmentName
+      this.$confirm(remindMessage, this.$t('message.common.warning'), {
+        confirmButtonText: this.$t('message.common.confirm'),
+        cancelButtonText: this.$t('message.common.cancle'),
         closeOnClickModal: false,
         type: 'warning'
       }).then(() => {

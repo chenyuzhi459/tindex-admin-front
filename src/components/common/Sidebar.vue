@@ -58,12 +58,12 @@
                         ]
                     },
                     {
-                        index: 'datasource',
-                        title: '数据源管理',
+                        index: 'dataSource',
+                        title: this.$t('message.sideBar.dataSource.title'),
                          subs: [
                             {
                                 index: 'dataSource',
-                                title: '数据源'
+                                title: this.$t('message.sideBar.dataSource.dataSource')
                             },
                             {
                                 index: '/serversInfo',

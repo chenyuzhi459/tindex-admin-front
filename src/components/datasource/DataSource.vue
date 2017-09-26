@@ -2,46 +2,46 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b @click="getDataSources">DataSources</b>
+        <b @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</b>
       </span>
       <br></br>
     </div>
 
     <!-- <div style=" margin-left:20px;"> 
-                  <br></br>
-              </div>  -->
+                            <br></br>
+                        </div>  -->
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="name">
-          <el-input v-model="formInline.name" placeholder="name" size="small"></el-input>
+        <el-form-item :label="$t('message.dataSource.name')">
+          <el-input v-model="formInline.name" :placeholder="$t('message.dataSource.name')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="onSearch">查询</el-button>
-          <el-button type="primary" size="small" @click="init">刷新</el-button>
+          <el-button type="primary" size="small" @click="onSearch">{{$t('message.dataSource.search')}}</el-button>
+          <el-button type="primary" size="small" @click="init">{{$t('message.dataSource.refresh')}}</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
-        <el-table-column prop="name" label="name" sortable="custom" width="310"></el-table-column>
-        <el-table-column label="segments" align="center">
-          <el-table-column prop="properties.segments.count" label="count" width="150"></el-table-column>
-          <el-table-column prop="properties.segments.size" label="size" width="150"></el-table-column>
-          <el-table-column prop="properties.segments.maxTime" label="maxTime" width="250"></el-table-column>
-          <el-table-column prop="properties.segments.minTime" label="minTime" width="250"></el-table-column>
+        <el-table-column prop="name" :label="$t('message.dataSource.name')" sortable="custom" width="310"></el-table-column>
+        <el-table-column :label="$t('message.dataSource.segments')" align="center">
+          <el-table-column prop="properties.segments.count" :label="$t('message.dataSource.count')" width="150"></el-table-column>
+          <el-table-column prop="properties.segments.size" :label="$t('message.dataSource.size')" width="150"></el-table-column>
+          <el-table-column prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="250"></el-table-column>
+          <el-table-column prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="250"></el-table-column>
         </el-table-column>
         <!-- <el-table-column prop="tiers" label="tiers">
-                        <el-table-column prop="size" label="size"></el-table-column>
-                        <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
-                      </el-table-column> -->
+                                  <el-table-column prop="size" label="size"></el-table-column>
+                                  <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
+                                </el-table-column> -->
 
-        <el-table-column label="操作">
+        <el-table-column :label="$t('message.dataSource.more')">
           <template scope="scope">
-            <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">info</el-button>
-            <el-button size="mini" @click="getIntervals(scope.row.name)">intervals</el-button>
-            <el-button size="mini" @click="getSegments(scope.row.name)">segments</el-button>
-            <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">delete</el-button>
+            <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.dataSource.info')}}</el-button>
+            <el-button size="mini" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button>
+            <el-button size="mini" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
+            <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">{{$t('message.dataSource.delete')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -55,17 +55,17 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
       <template slot="title">
         <div style=" line-height: 1;
-                                   font-size: 16px;
-                                   font-weight: 700;
-                                   color: #1f2d3d;">
+                      font-size: 16px;
+                      font-weight: 700;
+                      color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
       <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button @click="dialogVisible = false">{{$t('message.common.confirm')}}</el-button>
+        <el-button type="primary" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
       </span>
     </el-dialog>
 
@@ -126,15 +126,15 @@ export default {
         this.dataSourceInfo = response.data
         console.log(this.dataSourceInfo)
         var message = JSON.stringify(this.dataSourceInfo, null, 2)
-        this.configDialog("DataSource Info", message, true, "small", { minRows: 15, maxRows: 25 })
+        this.configDialog(this.$t('message.dataSource.dataSourceInfo'), message, true, "small", { minRows: 15, maxRows: 25 })
       })
     },
 
     deleteDataSource(dataSourceName) {
       var remindMessage = "Do you really want to delete:" + "\n" + dataSourceName
-      this.$confirm(remindMessage, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(remindMessage, this.$t('message.common.warning'), {
+        confirmButtonText: this.$t('message.common.confirm'),
+        cancelButtonText: this.$t('message.common.cancle'),
         closeOnClickModal: false,
         type: 'warning'
       }).then(() => {
