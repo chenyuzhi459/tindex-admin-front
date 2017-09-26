@@ -28,8 +28,10 @@ export default {
             },
             dataSource: {
                 title: 'DataSource Manage',
-                dataSource: 'DataSources'
+                dataSource: 'DataSources',
+                metadata: 'Metadata'
             }
+            
         },
         tasks: {
             runningTasksTitle: 'Running Tasks',

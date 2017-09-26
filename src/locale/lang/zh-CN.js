@@ -28,7 +28,8 @@ export default {
       },
       dataSource: {
         title: '数据源管理',
-        dataSource: '数据源'
+        dataSource: '数据源',
+        metadata: '元数据'
       }
     },
     tasks: {

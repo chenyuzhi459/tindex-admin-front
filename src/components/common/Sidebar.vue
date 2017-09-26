@@ -62,12 +62,12 @@
                         title: this.$t('message.sideBar.dataSource.title'),
                          subs: [
                             {
-                                index: 'dataSource',
+                                index: '/dataSource',
                                 title: this.$t('message.sideBar.dataSource.dataSource')
                             },
                             {
-                                index: '/serversInfo',
-                                title: '节点信息'
+                                index: '/mDataSource',
+                                title: this.$t('message.sideBar.dataSource.metadata')
                             }
                         ]
                     },
