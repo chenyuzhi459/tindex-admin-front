@@ -76,7 +76,29 @@ export default {
             offsets: 'offsets',
 
         },
-        hello: 'hello', 
+        supervisors: {
+            runningSuperviorTitle: 'Running Supervisors',
+            searchTips: 'please input id',
+            search: 'Search',
+            refresh: 'Refresh',
+            operation: 'more',
+            tasks: 'tasks',
+            spec: 'spec',
+            status: 'status',
+            reset: 'reset',
+            delete: 'kill',
+            dialogConfirm: 'Confirm',
+            dialogCancel: 'Cancel',
+            specTitle: 'Supervisor Spec',
+            statusTitle: 'Supervisor Status',
+            resetTips: 'Do you really want to reset',
+            resetSuccessMsg: 'reset successfully, id',
+            resetErrMsg: 'reset failed,please check overlord logs',
+            dialogWarningTitle: 'Warning',
+            killTips: 'Do you really want to kill',
+            killSuccess: 'Kill Successfully!',
+            killFailed: 'Kill failed,please check overlord logs'
+        },
         dataSource: {
             dataSourceTitle: "DataSources",
             search: "Search",
@@ -130,4 +152,5 @@ export default {
           warning: 'Warning'
         }
     }
+   
 }

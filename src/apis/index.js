@@ -10,12 +10,13 @@ export default {
     status: `${base}/status`,
     serversInfo: `${base}/druid/coordinator/v1/servers`,
     login: `${base}/login`,
-    runnigTasks: `${base}/druid/indexer/v1/runningTasks`,
+    runningTasks: `${base}/druid/indexer/v1/runningTasks`,
     completeTasks: `${base}/druid/indexer/v1/completeTasks`,
     pendingTasks: `${base}/druid/indexer/v1/pendingTasks`,
     waitingTasks: `${base}/druid/indexer/v1/waitingTasks`,
     searchCompleteTasks:`${base}/druid/indexer/v1/search/completeTasks`,
     baseTaskUrl:`${base}/druid/indexer/v1/task`,
+    supervisor:`${base}/druid/indexer/v1/supervisor`,
     dataSource:`${base}/druid/coordinator/v1/datasources`,
     intervals: `${base}/druid/coordinator/v1/intervals`
     

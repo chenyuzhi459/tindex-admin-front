@@ -63,7 +63,6 @@ export default {
         changeLanuage(command) {
             if(command !== 'zh' && command !== 'en') return
             if (this._i18n.locale === command) return
-
             this.$common.methods.setCookie('lanuage', command)
             history.go(0)
         }

@@ -15,23 +15,6 @@ export default {
       lanuage1: '中文',
       lanuage2: '英文'
     },
-    sideBar: {
-      dataAccess: {
-        title: '数据接入',
-        supervisor: 'supervisor管理',
-        task: 'task管理'
-      },
-      info: {
-        title: '系统信息',
-        status: '系统状态',
-        serversInfo: '节点信息'
-      },
-      dataSource: {
-        title: '数据源管理',
-        dataSource: '数据源',
-        metadata: '元数据'
-      }
-    },
     tasks: {
       runningTasksTitle: '运行任务',
       pendingTasksTitle: '队列任务 - 等待分配资源的任务',
@@ -72,11 +55,48 @@ export default {
       statusItem3: '失败',
       duration: '运行时长',
       topic: 'topic',
-      offsets: 'offsets',
-
-
+      offsets: 'offsets'
     },
-    hello: '你好',
+    supervisors: {
+      runningSuperviorTitle: '运行supervisors',
+      searchTips: '请输入id',
+      search: '搜索',
+      refresh: '刷新',
+      operation: '操作',
+      tasks: '任务',
+      spec: '说明',
+      status: '状态',
+      reset: '重置',
+      delete: '删除',
+      dialogConfirm: '确定',
+      dialogCancel: '取消',
+      specTitle: 'Supervisor 说明',
+      statusTitle: 'Supervisor 状态',
+      resetTips: '你确定要重置',
+      resetSuccessMsg: '重置成功, id',
+      resetErrMsg: '重置失败,请查看overlord日志',
+      dialogWarningTitle: '警告',
+      killTips: '你确定要删除',
+      killSuccess: '删除成功!',
+      killFailed: '删除失败,请查看overlord日志',
+    },
+    sideBar: {
+      dataAccess: {
+        title: '数据接入',
+        supervisor: 'supervisor管理',
+        task: 'task管理'
+      },
+      info: {
+        title: '系统信息',
+        status: '系统状态',
+        serversInfo: '节点信息'
+      },
+      dataSource: {
+        title: '数据源管理',
+        dataSource: '数据源',
+        metadata: '元数据'
+      }
+    },
     dataSource: {
       dataSourceTitle: "数据源",
       search: "搜索",
