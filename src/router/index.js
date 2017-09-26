@@ -11,7 +11,7 @@ export default new Router({
         {
             path: '/readme',
             component: resolve => require(['../components/common/Home.vue'], resolve),
-            children:[
+            children: [
                 {
                     path: '/',
                     component: resolve => require(['../components/page/Readme.vue'], resolve)
@@ -25,10 +25,14 @@ export default new Router({
                     component: resolve => require(['../components/info/ServersInfo.vue'], resolve)
                 },
                 {
+                    path: '/supervisorManager',
+                    component: resolve => require(['../components/data/access/SupervisorManager.vue'], resolve)
+                },
+                {
                     path: '/taskManager',
                     component: resolve => require(['../components/data/access/TaskManager.vue'], resolve)
                 },
-                
+
                 {
                     path: '/basetable',
                     component: resolve => require(['../components/page/BaseTable.vue'], resolve)
@@ -69,12 +73,12 @@ export default new Router({
                     component: resolve => require(['../components/datasource/DataSource.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/interval',
-                  component: resolve => require(['../components/datasource/Interval.vue'], resolve)    // 拖拽列表组件
+                    path: '/interval',
+                    component: resolve => require(['../components/datasource/Interval.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/segment',
-                  component: resolve => require(['../components/datasource/Segment.vue'], resolve)    // 拖拽列表组件
+                    path: '/segment',
+                    component: resolve => require(['../components/datasource/Segment.vue'], resolve)    // 拖拽列表组件
                 }
             ]
         },

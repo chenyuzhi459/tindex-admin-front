@@ -67,10 +67,30 @@ export default {
             statusItem3: '失败',
             duration: '运行时长',
             topic: 'topic',
-            offsets: 'offsets',
-
-
+            offsets: 'offsets'
         },
-        hello: '你好'
+        supervisors: {
+            runningSuperviorTitle: '运行supervisors',
+            searchTips: '请输入id',
+            search: '搜索',
+            refresh: '刷新',
+            operation: '操作',
+            tasks: '任务',
+            spec: '说明',
+            status: '状态',
+            reset: '重置',
+            delete: '删除',
+            dialogConfirm: '确定',
+            dialogCancel: '取消',
+            specTitle: 'Supervisor 说明',
+            statusTitle: 'Supervisor 状态',
+            resetTips: '你确定要重置',
+            resetSuccessMsg: '重置成功, id',
+            resetErrMsg: '重置失败,请查看overlord日志',
+            dialogWarningTitle: '警告',
+            killTips: '你确定要删除',
+            killSuccess: '删除成功!',
+            killFailed: '删除失败,请查看overlord日志',
+        }
     }
 }
