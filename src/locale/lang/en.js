@@ -19,13 +19,17 @@ export default {
             dataAccess: {
                 title: 'Data Access',
                 supervisor: 'Supervisor Manager',
-                task: 'Task Manager'
+                task: 'Task Manager',
             },
             info: {
                 title: 'System Info',
                 status: 'System Status',
                 serversInfo: 'Servers Info'
             },
+            dataSource: {
+                title: 'DataSource Manage',
+                dataSource: 'DataSources'
+            }
         },
         tasks: {
             runningTasksTitle: 'Running Tasks',
@@ -91,7 +95,60 @@ export default {
             dialogWarningTitle: 'Warning',
             killTips: 'Do you really want to kill',
             killSuccess: 'Kill Successfully!',
-            killFailed: 'Kill failed,please check overlord logs',
+            killFailed: 'Kill failed,please check overlord logs'
+        },
+        dataSource: {
+            dataSourceTitle: "DataSources",
+            search: "Search",
+            refresh: "Refresh",
+            name: "name",
+            segments: "segments",
+            count: "count",
+            size: "size",
+            maxTime: "maxTime",
+            minTime: "minTime",
+            more: "more",
+            info: "info",
+            intervals: "intervals",
+            "delete": "delete",
+            "dataSourceInfo": "DataSource Info",
+            "warning": "Warning",
+            "confirm": "Confirm",
+            "cancle": "Cancle"
+        },
+        interval: {
+          intervalTitle: "Intervals",
+          refresh: "Refresh",
+          name: "name",
+          segments: "segments",
+          more: "more"
+        },
+        segment: {
+          segmentTitle: "Segments",
+          refresh: "Refresh",
+          name: "name",
+          info: "info",
+          more: "more",
+          delete: "delete",
+          segmentInfo: "Segment Info",
+          confirm: "Cofirm",
+          cancle: "Cancle",
+          confirmButtonText: "Confirm",
+          cancleButtonTextL: "Cancle"
+        },
+        common: {
+          more: "more",
+          info: "info",
+          delete: "delete",
+          size: "size",
+          confirm: "Cofirm",
+          cancle: "Cancle",
+          refresh: "Refresh",
+          name: "name",
+          count: "count",
+          search: 'Search',
+          warning: 'Warning'
         }
     }
+   
 }
