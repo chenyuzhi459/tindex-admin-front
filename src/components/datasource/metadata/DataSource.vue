@@ -33,7 +33,7 @@
 
         <el-table-column :label="$t('message.dataSource.more')">
           <template scope="scope">
-            <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.dataSource.info')}}</el-button>
+            <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
             <el-button size="mini" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
