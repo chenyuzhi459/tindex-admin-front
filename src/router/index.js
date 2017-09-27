@@ -88,6 +88,14 @@ export default new Router({
                 {
                   path: '/mSegment',
                   component: resolve => require(['../components/datasource/metadata/Segment.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                  path: '/lookupCoordinator',
+                  component: resolve => require(['../components/lookup/lookupCoordinator/Lookup.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                  path: '/lookupHistorical',
+                  component: resolve => require(['../components/lookup/lookupHistorical/Lookup.vue'], resolve)    // 拖拽列表组件
                 }
             ]
         },

@@ -22,4 +22,6 @@ export default {
     mDataSource: `${base}/druid/coordinator/v1/metadata/datasources`,
     clientInfo: `${base}/druid/v2/datasources`,
     rules: `${base}/druid/coordinator/v1/rules`
+    // lookupCoordinator:
+    // lookupHistorical:
 }

@@ -95,7 +95,11 @@ export default {
         title: '数据源管理',
         dataSource: '数据源',
         metadata: '元数据',
-        
+      },
+      lookup: {
+        title: '用户分群管理',
+        lookupCoordinator: '用户分群（Coordinator）',
+        lookupHistorical: '用户分群（Historical）'
       }
     },
     dataSource: {
@@ -147,6 +151,14 @@ export default {
       cancle: "取 消",
       confirmButtonText: "确定",
       cancleButtonTextL: "取消"
+    },
+    lookup: {
+      lookupCoordinator: {
+        lookupTitle: "用户分群"
+      },
+      lookupHistorical: {
+
+      }
     },
     common: {
       more: "更多",

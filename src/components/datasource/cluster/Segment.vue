@@ -114,13 +114,13 @@ export default {
       this.fillShowTableData()
     },
     async getSegmentInfo(segmentName) {
-      const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments?full`
+      const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}?full`
       console.log(url)
       const response = await this.$http.get(url)
       this.segmentInfo = response.data
       console.log(this.segmentInfo)
       var message = this.$common.methods.JSONUtils.toString(this.segmentInfo)
-      this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "small", { minRows: 15, maxRows: 40 })
+      this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "full", { minRows: 15, maxRows: 40 })
 
     },
     getDataSource() {

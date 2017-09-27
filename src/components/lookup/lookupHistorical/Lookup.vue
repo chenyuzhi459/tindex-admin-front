@@ -2,7 +2,7 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</b>
+        <b>{{$t('message.lookup.lookupTitle')}}</b>
       </span>
       <br></br>
     </div>

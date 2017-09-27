@@ -31,8 +31,12 @@ export default {
                 dataSource: 'DataSources',
                 metadata: 'Metadata'
                 
+            },
+            lookup: {
+              title: 'Lookup Manage',
+              lookupCoordinator: 'Lookup Coordinator',
+              lookupHistorical: 'Lookup Historical'
             }
-            
         },
         tasks: {
             runningTasksTitle: 'Running Tasks',
@@ -153,6 +157,14 @@ export default {
           confirmButtonText: "Confirm",
           cancleButtonTextL: "Cancle"
         },
+        lookup: {
+          lookupCoordinator: {
+            lookupTitle: "Lookup"
+          },
+          lookupHistorical: {
+
+          }
+        },
         common: {
           more: "more",
           info: "info",
@@ -169,6 +181,7 @@ export default {
           deleteSuccess: 'Delete Success!',
           deleteFail: 'Delete Fail!'
         }
+
     }
    
 }
