@@ -111,10 +111,10 @@ export default {
             maxTime: "maxTime",
             minTime: "minTime",
             more: "more",
-            info: "info",
+            tiers: "tiers",
             intervals: "intervals",
             delete: "delete",
-            dataSourceInfo: "DataSource Info",
+            tiersInfo: "Tiers Info",
             warning: "Warning",
             confirm: "Confirm",
             cancle: "Cancle",
@@ -129,7 +129,9 @@ export default {
             history: 'history',
             add: 'add',
             rulesInfo: 'Rules Info',
-            rulesHistory: 'Rules History'
+            rulesHistory: 'Rules History',
+            addRulesSuccess: 'Add Rules Success!',
+            addRulesFail: 'Add Rules Fail!'
         },
         interval: {
           intervalTitle: "Intervals",
@@ -162,7 +164,10 @@ export default {
           name: "name",
           count: "count",
           search: 'Search',
-          warning: 'Warning'
+          warning: 'Warning',
+          deleteWarning: 'Do you really want to delete:',
+          deleteSuccess: 'Delete Success!',
+          deleteFail: 'Delete Fail!'
         }
     }
    

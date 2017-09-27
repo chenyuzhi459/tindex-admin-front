@@ -34,9 +34,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                 font-size: 16px;
-                                 font-weight: 700;
-                                 color: #1f2d3d;">
+                                   font-size: 16px;
+                                   font-weight: 700;
+                                   color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -102,7 +102,7 @@ export default {
       const intervalNameDeal = this.$route.query.intervalName.replace("/", "_")
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/intervals/${intervalNameDeal}`
       console.log(url)
-      const response = await this.$http.get(url) 
+      const response = await this.$http.get(url)
       var convertData = new Array()
       for (var i = 0, len = response.data.length; i < len; i++) {
         var map = new Map()
@@ -135,32 +135,32 @@ export default {
         { path: '/interval', query: { preLocation: "segment", intervalName: this.intervalName, dataSourceName: this.dataSourceName } }
       )
     },
-    deleteSegment(segmentName) {
-      var remindMessage = "Do you really want to delete:" + "\n\r" + segmentName
-      this.$confirm(remindMessage, this.$t('message.common.warning'), {
-        confirmButtonText: this.$t('message.common.confirm'),
-        cancelButtonText: this.$t('message.common.cancle'),
-        closeOnClickModal: false,
-        type: 'warning'
-      }).then(() => {
-        const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}`
-        console.log(url)
-        this.$http.delete(url).then(
-          response => {
-            window.setTimeout(this.init, 200)
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          }, response => {
-            this.$message({
-              type: 'warning',
-              message: '删除失败!'
-            })
+    async deleteSegment(segmentName) {
+      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${segmentName}`
+      try {
+        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+          confirmButtonText: this.$t('message.common.confirm'),
+          cancelButtonText: this.$t('message.common.cancle'),
+          closeOnClickModal: false,
+          type: 'warning'
+        })
+        try {
+          const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}`
+          const deleteResponse = await this.$http.delete(url)
+          window.setTimeout(this.init, 500)
+          this.$message({
+            type: 'success',
+            message: this.$t('message.common.deleteSuccess')
           })
-      }).catch(() => {
+        } catch (err) {
+          this.$message({
+            type: 'warning',
+            message: this.$t('message.common.deleteFail')
+          })
+        }
+      } catch (e) {
 
-      })
+      }
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
       this.dialogTitle = dialogTitle

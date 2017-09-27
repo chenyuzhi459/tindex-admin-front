@@ -29,7 +29,7 @@
         </el-table-column>
         <el-table-column :label="$t('message.dataSource.more')">
           <template scope="scope">
-            <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.dataSource.info')}}</el-button>
+            <el-button size="mini" @click="getTiers(scope.row.name)">{{$t('message.dataSource.tiers')}}</el-button>
             <el-button size="mini" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button>
             <el-button size="mini" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
@@ -49,9 +49,9 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
       <template slot="title">
         <div style=" line-height: 1;
-                                  font-size: 16px;
-                                  font-weight: 700;
-                                  color: #1f2d3d;">
+                                      font-size: 16px;
+                                      font-weight: 700;
+                                      color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -113,9 +113,9 @@ export default {
       this.fillShowTableData()
 
     },
-    getDataSourceInfo(dataSourceName) {
+    async getTiers(dataSourceName) {
       const url = `${this.$common.apis.dataSource}/${dataSourceName}`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.dataSourceInfo'))
+      this.getInfoFromUrl(url, this.$t('message.dataSource.tiersInfo'))
     },
     getDimensions(dataSourceName) {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/dimensions`
@@ -132,37 +132,38 @@ export default {
     async getInfoFromUrl(url, title) {
       console.log(url)
       const response = await this.$http.get(url)
-      this.dataSourceInfo = response.data
-      console.log(this.dataSourceInfo)
-      const message = this.$common.methods.JSONUtils.toString(this.dataSourceInfo)
+      const info = response.data
+      console.log(info)
+      const message = this.$common.methods.JSONUtils.toString(info)
       this.configDialog(title, message, true, "small", { minRows: 15, maxRows: 25 })
     },
 
-    deleteDataSource(dataSourceName) {
-      var remindMessage = "Do you really want to delete:" + "\n" + dataSourceName
-      this.$confirm(remindMessage, this.$t('message.common.warning'), {
-        confirmButtonText: this.$t('message.common.confirm'),
-        cancelButtonText: this.$t('message.common.cancle'),
-        closeOnClickModal: false,
-        type: 'warning'
-      }).then(() => {
-        const url = `${this.$common.apis.dataSource}/${dataSourceName}`
-        this.$http.delete(url).then(
-          response => {
-            window.setTimeout(this.init, 200)
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          }, response => {
-            this.$message({
-              type: 'warning',
-              message: '删除失败!'
-            })
+    async deleteDataSource(dataSourceName) {
+      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${dataSourceName}`
+      try {
+        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+          confirmButtonText: this.$t('message.common.confirm'),
+          cancelButtonText: this.$t('message.common.cancle'),
+          closeOnClickModal: false,
+          type: 'warning'
+        })
+        try {
+          const url = `${this.$common.apis.dataSource}/${dataSourceName}`
+          const deleteResponse = await this.$http.delete(url)
+          window.setTimeout(this.init, 500)
+          this.$message({
+            type: 'success',
+            message: this.$t('message.common.deleteSuccess')
           })
-      }).catch(() => {
+        } catch (err) {
+          this.$message({
+            type: 'warning',
+            message: this.$t('message.common.deleteFail')
+          })
+        }
+      } catch (e) {
 
-      })
+      }
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
       this.dialogTitle = dialogTitle

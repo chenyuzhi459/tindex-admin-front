@@ -77,13 +77,14 @@ export default {
       dialogInputAutosize: {},
       dialogVisible: false,
       formInline: {
-        name: '',
+        name: ''
       },
       pageSize: 15,
       currentPage: 1,
       isDescending: "descending",
       isSearching: false,
-      confirmType: ''
+      confirmType: '',
+      ruleDataSource: ''
     }
   },
   created: function() {
@@ -144,12 +145,17 @@ export default {
       this.dataSourceInfo = response.data
       console.log(this.dataSourceInfo)
       const message = this.$common.methods.JSONUtils.toString(this.dataSourceInfo)
-      this.configDialog(title, message, true, "small", { minRows: 15, maxRows: 25 }, "")
+      let size = "small"
+      if (title === this.$t('message.dataSource.dataSourceInfo')) {
+        size = "full"
+      }
+      this.configDialog(title, message, true, size, { minRows: 15, maxRows: 37 }, "")
 
     },
 
 
-    editRule() {
+    editRule(dataSourceName) {
+      this.ruleDataSource =  dataSourceName
       this.configDialog(this.$t('message.dataSource.rulesInfo'), '', true, "small", { minRows: 15, maxRows: 25 }, "addRule")
     },
 
@@ -212,14 +218,28 @@ export default {
       this.dialogVisible = false
     },
     async addRule() {
-      const url = `${this.$common.apis.rules}/${dataSourceName}`
-      console.log("url:  " + url)
-      const response = this.$http.post(url)
-      this.dataSources = []
-      let message = new Array()
-      message[0] = response.data
-      this.$common.methods.pushData(message, this.dataSources)
-      this.fillShowTableData()
+      try {
+        const postData = await this.$common.methods.JSONUtils.toJsonObject(this.dialogMessage)
+        
+        try {
+          const url = `${this.$common.apis.rules}/${this.ruleDataSource}`
+          const editResponse = await this.$http.post(url, postData, {
+            header:{ContentType:"application/json"}
+          })
+          window.setTimeout(this.init, 500)
+          this.$message({
+            type: 'success',
+            message: this.$t('message.dataSource.addRulesSuccess')
+          })
+        } catch (err) {
+          this.$message({
+            type: 'warning',
+            message: this.$t('message.dataSource.addRulesFail')
+          })
+        }
+      } catch (e) {
+
+      }
     },
     async getDataSourceByName(dataSourceName) {
       const url = `${this.$common.apis.mDataSource}/${dataSourceName}?full`
@@ -231,8 +251,6 @@ export default {
       this.$common.methods.pushData(message, this.dataSources)
       this.fillShowTableData()
     }
-
-
   }
 }
 </script>

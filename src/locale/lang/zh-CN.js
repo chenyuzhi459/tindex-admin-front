@@ -109,10 +109,10 @@ export default {
       maxTime: "最大时间",
       minTime: "最小时间",
       more: "更多",
-      info: "信息",
+      tiers: "等级",
       intervals: "区间",
       delete: "删除",
-      dataSourceInfo: "数据源信息",
+      tiersInfo: "等级信息",
       createTime: "创建时间",
       dimensions: '维度',
       metrics: '度量',
@@ -124,7 +124,9 @@ export default {
       history: '历史',
       add: '添加',
       rulesInfo: '规则信息',
-      rulesHistory: '规则（历史信息）'
+      rulesHistory: '规则（历史信息）',
+      addRulesSuccess: '添加规则成功！',
+      addRulesFail: '添加规则失败！'
     },
     interval: {
       intervalTitle: "区间",
@@ -157,7 +159,10 @@ export default {
       name: "名字",
       count: "数量",
       search: '搜索',
-      warning: '提醒'
+      warning: '提醒',
+      deleteWarning: '你确定要删除：',
+      deleteSuccess: '删除成功!',
+      deleteFail: '删除失败!'
     }
   }
 }
