@@ -5,7 +5,6 @@ const pushData = (fromData, toData) => {
 }
 
 const JSONUtils = {
-
     toString(data) {
         if (!data) {
             return null

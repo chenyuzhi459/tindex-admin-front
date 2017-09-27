@@ -94,7 +94,8 @@ export default {
       dataSource: {
         title: '数据源管理',
         dataSource: '数据源',
-        metadata: '元数据'
+        metadata: '元数据',
+        
       }
     },
     dataSource: {
@@ -111,7 +112,19 @@ export default {
       info: "信息",
       intervals: "区间",
       delete: "删除",
-      "dataSourceInfo": "数据源信息"
+      dataSourceInfo: "数据源信息",
+      createTime: "创建时间",
+      dimensions: '维度',
+      metrics: '度量',
+      candidates: 'candidates',
+      dimensionsInfo: '维度信息',
+      metricsInfo: '度量信息',
+      candidatesInfo: 'Candidates信息',
+      rules: '规则',
+      history: '历史',
+      add: '添加',
+      rulesInfo: '规则信息',
+      rulesHistory: '规则（历史信息）'
     },
     interval: {
       intervalTitle: "区间",

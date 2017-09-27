@@ -2,14 +2,11 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</b>
+        <b @click="getDataSources(true,'name')">{{$t('message.dataSource.dataSourceTitle')}}</b>
       </span>
       <br></br>
     </div>
 
-    <!-- <div style=" margin-left:20px;"> 
-                            <br></br>
-                        </div>  -->
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item :label="$t('message.dataSource.name')">
@@ -25,23 +22,22 @@
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column prop="name" :label="$t('message.dataSource.name')" sortable="custom" width="310"></el-table-column>
-        <el-table-column :label="$t('message.dataSource.segments')" align="center">
-          <el-table-column prop="properties.segments.count" :label="$t('message.dataSource.count')" width="150"></el-table-column>
-          <el-table-column prop="properties.segments.size" :label="$t('message.dataSource.size')" width="150"></el-table-column>
-          <el-table-column prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="250"></el-table-column>
-          <el-table-column prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="250"></el-table-column>
+        <el-table-column prop="properties.created" :label="$t('message.dataSource.createTime')" sortable="custom"></el-table-column>
+        <el-table-column :label="$t('message.dataSource.rules')">
+          <template scope="scope">
+            <el-button size="mini" @click="getRuleInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
+            <el-button size="mini" @click="editRule(scope.row.name)">{{$t('message.dataSource.add')}}</el-button>
+            <el-button size="mini" @click="getRuleHistory(scope.row.name)">{{$t('message.dataSource.history')}}</el-button>
+          </template>
         </el-table-column>
-        <!-- <el-table-column prop="tiers" label="tiers">
-                                  <el-table-column prop="size" label="size"></el-table-column>
-                                  <el-table-column prop="segmentCount" label="segmentCount" width="150"></el-table-column>
-                                </el-table-column> -->
 
         <el-table-column :label="$t('message.dataSource.more')">
           <template scope="scope">
             <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.dataSource.info')}}</el-button>
-            <el-button size="mini" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button>
             <el-button size="mini" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
-            <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">{{$t('message.dataSource.delete')}}</el-button>
+            <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
+            <el-button size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
+            <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -54,18 +50,15 @@
 
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
       <template slot="title">
-        <div style=" line-height: 1;
-                      font-size: 16px;
-                      font-weight: 700;
-                      color: #1f2d3d;">
+        <div style=" line-height: 1; font-size: 16px; font-weight: 700;color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
       <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">{{$t('message.common.confirm')}}</el-button>
-        <el-button type="primary" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+        <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
+        <el-button @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
       </span>
     </el-dialog>
 
@@ -88,8 +81,9 @@ export default {
       },
       pageSize: 15,
       currentPage: 1,
-      isAscending: "ascending",
+      isDescending: "descending",
       isSearching: false,
+      confirmType: ''
     }
   },
   created: function() {
@@ -98,79 +92,78 @@ export default {
   },
   methods: {
     init() {
-      if (this.$route.query.preLocation === 'interval') {
-        this.getDataSourceByName(this.$route.query.dataSourceName)
-      } else if (this.$route.query.preLocation === 'segment') {
+
+      if (this.$route.query.preLocation === 'segment') {
         this.getDataSourceByName(this.$route.query.dataSourceName)
       } else {
-        this.getDataSources("true")
+        this.getDataSources("true", "name")
       }
     },
-    getDataSources(isAscending) {
-      const url = `${this.$common.apis.dataSource}?full`
+    async getDataSources(isDescending, sortName) {
+      const url = `${this.$common.apis.mDataSource}/sortAndSearch?full`
       console.log(url)
-      this.$http.get(url, {
+      const response = await this.$http.get(url, {
         params: {
-          isAscending: isAscending
+          isDescending: isDescending,
+          sortDimension: sortName
         }
-      }).then(response => {
-        this.dataSources = []
-        this.$common.methods.pushData(response.data, this.dataSources)
-        this.fillShowTableData()
       })
+      this.dataSources = []
+
+      this.$common.methods.pushData(response.data, this.dataSources)
+      this.fillShowTableData()
+
     },
     getDataSourceInfo(dataSourceName) {
-      const url = `${this.$common.apis.dataSource}/${dataSourceName}`
+      const url = `${this.$common.apis.mDataSource}/${dataSourceName}`
+      this.getInfoFromUrl(url, this.$t('message.dataSource.dataSourceInfo'))
+    },
+    getDimensions(dataSourceName) {
+      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/dimensions`
+      this.getInfoFromUrl(url, this.$t('message.dataSource.dimensionsInfo'))
+    },
+    getMetrics(dataSourceName) {
+      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/metrics`
+      this.getInfoFromUrl(url, this.$t('message.dataSource.metricsInfo'))
+    },
+    getCandidates(dataSourceName) {
+      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
+      this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
+    },
+    getRuleInfo(dataSourceName) {
+      const url = `${this.$common.apis.rules}/${dataSourceName}`
+      this.getInfoFromUrl(url, this.$t('message.dataSource.rulesInfo'))
+    },
+    getRuleHistory(dataSourceName) {
+      const url = `${this.$common.apis.rules}/${dataSourceName}/history`
+      this.getInfoFromUrl(url, this.$t('message.dataSource.rulesHistory'))
+    },
+    async getInfoFromUrl(url, title) {
       console.log(url)
-      this.$http.get(url).then(response => {
-        this.dataSourceInfo = response.data
-        console.log(this.dataSourceInfo)
-        var message = JSON.stringify(this.dataSourceInfo, null, 2)
-        this.configDialog(this.$t('message.dataSource.dataSourceInfo'), message, true, "small", { minRows: 15, maxRows: 25 })
-      })
+      const response = await this.$http.get(url)
+      this.dataSourceInfo = response.data
+      console.log(this.dataSourceInfo)
+      const message = this.$common.methods.JSONUtils.toString(this.dataSourceInfo)
+      this.configDialog(title, message, true, "small", { minRows: 15, maxRows: 25 }, "")
+
     },
 
-    deleteDataSource(dataSourceName) {
-      var remindMessage = "Do you really want to delete:" + "\n" + dataSourceName
-      this.$confirm(remindMessage, this.$t('message.common.warning'), {
-        confirmButtonText: this.$t('message.common.confirm'),
-        cancelButtonText: this.$t('message.common.cancle'),
-        closeOnClickModal: false,
-        type: 'warning'
-      }).then(() => {
-        const url = `${this.$common.apis.dataSource}/${dataSourceName}`
-        this.$http.delete(url).then(
-          response => {
-            window.setTimeout(this.init, 200)
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          }, response => {
-            this.$message({
-              type: 'warning',
-              message: '删除失败!'
-            })
-          })
-      }).catch(() => {
 
-      })
+    editRule() {
+      this.configDialog(this.$t('message.dataSource.rulesInfo'), '', true, "small", { minRows: 15, maxRows: 25 }, "addRule")
     },
-    configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
+
+    configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize, confirmType) {
       this.dialogTitle = dialogTitle
       this.dialogMessage = dialogMessage
       this.dialogVisible = dialogVisible
       this.dialogSize = dialogSize
       this.dialogInputAutosize = dialogInputAutosize
-    },
-    getIntervals(dataSourceName) {
-      this.$router.push(
-        { path: '/interval', query: { preLocation: "dataSource", dataSourceName: dataSourceName } }
-      )
+      this.confirmType = confirmType
     },
     getSegments(dataSourceName) {
       this.$router.push(
-        { path: '/segment', query: { preLocation: "dataSource", dataSourceName: dataSourceName } }
+        { path: '/mSegment', query: { preLocation: "dataSource", dataSourceName: dataSourceName } }
       )
     },
 
@@ -191,35 +184,55 @@ export default {
       this.fillShowTableData()
     },
     handleSort(column) {
-      this.isAscending = column.order === "ascending" ? true : false
-      this.getDataSources(this.isAscending)
+      this.isDescending = column.order === "descending" ? true : false
+      let name
+      if (column.prop === "properties.created") {
+        name = "created"
+      } else {
+        name = column.prop
+      }
+      this.getDataSources(this.isDescending, name)
     },
-    onSearch() {
-      const url = `${this.$common.apis.dataSource}?full`
-      this.$http.get(url, {
+    async onSearch() {
+      const url = `${this.$common.apis.mDataSource}/sortAndSearch?full`
+      const response = await this.$http.get(url, {
         params: {
-          isAscending: this.isAscending,
-          searchString: this.formInline.name
+          isDescending: this.isDescending,
+          searchValue: this.formInline.name
         }
-      }).then(response => {
-        this.dataSources = []
-        this.$common.methods.pushData(response.data, this.dataSources)
-        this.fillShowTableData()
       })
+      this.dataSources = []
+      this.$common.methods.pushData(response.data, this.dataSources)
+      this.fillShowTableData()
     },
-    getDataSourceByName(dataSourceName) {
-      const url = `${this.$common.apis.dataSource}?full`
-      this.$http.get(url, {
-        params: {
-          isAscending: this.isAscending,
-          searchString: dataSourceName
-        }
-      }).then(response => {
-        this.dataSources = []
-        this.$common.methods.pushData(response.data, this.dataSources)
-        this.fillShowTableData()
-      })
+    clickConfirm() {
+      if (this.confirmType === "addRule") {
+        this.addRule()
+      }
+      this.dialogVisible = false
+    },
+    async addRule() {
+      const url = `${this.$common.apis.rules}/${dataSourceName}`
+      console.log("url:  " + url)
+      const response = this.$http.post(url)
+      this.dataSources = []
+      let message = new Array()
+      message[0] = response.data
+      this.$common.methods.pushData(message, this.dataSources)
+      this.fillShowTableData()
+    },
+    async getDataSourceByName(dataSourceName) {
+      const url = `${this.$common.apis.mDataSource}/${dataSourceName}?full`
+      console.log("url:  " + url)
+      const response = await this.$http.get(url)
+      this.dataSources = []
+      let message = new Array()
+      message[0] = response.data
+      this.$common.methods.pushData(message, this.dataSources)
+      this.fillShowTableData()
     }
+
+
   }
 }
 </script>

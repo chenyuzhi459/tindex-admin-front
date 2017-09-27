@@ -30,6 +30,7 @@ export default {
                 title: 'DataSource Manage',
                 dataSource: 'DataSources',
                 metadata: 'Metadata'
+                
             }
             
         },
@@ -112,11 +113,23 @@ export default {
             more: "more",
             info: "info",
             intervals: "intervals",
-            "delete": "delete",
-            "dataSourceInfo": "DataSource Info",
-            "warning": "Warning",
-            "confirm": "Confirm",
-            "cancle": "Cancle"
+            delete: "delete",
+            dataSourceInfo: "DataSource Info",
+            warning: "Warning",
+            confirm: "Confirm",
+            cancle: "Cancle",
+            createTime: 'createTime',
+            dimensions: 'dimensions',
+            metrics: 'metrics',
+            candidates: 'candidates',
+            dimensionsInfo: 'Dimensions Info',
+            metricsInfo: 'Metrics Info',
+            candidatesInfo: 'Candidates Info',
+            rules: 'rules',
+            history: 'history',
+            add: 'add',
+            rulesInfo: 'Rules Info',
+            rulesHistory: 'Rules History'
         },
         interval: {
           intervalTitle: "Intervals",

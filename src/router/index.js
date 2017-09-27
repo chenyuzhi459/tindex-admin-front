@@ -86,10 +86,6 @@ export default new Router({
                   component: resolve => require(['../components/datasource/metadata/DataSource.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/mInterval',
-                  component: resolve => require(['../components/datasource/metadata/Interval.vue'], resolve)    // 拖拽列表组件
-                },
-                {
                   path: '/mSegment',
                   component: resolve => require(['../components/datasource/metadata/Segment.vue'], resolve)    // 拖拽列表组件
                 }

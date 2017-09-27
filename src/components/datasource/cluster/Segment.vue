@@ -34,9 +34,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                           font-size: 16px;
-                           font-weight: 700;
-                           color: #1f2d3d;">
+                                 font-size: 16px;
+                                 font-weight: 700;
+                                 color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -77,54 +77,51 @@ export default {
   methods: {
     init() {
       const preLocation = this.$route.query.preLocation
-      
+
       if (preLocation === "dataSource") {
         this.getSegments()
       } else if (preLocation === "interval") {
         this.getSegmentsFromInterval()
       }
     },
-    getSegments() {
+    async getSegments() {
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments`
       console.log(url)
-      this.$http.get(url).then(response => {
-        var convertData = new Array()
-        for (var i = 0, len = response.data.length; i < len; i++) {
-          var map = new Map()
-          map['name'] = response.data[i]
-          convertData[i] = map
-        }
-        this.segments = []
-        this.$common.methods.pushData(convertData, this.segments)
-        this.fillShowTableData()
-      })
+      const response = await this.$http.get(url)
+      var convertData = new Array()
+      for (var i = 0, len = response.data.length; i < len; i++) {
+        var map = new Map()
+        map['name'] = response.data[i]
+        convertData[i] = map
+      }
+      this.segments = []
+      this.$common.methods.pushData(convertData, this.segments)
+      this.fillShowTableData()
     },
-    getSegmentsFromInterval() {
-
+    async getSegmentsFromInterval() {
       const intervalNameDeal = this.$route.query.intervalName.replace("/", "_")
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/intervals/${intervalNameDeal}`
       console.log(url)
-      this.$http.get(url).then(response => {
-        var convertData = new Array()
-        for (var i = 0, len = response.data.length; i < len; i++) {
-          var map = new Map()
-          map['name'] = response.data[i]
-          convertData[i] = map
-        }
-        this.segments = []
-        this.$common.methods.pushData(convertData, this.segments)
-        this.fillShowTableData()
-      })
+      const response = await this.$http.get(url) 
+      var convertData = new Array()
+      for (var i = 0, len = response.data.length; i < len; i++) {
+        var map = new Map()
+        map['name'] = response.data[i]
+        convertData[i] = map
+      }
+      this.segments = []
+      this.$common.methods.pushData(convertData, this.segments)
+      this.fillShowTableData()
     },
-    getSegmentInfo(segmentName) {
+    async getSegmentInfo(segmentName) {
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments?full`
       console.log(url)
-      this.$http.get(url).then(response => {
-        this.segmentInfo = response.data
-        console.log(this.segmentInfo)
-        var message = JSON.stringify(this.segmentInfo, null, 2)
-        this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "small", { minRows: 15, maxRows: 40 })
-      })
+      const response = await this.$http.get(url)
+      this.segmentInfo = response.data
+      console.log(this.segmentInfo)
+      var message = this.$common.methods.JSONUtils.toString(this.segmentInfo)
+      this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "small", { minRows: 15, maxRows: 40 })
+
     },
     getDataSource() {
       console.log(this.dataSourceName)
@@ -175,7 +172,7 @@ export default {
     fillShowTableData() {
       this.showTableData = []
       var position = (this.currentPage - 1) * this.pageSize
-      var limit = (position + this.pageSize) >= 　this.segments.length ? this.segments.length - position : this.pageSize;
+      var limit = (position + this.pageSize) >= this.segments.length ? this.segments.length - position : this.pageSize;
       for (var i = 0; i < limit; i++) {
         this.showTableData.push(this.segments[position + i])
       }
@@ -191,18 +188,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.handle-box {
-  margin-bottom: 20px;
-}
-
-.handle-select {
-  width: 120px;
-}
-
-.handle-input {
-  width: 300px;
-  display: inline-block;
-}
-</style>

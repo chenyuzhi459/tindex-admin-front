@@ -18,6 +18,8 @@ export default {
     baseTaskUrl:`${base}/druid/indexer/v1/task`,
     supervisor:`${base}/druid/indexer/v1/supervisor`,
     dataSource:`${base}/druid/coordinator/v1/datasources`,
-    intervals: `${base}/druid/coordinator/v1/intervals`
-    
+    intervals: `${base}/druid/coordinator/v1/intervals`,
+    mDataSource: `${base}/druid/coordinator/v1/metadata/datasources`,
+    clientInfo: `${base}/druid/v2/datasources`,
+    rules: `${base}/druid/coordinator/v1/rules`
 }

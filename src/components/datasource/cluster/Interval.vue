@@ -70,20 +70,20 @@ export default {
         this.getIntervalsByDataSourceName()
       }
     },
-    getIntervalsByDataSourceName() {
+    async getIntervalsByDataSourceName() {
       const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals`
       console.log(url)
-      this.$http.get(url).then(response => {
-        const convertData = new Array()
-        for (var i = 0, len = response.data.length; i < len; i++) {
-          var map = new Map()
-          map['name'] = response.data[i]
-          convertData[i] = map
-        }
-        this.intervals = []
-        this.$common.methods.pushData(convertData, this.intervals)
-        this.fillShowTableData()
-      })
+      const response = await this.$http.get(url)
+      const convertData = new Array()
+      for (var i = 0, len = response.data.length; i < len; i++) {
+        var map = new Map()
+        map['name'] = response.data[i]
+        convertData[i] = map
+      }
+      this.intervals = []
+      this.$common.methods.pushData(convertData, this.intervals)
+      this.fillShowTableData()
+
     },
     getSegments(intervalName) {
       this.$router.push(
@@ -96,21 +96,6 @@ export default {
         { path: '/dataSource', query: { preLocation: "interval", dataSourceName: this.dataSourceName } }
       )
     },
-    // getIntervalByName(intervalName) {
-    //   const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${this.$route.query.intervalName.replace("/", "_")}`
-    //   console.log(url + "   by name")
-    //   this.$http.get(url).then(response => {
-    //     const convertData = new Array()
-    //     for (var i = 0, len = response.data.length; i < len; i++) {
-    //       var map = new Map()
-    //       map['name'] = response.data[i]
-    //       convertData[i] = map
-    //     }
-    //     this.intervals = []
-    //     this.$common.methods.pushData(convertData, this.intervals)
-    //     this.fillShowTableData()
-    //   })
-    // },
     fillShowTableData() {
       this.showTableData = []
       var position = (this.currentPage - 1) * this.pageSize
@@ -131,18 +116,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.handle-box {
-  margin-bottom: 20px;
-}
-
-.handle-select {
-  width: 120px;
-}
-
-.handle-input {
-  width: 300px;
-  display: inline-block;
-}
-</style>
