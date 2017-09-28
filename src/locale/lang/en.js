@@ -28,8 +28,8 @@ export default {
             },
             dataSource: {
                 title: 'DataSource Manage',
-                dataSource: 'DataSources',
-                metadata: 'Metadata'
+                dataSource: 'DataSources(cluster)',
+                metadata: 'DataSources(Metadata)'
                 
             },
             lookup: {
@@ -106,22 +106,13 @@ export default {
         },
         dataSource: {
             dataSourceTitle: "DataSources",
-            search: "Search",
-            refresh: "Refresh",
-            name: "name",
             segments: "segments",
-            count: "count",
-            size: "size",
             maxTime: "maxTime",
             minTime: "minTime",
-            more: "more",
             tiers: "tiers",
             intervals: "intervals",
-            delete: "delete",
             tiersInfo: "Tiers Info",
             warning: "Warning",
-            confirm: "Confirm",
-            cancle: "Cancle",
             createTime: 'createTime',
             dimensions: 'dimensions',
             metrics: 'metrics',
@@ -163,7 +154,9 @@ export default {
           },
           lookupHistorical: {
 
-          }
+          },
+          lookups: "Lookup Tier",
+          userGroupLookup: "Lookup"
         },
         common: {
           more: "more",
@@ -179,7 +172,8 @@ export default {
           warning: 'Warning',
           deleteWarning: 'Do you really want to delete:',
           deleteSuccess: 'Delete Success!',
-          deleteFail: 'Delete Fail!'
+          deleteFail: 'Delete Fail!',
+          items: 'items'
         }
 
     }

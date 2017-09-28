@@ -90,7 +90,7 @@ export default {
       }
       this.segments = []
       this.$common.methods.pushData(convertData, this.segments)
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
 
     },
     async getSegmentInfo(segmentName) {
@@ -117,21 +117,13 @@ export default {
       this.dialogSize = dialogSize
       this.dialogInputAutosize = dialogInputAutosize
     },
-    fillShowTableData() {
-      this.showTableData = []
-      var position = (this.currentPage - 1) * this.pageSize
-      var limit = (position + this.pageSize) >= this.segments.length ? this.segments.length - position : this.pageSize;
-      for (var i = 0; i < limit; i++) {
-        this.showTableData.push(this.segments[position + i])
-      }
-    },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
     handleSizeChange(newValue) {
       this.pageSize = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     }
   }
 }

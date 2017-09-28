@@ -9,19 +9,19 @@
 
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item :label="$t('message.dataSource.name')">
-          <el-input v-model="formInline.name" :placeholder="$t('message.dataSource.name')" size="small"></el-input>
+        <el-form-item :label="$t('message.common.name')">
+          <el-input v-model="formInline.name" :placeholder="$t('message.common.name')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="onSearch">{{$t('message.dataSource.search')}}</el-button>
-          <el-button type="primary" size="small" @click="init">{{$t('message.dataSource.refresh')}}</el-button>
+          <el-button type="primary" size="small" @click="onSearch">{{$t('message.common.search')}}</el-button>
+          <el-button type="primary" size="small" @click="init">{{$t('message.common.refresh')}}</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
-        <el-table-column prop="name" :label="$t('message.dataSource.name')" sortable="custom" width="310"></el-table-column>
+        <el-table-column prop="name" :label="$t('message.common.name')" sortable="custom" width="310"></el-table-column>
         <el-table-column prop="properties.created" :label="$t('message.dataSource.createTime')" sortable="custom"></el-table-column>
         <el-table-column :label="$t('message.dataSource.rules')">
           <template scope="scope">
@@ -31,7 +31,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('message.dataSource.more')">
+        <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
             <el-button size="mini" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
@@ -112,7 +112,7 @@ export default {
       this.dataSources = []
 
       this.$common.methods.pushData(response.data, this.dataSources)
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
 
     },
     getDataSourceInfo(dataSourceName) {
@@ -172,22 +172,13 @@ export default {
         { path: '/mSegment', query: { preLocation: "dataSource", dataSourceName: dataSourceName } }
       )
     },
-
-    fillShowTableData() {
-      this.showTableData = []
-      var position = (this.currentPage - 1) * this.pageSize
-      var limit = (position + this.pageSize) >= this.dataSources.length ? this.dataSources.length - position : this.pageSize;
-      for (var i = 0; i < limit; i++) {
-        this.showTableData.push(this.dataSources[position + i])
-      }
-    },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
     handleSizeChange(newValue) {
       this.pageSize = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
     handleSort(column) {
       this.isDescending = column.order === "descending" ? true : false
@@ -209,7 +200,7 @@ export default {
       })
       this.dataSources = []
       this.$common.methods.pushData(response.data, this.dataSources)
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
     clickConfirm() {
       if (this.confirmType === "addRule") {
@@ -249,7 +240,7 @@ export default {
       let message = new Array()
       message[0] = response.data
       this.$common.methods.pushData(message, this.dataSources)
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     }
   }
 }

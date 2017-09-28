@@ -96,7 +96,7 @@ export default {
       }
       this.segments = []
       this.$common.methods.pushData(convertData, this.segments)
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
     async getSegmentsFromInterval() {
       const intervalNameDeal = this.$route.query.intervalName.replace("/", "_")
@@ -111,7 +111,7 @@ export default {
       }
       this.segments = []
       this.$common.methods.pushData(convertData, this.segments)
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
     async getSegmentInfo(segmentName) {
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}?full`
@@ -169,21 +169,13 @@ export default {
       this.dialogSize = dialogSize
       this.dialogInputAutosize = dialogInputAutosize
     },
-    fillShowTableData() {
-      this.showTableData = []
-      var position = (this.currentPage - 1) * this.pageSize
-      var limit = (position + this.pageSize) >= this.segments.length ? this.segments.length - position : this.pageSize;
-      for (var i = 0; i < limit; i++) {
-        this.showTableData.push(this.segments[position + i])
-      }
-    },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
     handleSizeChange(newValue) {
       this.pageSize = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     }
   }
 }

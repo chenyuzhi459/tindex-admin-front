@@ -21,7 +21,8 @@ export default {
     intervals: `${base}/druid/coordinator/v1/intervals`,
     mDataSource: `${base}/druid/coordinator/v1/metadata/datasources`,
     clientInfo: `${base}/druid/v2/datasources`,
-    rules: `${base}/druid/coordinator/v1/rules`
+    rules: `${base}/druid/coordinator/v1/rules`,
+    lookups: `${base}/druid/coordinator/v1/lookups`
     // lookupCoordinator:
     // lookupHistorical:
 }

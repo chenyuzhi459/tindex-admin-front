@@ -93,8 +93,8 @@ export default {
       },
       dataSource: {
         title: '数据源管理',
-        dataSource: '数据源',
-        metadata: '元数据',
+        dataSource: '数据源（集群）',
+        metadata: '数据源（元数据）',
       },
       lookup: {
         title: '用户分群管理',
@@ -158,7 +158,9 @@ export default {
       },
       lookupHistorical: {
 
-      }
+      },
+      lookups: "分群组",
+      userGroupLookup: "分群"
     },
     common: {
       more: "更多",
@@ -168,13 +170,14 @@ export default {
       confirm: "确 认",
       cancle: "取 消",
       refresh: "更新",
-      name: "名字",
+      name: "名称",
       count: "数量",
-      search: '搜索',
-      warning: '提醒',
-      deleteWarning: '你确定要删除：',
-      deleteSuccess: '删除成功!',
-      deleteFail: '删除失败!'
+      search: "搜索",
+      warning: "提醒",
+      deleteWarning: "你确定要删除：",
+      deleteSuccess: "删除成功!",
+      deleteFail: "删除失败!",
+      items: "条目明细"
     }
   }
 }
