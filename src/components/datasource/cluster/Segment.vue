@@ -34,9 +34,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                   font-size: 16px;
-                                   font-weight: 700;
-                                   color: #1f2d3d;">
+                                     font-size: 16px;
+                                     font-weight: 700;
+                                     color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -96,7 +96,7 @@ export default {
       }
       this.segments = []
       this.$common.methods.pushData(convertData, this.segments)
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     },
     async getSegmentsFromInterval() {
       const intervalNameDeal = this.$route.query.intervalName.replace("/", "_")
@@ -111,16 +111,16 @@ export default {
       }
       this.segments = []
       this.$common.methods.pushData(convertData, this.segments)
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     },
     async getSegmentInfo(segmentName) {
-      const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments?full`
+      const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}?full`
       console.log(url)
       const response = await this.$http.get(url)
       this.segmentInfo = response.data
       console.log(this.segmentInfo)
       var message = this.$common.methods.JSONUtils.toString(this.segmentInfo)
-      this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "small", { minRows: 15, maxRows: 40 })
+      this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "full", { minRows: 15, maxRows: 40 })
 
     },
     getDataSource() {
@@ -169,21 +169,13 @@ export default {
       this.dialogSize = dialogSize
       this.dialogInputAutosize = dialogInputAutosize
     },
-    fillShowTableData() {
-      this.showTableData = []
-      var position = (this.currentPage - 1) * this.pageSize
-      var limit = (position + this.pageSize) >= this.segments.length ? this.segments.length - position : this.pageSize;
-      for (var i = 0; i < limit; i++) {
-        this.showTableData.push(this.segments[position + i])
-      }
-    },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     },
     handleSizeChange(newValue) {
       this.pageSize = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     }
   }
 }

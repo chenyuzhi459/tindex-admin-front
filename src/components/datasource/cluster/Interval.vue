@@ -65,7 +65,7 @@ export default {
         const intervalArr = []
         intervalArr[0] = interval
         this.$common.methods.pushData(intervalArr, this.intervals)
-        this.fillShowTableData()
+        this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
       } else {
         this.getIntervalsByDataSourceName()
       }
@@ -82,7 +82,7 @@ export default {
       }
       this.intervals = []
       this.$common.methods.pushData(convertData, this.intervals)
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
 
     },
     getSegments(intervalName) {
@@ -96,22 +96,13 @@ export default {
         { path: '/dataSource', query: { preLocation: "interval", dataSourceName: this.dataSourceName } }
       )
     },
-    fillShowTableData() {
-      this.showTableData = []
-      var position = (this.currentPage - 1) * this.pageSize
-      var limit = (position + this.pageSize) >= this.intervals.length ? this.intervals.length - position : this.pageSize;
-      for (var i = 0; i < limit; i++) {
-        this.showTableData.push(this.intervals[position + i])
-      }
-    },
-
     handleCurrentChange(newValue) {
       this.currentPage = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
     },
     handleSizeChange(newValue) {
       this.pageSize = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
     }
   }
 }
