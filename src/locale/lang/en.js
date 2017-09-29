@@ -28,11 +28,15 @@ export default {
             },
             dataSource: {
                 title: 'DataSource Manage',
-                dataSource: 'DataSources',
-                metadata: 'Metadata'
-
+                dataSource: 'DataSources(cluster)',
+                metadata: 'DataSources(Metadata)'
+                
+            },
+            lookup: {
+              title: 'Lookup Manage',
+              lookupCoordinator: 'Lookup Coordinator',
+              lookupHistorical: 'Lookup Historical'
             }
-
         },
         tasks: {
             runningTasksTitle: 'Running Tasks',
@@ -118,22 +122,13 @@ export default {
         },
         dataSource: {
             dataSourceTitle: "DataSources",
-            search: "Search",
-            refresh: "Refresh",
-            name: "name",
             segments: "segments",
-            count: "count",
-            size: "size",
             maxTime: "maxTime",
             minTime: "minTime",
-            more: "more",
             tiers: "tiers",
             intervals: "intervals",
-            delete: "delete",
             tiersInfo: "Tiers Info",
             warning: "Warning",
-            confirm: "Confirm",
-            cancle: "Cancle",
             createTime: 'createTime',
             dimensions: 'dimensions',
             metrics: 'metrics',
@@ -169,22 +164,43 @@ export default {
             confirmButtonText: "Confirm",
             cancleButtonTextL: "Cancle"
         },
+        lookup: {
+          lookupCoordinator: {
+            lookupTitle: "Lookup"
+          },
+          lookupHistorical: {
+
+          },
+          lookups: "Lookup Tier",
+          userGroupLookup: "Lookup",
+          type: "type",
+          version: "version",
+          lookupInfo: "Lookup Info",
+          addLookup: "Create Lookup",
+          lookupName: "Lookup Name",
+          lookupNameIndex: "Please input the lookup name",
+          addLookupWarning: "Do you really want to add lookup:"
+        },
         common: {
-            more: "more",
-            info: "info",
-            delete: "delete",
-            size: "size",
-            confirm: "Cofirm",
-            cancle: "Cancle",
-            refresh: "Refresh",
-            name: "name",
-            count: "count",
-            search: 'Search',
-            warning: 'Warning',
-            deleteWarning: 'Do you really want to delete:',
-            deleteSuccess: 'Delete Success!',
-            deleteFail: 'Delete Fail!'
+          more: "more",
+          info: "info",
+          delete: "delete",
+          size: "size",
+          confirm: "Cofirm",
+          cancle: "Cancle",
+          refresh: "Refresh",
+          name: "name",
+          count: "count",
+          search: 'Search',
+          warning: 'Warning',
+          deleteWarning: 'Do you really want to delete:',
+          deleteSuccess: 'Delete Success!',
+          deleteFail: 'Delete Fail!',
+          addSuccess: "Add Success!",
+          addFail: "Add Fail!",
+          items: 'items'
         }
+
     }
 
 }

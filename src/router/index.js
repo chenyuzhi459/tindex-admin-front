@@ -92,8 +92,16 @@ export default new Router({
                     component: resolve => require(['../components/datasource/metadata/DataSource.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                    path: '/mSegment',
-                    component: resolve => require(['../components/datasource/metadata/Segment.vue'], resolve)    // 拖拽列表组件
+                  path: '/mSegment',
+                  component: resolve => require(['../components/datasource/metadata/Segment.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                  path: '/lookupCoordinator',
+                  component: resolve => require(['../components/lookup/lookupCoordinator/Lookup.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                  path: '/lookupHistorical',
+                  component: resolve => require(['../components/lookup/lookupHistorical/Lookup.vue'], resolve)    // 拖拽列表组件
                 }
             ]
         },
