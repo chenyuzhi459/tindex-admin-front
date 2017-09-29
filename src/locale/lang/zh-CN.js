@@ -58,7 +58,10 @@ export default {
       offsets: 'offsets'
     },
     supervisors: {
+      supervisorManager: 'Supervisor管理',
+      supervisorTasks: 'Supervisor任务',
       runningSuperviorTitle: '运行supervisors',
+      completeSupervisorsTitle: '已完成Supervisors',
       searchTips: '请输入id',
       search: '搜索',
       refresh: '刷新',
@@ -79,6 +82,20 @@ export default {
       killTips: '你确定要删除',
       killSuccess: '删除成功!',
       killFailed: '删除失败,请查看overlord日志',
+      version: '版本',
+      taskDuration: '运行时间',
+      type: '类型',
+      topic: 'topic',
+      reuse: '重用',
+      supervisorStatusTitle: 'Supervisor状态',
+      supervisorSpec: 'Supervisor说明',
+      createSupervisor: '创建Supervisor',
+      format: '格式化',
+      createDialogConfirm: '创建',
+      jsonSyntaxError: 'json格式错误',
+      creatSuccess: '创建成功, id',
+      createFailedFront: '创建失败,状态码',
+      createFailedLast: 'please check overlord logs'
     },
     sideBar: {
       dataAccess: {

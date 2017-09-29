@@ -3,7 +3,7 @@
 
         <div style=" margin-left:20px;">
             <span style="color: #242f42;font-size:20px;">
-                <b>{{$t('message.tasks.runningTasksTitle')}}</b>
+                <b>{{$t('message.tasks.waitingTasksTitle')}}</b>
             </span>
             <br></br>
         </div>
@@ -21,9 +21,8 @@
         <div class="table" style=" margin-left:20px;">
             <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
                 <el-table-column prop="id" label="id" min-width="150"></el-table-column>
-                <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207"></el-table-column>
-                <el-table-column prop="queueInsertionTime" :label="$t('message.tasks.queueInsertTime')" width="207"></el-table-column>
-                <el-table-column prop="location" :label="$t('message.tasks.location')" width="175"></el-table-column>
+                <el-table-column prop="location.host" :label="$t('message.tasks.locationHost')" width="175"></el-table-column>
+                <el-table-column prop="location.port" :label="$t('message.tasks.locationPort')" width="175"></el-table-column>
                 <el-table-column :label="$t('message.tasks.operation')" width="320">
                     <template scope="scope">
                         <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
@@ -62,9 +61,12 @@
 <script>
 import _ from 'lodash'
 export default {
+    props: [
+        'supervisorId'
+    ],
     data() {
         return {
-            runningTasks: [],
+            waitingTasks: [],
             showTableData: [],
             dialogMessage: '',
             dialogTitle: '',
@@ -83,26 +85,29 @@ export default {
     },
     created: function() {
         this.init()
+        //console.log(this._i18n.locale = 'en', 'this._i18n');
     },
     methods: {
         init() {
             this.sortDimension = 'createdTime'
             this.isDescending = true
             this.currentPage = 1
-            this.getRunningTasks()
+            this.getWaitingTasks()
         },
-        async getRunningTasks() {
-            let { data } = await this.$http.get(this.$common.apis.runningTasks)
+        async getWaitingTasks() {
+            const url = `${this.$common.apis.overlordUrl}/${this.supervisorId}/waitingTasks`
+            const { data } = await this.$http.get(url)
             data.map(s => {
+                //console.log('11location:',s.location)
                 if (undefined !== s.location) {
-                    s.location = s.location.host + ":" + s.location.port
+                    s.location.host = _.isNull(s.location.host) ? 'null' : s.location.host
                     return s
                 }
             })
-            this.runningTasks = []
-            this.$common.methods.pushData(data, this.runningTasks)
-            this.totalNum = this.runningTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
+            this.waitingTasks = []
+            this.$common.methods.pushData(data, this.waitingTasks)
+            this.totalNum = this.waitingTasks.length
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
@@ -146,9 +151,7 @@ export default {
                     const postResponse = await this.$http.post(url)
                     if (postResponse.status === 200) {
                         window.setTimeout(this.init, 500)
-                        this.$common.eventBus.$emit('updateCompleteTasks')
-                        this.$common.eventBus.$emit('updatePendingTasks')
-                        this.$common.eventBus.$emit('updateWaitingTasks')
+                        this.$common.eventBus.$emit('updateSupervisorCompleteTasks')
                         this.$message({
                             type: 'success',
                             message: this.$t('message.tasks.killSuccess')
@@ -161,18 +164,15 @@ export default {
         },
         handleCurrentChange(newValue) {
             this.currentPage = newValue
-            const resultData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
-
-
         },
         handleSizeChange(newValue) {
             this.pageSize = newValue
-            const resultData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
-
         },
         sortChange(column) {
             if (null === column.order) {
@@ -187,10 +187,10 @@ export default {
                 this.isDescending = true
                 direction = 'desc'
             }
-            const sortedData = this.$common.methods.sortArray(this.runningTasks, this.sortDimension, direction)
-            this.runningTasks = []
-            this.$common.methods.pushData(sortedData, this.runningTasks)
-            const resultData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
+            const sortedData = this.$common.methods.sortArray(this.waitingTasks, this.sortDimension, direction)
+            this.waitingTasks = []
+            this.$common.methods.pushData(sortedData, this.waitingTasks)
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
@@ -199,21 +199,22 @@ export default {
                 return
             }
             this.currentPage = 1
-            const searchedData = this.$common.methods.searchArray(this.runningTasks, 'id', this.formInline.searchValue1)
-            this.runningTasks = []
-            this.$common.methods.pushData(searchedData, this.runningTasks)
-            this.totalNum = this.runningTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
+            const searchedData = this.$common.methods.searchArray(this.waitingTasks, 'id', this.formInline.searchValue1)
+            this.waitingTasks = []
+            this.$common.methods.pushData(searchedData, this.waitingTasks)
+            this.totalNum = this.waitingTasks.length
+            const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         }
     },
     mounted() {
         let self = this
-        this.$common.eventBus.$on('updateAllTasks', () => {
+        this.$common.eventBus.$on('updateSupervisorAllTasks', () => {
             self.init()
         })
-        this.$common.eventBus.$on('updateRunningTasks', () => {
+        this.$common.eventBus.$on('updateSupervisorWaitingTasks', () => {
+            console.log('wait init123')
             self.init()
         })
     }

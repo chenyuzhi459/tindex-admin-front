@@ -21,7 +21,7 @@
     </el-dialog>
 </div>
 </template>
-<<script>
+<script>
 
 import RunningTasks from './taskmanager/RunningTasks'
 import CompleteTasks from './taskmanager/CompleteTasks'

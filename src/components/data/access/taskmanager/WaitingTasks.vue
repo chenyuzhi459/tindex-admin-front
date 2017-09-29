@@ -87,6 +87,8 @@ export default {
     },
     methods: {
         init() {
+            this.sortDimension = 'createdTime'
+            this.isDescending = true
             this.currentPage = 1
             this.getWaitingTasks()
         },

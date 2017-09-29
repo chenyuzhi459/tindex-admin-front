@@ -25,8 +25,14 @@ export default new Router({
                     component: resolve => require(['../components/info/ServersInfo.vue'], resolve)
                 },
                 {
+                    name: 'supervisorManager',
                     path: '/supervisorManager',
                     component: resolve => require(['../components/data/access/SupervisorManager.vue'], resolve)
+                },
+                {
+                    name: 'supervisorTasks',
+                    path: '/:supervisorId/supervisorTasks', 
+                    component: resolve => require(['../components/data/access/supervisorManager/SupervisorTasks.vue'], resolve)
                 },
                 {
                     path: '/taskManager',
@@ -70,20 +76,20 @@ export default new Router({
 
 
                 {
-                  path: '/dataSource',
-                  component: resolve => require(['../components/datasource/cluster/DataSource.vue'], resolve)    // 拖拽列表组件
+                    path: '/dataSource',
+                    component: resolve => require(['../components/datasource/cluster/DataSource.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/interval',
-                  component: resolve => require(['../components/datasource/cluster/Interval.vue'], resolve)    // 拖拽列表组件
+                    path: '/interval',
+                    component: resolve => require(['../components/datasource/cluster/Interval.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/segment',
-                  component: resolve => require(['../components/datasource/cluster/Segment.vue'], resolve)    // 拖拽列表组件
+                    path: '/segment',
+                    component: resolve => require(['../components/datasource/cluster/Segment.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/mDataSource',
-                  component: resolve => require(['../components/datasource/metadata/DataSource.vue'], resolve)    // 拖拽列表组件
+                    path: '/mDataSource',
+                    component: resolve => require(['../components/datasource/metadata/DataSource.vue'], resolve)    // 拖拽列表组件
                 },
                 {
                   path: '/mSegment',
