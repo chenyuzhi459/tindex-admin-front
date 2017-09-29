@@ -130,7 +130,8 @@ export default {
       rulesInfo: '规则信息',
       rulesHistory: '规则（历史信息）',
       addRulesSuccess: '添加规则成功！',
-      addRulesFail: '添加规则失败！'
+      addRulesFail: '添加规则失败！',
+      addRuleWarning: '你确定要添加规则?'
     },
     interval: {
       intervalTitle: "区间",

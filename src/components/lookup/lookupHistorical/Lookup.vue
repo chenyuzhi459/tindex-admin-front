@@ -16,7 +16,7 @@
           <el-input v-model="formInline.name" :placeholder="$t('message.lookup.userGroupLookup')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="onSearch">{{$t('message.common.search')}}</el-button>
+          <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="addLookup">{{$t('message.lookup.addLookup')}}</el-button>
@@ -29,7 +29,7 @@
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column prop="lookup" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
-        <el-table-column prop="version" :label="$t('message.lookup.version')"></el-table-column>
+        <!-- <el-table-column prop="version" :label="$t('message.lookup.version')"></el-table-column> -->
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <el-button size="mini" @click="getInfo(scope.row.lookup)">{{$t('message.common.info')}}</el-button>
@@ -58,8 +58,8 @@
         <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
         </el-input>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
-          <el-button type="primary" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+          <el-button @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+          <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
         </span>
       </el-dialog>
     </div>
@@ -97,7 +97,8 @@ export default {
       this.getLookups(false, '')
     },
     async getLookups(isDescending, searchValue) {
-      const url = `${this.$common.apis.lookupsHis}`
+      const url = `${this.$common.apis.lookupsHis}/sortAndSearch`
+      console.log(searchValue,"searchValue")
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
@@ -105,7 +106,18 @@ export default {
           ip: this.historicalIp
         }
       })
+      console.log(url,"LookupsUrl")
+      console.log(searchValue,"searchValue")
+      console.log(isDescending,"isDescending")
       this.lookups = []
+      for(let i=0; i<response.data.length; i++) {
+
+        for (var key in response.data) {
+          response.data[key]["lookup"] = key
+        }
+      }
+        console.log(response.data,"response")
+
       this.$common.methods.pushData(response.data, this.lookups)
       this.showTableData = this.$common.methods.fillShowTableData(this.lookups, this.currentPage, this.pageSize)
     },
@@ -161,7 +173,6 @@ export default {
         }
       })
       this.historicalIps = response.data
-      console.log(response.data, "ip")
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize, confirmType, lookupNameInput) {
       this.dialogTitle = dialogTitle

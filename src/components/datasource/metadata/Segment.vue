@@ -41,8 +41,8 @@
         <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
         </el-input>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{$t('message.segment.confirm')}}</el-button>
-          <el-button type="primary" @click="dialogVisible = false">{{$t('message.segment.cancle')}}</el-button>
+          <el-button @click="dialogVisible = false">{{$t('message.segment.cancle')}}</el-button>
+          <el-button type="primary" @click="dialogVisible = false">{{$t('message.segment.confirm')}}</el-button>
         </span>
       </el-dialog>
     </div>

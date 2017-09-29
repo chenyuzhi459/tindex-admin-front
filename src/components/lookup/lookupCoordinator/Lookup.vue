@@ -39,7 +39,7 @@
           <el-input v-model="formInline.name" :placeholder="$t('message.lookup.userGroupLookup')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="onSearch">{{$t('message.common.search')}}</el-button>
+          <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="addLookup">{{$t('message.lookup.addLookup')}}</el-button>
@@ -68,12 +68,12 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="dialogVisible" :size="dialogSize" >
+    <el-dialog :visible.sync="dialogVisible" :size="dialogSize">
       <template slot="title">
         <div style=" line-height: 1;
-                                                                              font-size: 16px;
-                                                                              font-weight: 700;
-                                                                              color: #1f2d3d;">
+                                                                                font-size: 16px;
+                                                                                font-weight: 700;
+                                                                                color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -86,8 +86,8 @@
       <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
-        <el-button type="primary" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+        <el-button @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+        <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
       </span>
     </el-dialog>
 
@@ -241,7 +241,7 @@ export default {
         })
         try {
           const url = `${this.$common.apis.lookups}/${this.tierName}/${lookupName}`
-          console.log(url,"deleteUrl")
+          console.log(url, "deleteUrl")
           const addResponse = await this.$http.delete(url)
           window.setTimeout(this.init, 500)
           this.$message({

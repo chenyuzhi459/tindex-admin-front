@@ -126,7 +126,8 @@ export default {
             rulesInfo: 'Rules Info',
             rulesHistory: 'Rules History',
             addRulesSuccess: 'Add Rules Success!',
-            addRulesFail: 'Add Rules Fail!'
+            addRulesFail: 'Add Rules Fail!',
+            addRuleWarning: 'Do you really add rule?'
         },
         interval: {
           intervalTitle: "Intervals",

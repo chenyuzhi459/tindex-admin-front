@@ -12,7 +12,7 @@
           <el-input v-model="formInline.name" :placeholder="$t('message.common.name')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="onSearch">{{$t('message.common.search')}}</el-button>
+          <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
           <el-button type="primary" size="small" @click="init">{{$t('message.common.refresh')}}</el-button>
         </el-form-item>
       </el-form>
@@ -59,8 +59,8 @@
       <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">{{$t('message.common.confirm')}}</el-button>
-        <el-button type="primary" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+        <el-button @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+        <el-button type="primary" @click="dialogVisible = false">{{$t('message.common.confirm')}}</el-button>
       </span>
     </el-dialog>
 
