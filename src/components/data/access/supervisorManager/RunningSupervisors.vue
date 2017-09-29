@@ -23,7 +23,7 @@
                 <el-table-column prop="id" label="id"></el-table-column>
                 <el-table-column :label="$t('message.supervisors.operation')" width="300">
                     <template scope="scope">
-                         <el-button size="mini" @click="getSpec(scope.row.id)">{{$t('message.supervisors.tasks')}}</el-button>
+                         <el-button size="mini" @click="getTasks(scope.row.id)">{{$t('message.supervisors.tasks')}}</el-button>
                         <el-button size="mini" @click="getSpec(scope.row.id)">{{$t('message.supervisors.spec')}}</el-button>
                         <el-button size="mini" @click="getStatus(scope.row.id)">{{$t('message.supervisors.status')}}</el-button>
                         <el-button size="mini" @click="doReset(scope.row.id,0)">{{$t('message.supervisors.reset')}}</el-button>
@@ -32,7 +32,7 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[1,2,5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
                 </el-pagination>
             </div>
             <br>
@@ -138,9 +138,13 @@ export default {
             }
 
         },
-        getTasklog(taskId, offset) {
-            const url = `${this.$common.apis.baseTaskUrl}/${taskId}/log?offset=${offset}`
-            window.open(url)
+        getTasks(id){
+            this.$router.push({
+                name: 'supervisorTasks',
+                params: {
+                    supervisorId: id
+                }
+            })
         },
         configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
             this.dialogTitle = dialogTitle

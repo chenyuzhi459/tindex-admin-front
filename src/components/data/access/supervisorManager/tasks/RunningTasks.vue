@@ -1,6 +1,5 @@
 <template>
     <div class="main">
-
         <div style=" margin-left:20px;">
             <span style="color: #242f42;font-size:20px;">
                 <b>{{$t('message.tasks.runningTasksTitle')}}</b>
@@ -62,6 +61,9 @@
 <script>
 import _ from 'lodash'
 export default {
+    props: [
+        'supervisorId'
+    ],
     data() {
         return {
             runningTasks: [],
@@ -92,7 +94,8 @@ export default {
             this.getRunningTasks()
         },
         async getRunningTasks() {
-            let { data } = await this.$http.get(this.$common.apis.runningTasks)
+            const url = `${this.$common.apis.overlordUrl}/${this.supervisorId}/runningTasks`
+            let { data } = await this.$http.get(url)
             data.map(s => {
                 if (undefined !== s.location) {
                     s.location = s.location.host + ":" + s.location.port
@@ -146,9 +149,9 @@ export default {
                     const postResponse = await this.$http.post(url)
                     if (postResponse.status === 200) {
                         window.setTimeout(this.init, 500)
-                        this.$common.eventBus.$emit('updateCompleteTasks')
-                        this.$common.eventBus.$emit('updatePendingTasks')
-                        this.$common.eventBus.$emit('updateWaitingTasks')
+                        this.$common.eventBus.$emit('updateSupervisorCompleteTasks')
+                        this.$common.eventBus.$emit('updateSupervisorPendingTasks')
+                        this.$common.eventBus.$emit('updateSupervisorWaitingTasks')
                         this.$message({
                             type: 'success',
                             message: this.$t('message.tasks.killSuccess')
@@ -210,10 +213,10 @@ export default {
     },
     mounted() {
         let self = this
-        this.$common.eventBus.$on('updateAllTasks', () => {
+        this.$common.eventBus.$on('updateSupervisorAllTasks', () => {
             self.init()
         })
-        this.$common.eventBus.$on('updateRunningTasks', () => {
+        this.$common.eventBus.$on('updateSupervisorRunningTasks', () => {
             self.init()
         })
     }

@@ -30,9 +30,9 @@ export default {
                 title: 'DataSource Manage',
                 dataSource: 'DataSources',
                 metadata: 'Metadata'
-                
+
             }
-            
+
         },
         tasks: {
             runningTasksTitle: 'Running Tasks',
@@ -74,11 +74,13 @@ export default {
             statusItem3: 'FAILED',
             duration: 'duration',
             topic: 'topic',
-            offsets: 'offsets',
-
+            offsets: 'offsets'
         },
         supervisors: {
+            supervisorManager: 'Supervisor Manager',
+            supervisorTasks: 'Supervisor Tasks',
             runningSuperviorTitle: 'Running Supervisors',
+            completeSupervisorsTitle: 'Complete Supervisors',
             searchTips: 'please input id',
             search: 'Search',
             refresh: 'Refresh',
@@ -98,7 +100,21 @@ export default {
             dialogWarningTitle: 'Warning',
             killTips: 'Do you really want to kill',
             killSuccess: 'Kill Successfully!',
-            killFailed: 'Kill failed,please check overlord logs'
+            killFailed: 'Kill failed,please check overlord logs',
+            version: 'version',
+            taskDuration: 'taskDuration',
+            type: 'type',
+            topic: 'topic',
+            reuse: 'reuse',
+            supervisorStatusTitle: 'Supervisor Status',
+            supervisorSpec: 'Supervisor Spec',
+            createSupervisor: 'createSupervisor',
+            format: 'format',
+            createDialogConfirm: 'Create',
+            jsonSyntaxError: 'wrong json syntax',
+            creatSuccess: 'create successfully, id',
+            createFailedFront: 'request failed with status',
+            createFailedLast: 'please check overlord logs'
         },
         dataSource: {
             dataSourceTitle: "DataSources",
@@ -134,41 +150,41 @@ export default {
             addRulesFail: 'Add Rules Fail!'
         },
         interval: {
-          intervalTitle: "Intervals",
-          refresh: "Refresh",
-          name: "name",
-          segments: "segments",
-          more: "more"
+            intervalTitle: "Intervals",
+            refresh: "Refresh",
+            name: "name",
+            segments: "segments",
+            more: "more"
         },
         segment: {
-          segmentTitle: "Segments",
-          refresh: "Refresh",
-          name: "name",
-          info: "info",
-          more: "more",
-          delete: "delete",
-          segmentInfo: "Segment Info",
-          confirm: "Cofirm",
-          cancle: "Cancle",
-          confirmButtonText: "Confirm",
-          cancleButtonTextL: "Cancle"
+            segmentTitle: "Segments",
+            refresh: "Refresh",
+            name: "name",
+            info: "info",
+            more: "more",
+            delete: "delete",
+            segmentInfo: "Segment Info",
+            confirm: "Cofirm",
+            cancle: "Cancle",
+            confirmButtonText: "Confirm",
+            cancleButtonTextL: "Cancle"
         },
         common: {
-          more: "more",
-          info: "info",
-          delete: "delete",
-          size: "size",
-          confirm: "Cofirm",
-          cancle: "Cancle",
-          refresh: "Refresh",
-          name: "name",
-          count: "count",
-          search: 'Search',
-          warning: 'Warning',
-          deleteWarning: 'Do you really want to delete:',
-          deleteSuccess: 'Delete Success!',
-          deleteFail: 'Delete Fail!'
+            more: "more",
+            info: "info",
+            delete: "delete",
+            size: "size",
+            confirm: "Cofirm",
+            cancle: "Cancle",
+            refresh: "Refresh",
+            name: "name",
+            count: "count",
+            search: 'Search',
+            warning: 'Warning',
+            deleteWarning: 'Do you really want to delete:',
+            deleteSuccess: 'Delete Success!',
+            deleteFail: 'Delete Fail!'
         }
     }
-   
+
 }

@@ -86,6 +86,8 @@ export default {
     },
     methods: {
         init() {
+            this.sortDimension = 'createdTime'
+            this.isDescending = true
             this.currentPage = 1
             this.getPendingTasks()
         },
@@ -133,7 +135,7 @@ export default {
             const killTips = this.$t('message.tasks.killTips')
             const remindMessage = `${killTips}:\n${taskId.substring(0, 45)}\n${taskId.substring(45)}`
             try {
-                const res = await this.$confirm(remindMessage,  this.$t('message.tasks.killConfirmTitle'), {
+                const res = await this.$confirm(remindMessage, this.$t('message.tasks.killConfirmTitle'), {
                     confirmButtonText: this.$t('message.tasks.dialogConfirm'),
                     cancelButtonText: this.$t('message.tasks.dialogCancel'),
                     closeOnClickModal: false,

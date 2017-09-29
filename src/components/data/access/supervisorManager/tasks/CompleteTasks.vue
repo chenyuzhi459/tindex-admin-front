@@ -24,7 +24,7 @@
         </el-form>
 
         <div class="table" style=" margin-left:20px;">
-            <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
+            <el-table :data="completeTasks" border stripe style="width: 100%" @sort-change="sortChange">
                 <el-table-column prop="id" label="id" min-width="472"></el-table-column>
                 <el-table-column prop="status" :label="$t('message.tasks.status')" width="108"></el-table-column>
                 <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207">
@@ -35,7 +35,7 @@
 
                 <el-table-column :label="$t('message.tasks.operation')" width="275">
                     <template scope="scope">
-                         <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
+                        <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
                         <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
                         <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
                         <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
@@ -43,13 +43,7 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination @size-change="handleSizeChange" 
-                @current-change="handleCurrentChange" 
-                :current-page="currentPage" 
-                :page-sizes="[5,10, 25, 50, 100]" 
-                :page-size="pageSize" 
-                layout="total, sizes, prev, pager, next, jumper" 
-                :total="totalNum">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
                 </el-pagination>
             </div>
 
@@ -59,9 +53,9 @@
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
                 <div style=" line-height: 1;
-                            font-size: 16px;
-                            font-weight: 700;
-                            color: #1f2d3d;">
+                                                            font-size: 16px;
+                                                            font-weight: 700;
+                                                            color: #1f2d3d;">
                     {{dialogTitle}}
                 </div>
             </template>
@@ -78,10 +72,12 @@
 <script>
 
 export default {
+    props: [
+        'supervisorId'
+    ],
     data() {
         return {
             completeTasks: [],
-            showTableData: [],
             dialogMessage: '',
             dialogTitle: '',
             dialogSize: 'full',
@@ -138,94 +134,88 @@ export default {
             this.dialogInputAutosize = dialogInputAutosize
         },
         async getCompleteTasks() {
-            const { data } = await this.$http.get(this.$common.apis.completeTasks)
+            const countUrl = `${this.$common.apis.overlordUrl}/completeTasks/${this.supervisorId}/count`
+            const countResponse = await this.$http.get(countUrl)
+            this.totalNum = countResponse.data.total
+
+            const url = `${this.$common.apis.overlordUrl}/completeTasks/${this.supervisorId}`
+            const { data } = await this.$http.get(url, {
+                params: {
+                    offset: (this.currentPage - 1) * this.pageSize,
+                    size: this.pageSize
+                }
+            })
             this.completeTasks = []
             this.$common.methods.pushData(data, this.completeTasks)
-            this.totalNum = this.completeTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.completeTasks, this.currentPage, this.pageSize)
-            this.showTableData = []
-            this.$common.methods.pushData(resultData, this.showTableData)
         },
         async getShowTasks(currentPage, pageSize, sortDimension, isDescending) {
-            const offset = (currentPage - 1) * pageSize
-            const response = await this.$http.get(this.$common.apis.completeTasks, {
-                params: {
-                    offset: offset,
-                    size: pageSize,
-                    sortDimension, sortDimension,
-                    isDescending: isDescending
+            let paramsData = {
+                offset: (currentPage - 1) * pageSize,
+                size: pageSize,
+                sortDimension: this.sortDimension === 'createdTime' ? 'created_date' : this.sortDimension,
+                isDescending: this.isDescending
+            }
+            if (this.isSearching) {
+                if (!_.isEqual(this.formInline.searchValue1, '')) {
+                    paramsData.searchDimension1 = 'id'
+                    paramsData.searchValue1 = this.formInline.searchValue1
                 }
-            })
-            this.showTableData = []
-            this.$common.methods.pushData(response.data, this.showTableData)
+                if (!_.isEqual(this.formInline.searchValue2, 'ALL')) {
+                    paramsData.searchDimension2 = 'status_payload'
+                    paramsData.searchValue2 = this.formInline.searchValue2
+                }
+            }
 
-        },
-        async searchCompleteTasks() {
-            const { data } = await this.$http.get(this.$common.apis.searchCompleteTasks, {
-                params: {
-                    searchDimension1: 'id',
-                    searchValue1: this.formInline.searchValue1,
-                    searchDimension2: 'status_payload',
-                    searchValue2: this.formInline.searchValue2 === "ALL" ? "" : this.formInline.searchValue2,
-                    sortDimension: this.sortDimension === 'createdTime' ? 'created_date' : this.sortDimension,
-                    isDescending: this.isDescending
-                }
+            const url = `${this.$common.apis.overlordUrl}/completeTasks/${this.supervisorId}`
+            const response = await this.$http.get(url, {
+                params: paramsData
             })
             this.completeTasks = []
-            this.$common.methods.pushData(data, this.completeTasks)
-            this.totalNum = this.completeTasks.length
-            this.isSearching = true
-            const resultData = this.$common.methods.fillShowTableData(this.completeTasks, this.currentPage, this.pageSize)
-            this.showTableData = []
-            this.$common.methods.pushData(resultData, this.showTableData)
+            this.$common.methods.pushData(response.data, this.completeTasks)
 
         },
-        onSearch() {
-            //注意此处一定要先加this.isSearching = true,否则触发handleCurrentChange的回调时会出错
+        async onSearch() {
+            let paramsData = {}
+            if (!_.isEqual(this.formInline.searchValue1, '')) {
+                paramsData.searchDimension1 = 'id'
+                paramsData.searchValue1 = this.formInline.searchValue1
+            }
+            if (!_.isEqual(this.formInline.searchValue2, 'ALL')) {
+                paramsData.searchDimension2 = 'status_payload'
+                paramsData.searchValue2 = this.formInline.searchValue2
+            }
+            const countUrl = `${this.$common.apis.overlordUrl}/completeTasks/${this.supervisorId}/count`
+            const countResponse = await this.$http.get(countUrl, { params: paramsData })
+            this.totalNum = countResponse.data.total
+
             this.isSearching = true
             this.currentPage = 1
-            this.searchCompleteTasks()
+            this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
 
         },
-        sortChange(column,prop,order) {
-            if( null === column.order){
+        sortChange(column, prop, order) {
+            if (null === column.order) {
                 return
             }
             this.sortDimension = column.prop
             this.isDescending = column.order === "ascending" ? false : true
-            if (this.isSearching) {
-                this.searchCompleteTasks()
-            } else {
-                this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
-            }
+            this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
         },
         handleCurrentChange(newValue) {
             this.currentPage = newValue
-            if (this.isSearching) {
-                const resultData = this.$common.methods.fillShowTableData(this.completeTasks, this.currentPage, this.pageSize)
-                this.showTableData = []
-                this.$common.methods.pushData(resultData, this.showTableData)
-            } else {
-                this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
-            }
+            this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
         },
         handleSizeChange(newValue) {
             this.pageSize = newValue
-            if (this.isSearching) {
-                const resultData = this.$common.methods.fillShowTableData(this.completeTasks, this.currentPage, this.pageSize)
-                this.showTableData = []
-                this.$common.methods.pushData(resultData, this.showTableData)
-            } else {
-                this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
-            }
+            this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
         }
     },
     mounted() {
         let self = this
-        this.$common.eventBus.$on("updateAllTasks", () => {
+        this.$common.eventBus.$on("updateSupervisorAllTasks", () => {
             self.init()
         })
-        this.$common.eventBus.$on("updateCompleteTasks", () => {
+        this.$common.eventBus.$on("updateSupervisorCompleteTasks", () => {
             self.init()
         })
     }
