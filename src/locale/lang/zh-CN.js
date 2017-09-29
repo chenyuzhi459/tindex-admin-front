@@ -160,7 +160,14 @@ export default {
 
       },
       lookups: "分群组",
-      userGroupLookup: "分群"
+      userGroupLookup: "分群",
+      type: "类型",
+      version: "版本",
+      lookupInfo: "分群信息",
+      addLookup: "创建分群",
+      lookupName: "分群名称",
+      lookupNameIndex: "请输入分群名称",
+      addLookupWarning: "你确定要添加分群："
     },
     common: {
       more: "更多",
@@ -177,6 +184,8 @@ export default {
       deleteWarning: "你确定要删除：",
       deleteSuccess: "删除成功!",
       deleteFail: "删除失败!",
+      addSuccess: "添加成功！",
+      addFail: "添加失败！",
       items: "条目明细"
     }
   }

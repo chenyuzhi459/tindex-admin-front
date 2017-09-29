@@ -156,7 +156,14 @@ export default {
 
           },
           lookups: "Lookup Tier",
-          userGroupLookup: "Lookup"
+          userGroupLookup: "Lookup",
+          type: "type",
+          version: "version",
+          lookupInfo: "Lookup Info",
+          addLookup: "Create Lookup",
+          lookupName: "Lookup Name",
+          lookupNameIndex: "Please input the lookup name",
+          addLookupWarning: "Do you really want to add lookup:"
         },
         common: {
           more: "more",
@@ -173,6 +180,8 @@ export default {
           deleteWarning: 'Do you really want to delete:',
           deleteSuccess: 'Delete Success!',
           deleteFail: 'Delete Fail!',
+          addSuccess: "Add Success!",
+          addFail: "Add Fail!",
           items: 'items'
         }
 

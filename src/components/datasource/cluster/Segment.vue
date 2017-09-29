@@ -34,9 +34,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                   font-size: 16px;
-                                   font-weight: 700;
-                                   color: #1f2d3d;">
+                                     font-size: 16px;
+                                     font-weight: 700;
+                                     color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -96,7 +96,7 @@ export default {
       }
       this.segments = []
       this.$common.methods.pushData(convertData, this.segments)
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     },
     async getSegmentsFromInterval() {
       const intervalNameDeal = this.$route.query.intervalName.replace("/", "_")
@@ -111,7 +111,7 @@ export default {
       }
       this.segments = []
       this.$common.methods.pushData(convertData, this.segments)
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     },
     async getSegmentInfo(segmentName) {
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}?full`
@@ -171,11 +171,11 @@ export default {
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     },
     handleSizeChange(newValue) {
       this.pageSize = newValue
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     }
   }
 }

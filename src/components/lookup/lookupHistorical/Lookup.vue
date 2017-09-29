@@ -1,69 +1,68 @@
 <template>
   <div class="main">
+
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b>{{$t('message.lookup.lookupTitle')}}</b>
+        <b>{{historicalIp}}</b>
+        <br/>
+        <el-button v-for="ip in historicalIps" :key="ip" type="text" size="large" @click="clickIp(ip)">{{ip}}</el-button>
+        <br/>
       </span>
-      <br></br>
     </div>
+
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item :label="$t('message.dataSource.name')">
-          <el-input v-model="formInline.name" :placeholder="$t('message.dataSource.name')" size="small"></el-input>
+        <el-form-item :label="$t('message.lookup.userGroupLookup')">
+          <el-input v-model="formInline.name" :placeholder="$t('message.lookup.userGroupLookup')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="onSearch">{{$t('message.dataSource.search')}}</el-button>
-          <el-button type="primary" size="small" @click="init">{{$t('message.dataSource.refresh')}}</el-button>
+          <el-button type="primary" size="small" @click="onSearch">{{$t('message.common.search')}}</el-button>
         </el-form-item>
+        <el-form-item>
+          <el-button type="primary" size="small" @click="addLookup">{{$t('message.lookup.addLookup')}}</el-button>
+        </el-form-item>
+
       </el-form>
     </div>
+
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
-        <el-table-column prop="name" :label="$t('message.dataSource.name')" sortable="custom" width="310"></el-table-column>
-        <el-table-column prop="tiers" :label="$t('message.dataSource.tiers')" width="115"></el-table-column>
-        <el-table-column :label="$t('message.dataSource.segments')" align="center">
-          <el-table-column prop="properties.segments.count" :label="$t('message.dataSource.count')" width="80"></el-table-column>
-          <el-table-column prop="properties.segments.size" :label="$t('message.dataSource.size')" width="120"></el-table-column>
-          <el-table-column prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
-          <el-table-column prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
-        </el-table-column>
-        <el-table-column :label="$t('message.dataSource.more')" width="480">
+        <el-table-column prop="lookup" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
+        <el-table-column prop="version" :label="$t('message.lookup.version')"></el-table-column>
+        <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
-            <!-- <el-button size="mini" @click="getTiers(scope.row.name)">{{$t('message.dataSource.tiers')}}</el-button> -->
-            <el-button size="mini" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button>
-            <el-button size="mini" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
-            <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
-            <el-button size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
-            <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button>
-            <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">{{$t('message.dataSource.delete')}}</el-button>
+            <el-button size="mini" @click="getInfo(scope.row.lookup)">{{$t('message.common.info')}}</el-button>
+            <el-button size="mini" type="danger" @click="deleteLookup(scope.row.lookup)">{{$t('message.common.delete')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="pagination">
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="dataSources.length">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5, 10, 15, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="lookups.length">
         </el-pagination>
       </div>
+
+      <el-dialog :visible.sync="dialogVisible" :size="dialogSize">
+        <template slot="title">
+          <div style="line-height: 1;font-size: 16px; font-weight: 700; color: #1f2d3d;">
+            {{dialogTitle}}
+          </div>
+        </template>
+
+        <el-input :placeholder="$t('message.lookup.lookupNameIndex')" v-model="lookupNameInput">
+          <template slot="prepend">{{$t('message.lookup.lookupName')}}</template>
+        </el-input>
+        <!-- <b>标签一</b><el-input v-model="formInline.name" :placeholder="$t('message.lookup.userGroupLookup')" size="small" ></el-input> -->
+        <br/><br/>
+        <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
+        </el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
+          <el-button type="primary" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+        </span>
+      </el-dialog>
     </div>
-
-    <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
-      <template slot="title">
-        <div style=" line-height: 1;
-                                      font-size: 16px;
-                                      font-weight: 700;
-                                      color: #1f2d3d;">
-          {{dialogTitle}}
-        </div>
-      </template>
-      <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
-      </el-input>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">{{$t('message.common.confirm')}}</el-button>
-        <el-button type="primary" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
-      </span>
-    </el-dialog>
-
   </div>
 </template>
 
@@ -71,95 +70,71 @@
 export default {
   data() {
     return {
-      dataSources: [],
+      historicalIps: [],
+      historicalIp: '192.168.0.225:8083',
+      lookups: [],
+      pageSize: 15,
+      currentPage: 1,
+      formInline: {
+        name: '',
+      },
       showTableData: [],
+      confirmType: '',
+      lookupNameInput: '',
       dialogMessage: '',
       dialogTitle: '',
       dialogSize: 'large',
       dialogInputAutosize: {},
       dialogVisible: false,
-      formInline: {
-        name: '',
-      },
-      pageSize: 15,
-      currentPage: 1,
-      isAscending: "ascending",
-      isSearching: false,
     }
   },
   created: function() {
-    this.dataSourceName = this.$route.query.dataSourceName
     this.init()
   },
   methods: {
     init() {
-      if (this.$route.query.preLocation === 'interval') {
-        this.getDataSourceByName(this.$route.query.dataSourceName)
-      } else if (this.$route.query.preLocation === 'segment') {
-        this.getDataSourceByName(this.$route.query.dataSourceName)
-      } else {
-        this.getDataSources("true")
-      }
+      this.getHistoricalIps()
+      this.getLookups(false, '')
     },
-    async getDataSources(isAscending) {
-      const url = `${this.$common.apis.dataSource}?full`
-      console.log(url)
+    async getLookups(isDescending, searchValue) {
+      const url = `${this.$common.apis.lookupsHis}`
       const response = await this.$http.get(url, {
         params: {
-          isAscending: isAscending
+          isDescending: isDescending,
+          searchValue: searchValue,
+          ip: this.historicalIp
         }
       })
-      let dataSourceMap = new Map()
-      for(let i=0; i<response.data.length;i++) {
-        dataSourceMap = response.data[i]["properties"]["tiers"]
-        let tierName
-        for(var key in dataSourceMap) {
-          tierName = key
+      this.lookups = []
+      this.$common.methods.pushData(response.data, this.lookups)
+      this.showTableData = this.$common.methods.fillShowTableData(this.lookups, this.currentPage, this.pageSize)
+    },
+    async getLookupByName(lookupName) {
+      const url = `${this.$common.apis.lookupsHis}/${lookupName}`
+      const response = await this.$http.get(url, {
+        params: {
+          ip: this.historicalIp
         }
-        response.data[i]["tiers"] = tierName
-      }
-      this.dataSources = []
-      this.$common.methods.pushData(response.data, this.dataSources)
-      this.fillShowTableData()
-
+      })
+      return response.data
     },
-    async getTiers(dataSourceName) {
-      const url = `${this.$common.apis.dataSource}/${dataSourceName}`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.tiersInfo'))
-    },
-    getDimensions(dataSourceName) {
-      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/dimensions`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.dimensionsInfo'))
-    },
-    getMetrics(dataSourceName) {
-      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/metrics`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.metricsInfo'))
-    },
-    getCandidates(dataSourceName) {
-      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
-    },
-    async getInfoFromUrl(url, title) {
-      console.log(url)
-      const response = await this.$http.get(url)
-      const info = response.data
-      console.log(info)
-      const message = this.$common.methods.JSONUtils.toString(info)
-      this.configDialog(title, message, true, "small", { minRows: 15, maxRows: 25 })
-    },
-
-    async deleteDataSource(dataSourceName) {
-      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${dataSourceName}`
+    async deleteLookup(lookupName) {
+      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${lookupName}`
       try {
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
-          confirmButtonText: this.$t('message.common.confirm'),
           cancelButtonText: this.$t('message.common.cancle'),
+          confirmButtonText: this.$t('message.common.confirm'),
           closeOnClickModal: false,
           type: 'warning'
         })
         try {
-          const url = `${this.$common.apis.dataSource}/${dataSourceName}`
-          const deleteResponse = await this.$http.delete(url)
+          const url = `${this.$common.apis.lookupsHis}/${lookupName}`
+          console.log(url, "deleteUrl")
+          const addResponse = await this.$http.delete(url, {
+            params: {
+              ip: this.historicalIp
+            }
+          })
           window.setTimeout(this.init, 500)
           this.$message({
             type: 'success',
@@ -175,70 +150,92 @@ export default {
 
       }
     },
-    configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
+    onSearch() {
+      this.getLookups(this.isDescending, this.formInline.name)
+    },
+    async getHistoricalIps() {
+      const url = `${this.$common.apis.historicalIps}`
+      const response = await this.$http.get(url, {
+        params: {
+          ip: this.historicalIp
+        }
+      })
+      this.historicalIps = response.data
+      console.log(response.data, "ip")
+    },
+    configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize, confirmType, lookupNameInput) {
       this.dialogTitle = dialogTitle
       this.dialogMessage = dialogMessage
       this.dialogVisible = dialogVisible
       this.dialogSize = dialogSize
       this.dialogInputAutosize = dialogInputAutosize
+      this.confirmType = confirmType
+      this.lookupNameInput = lookupNameInput
     },
-    getIntervals(dataSourceName) {
-      this.$router.push(
-        { path: '/interval', query: { preLocation: "dataSource", dataSourceName: dataSourceName } }
-      )
+    handleSort(column) {
+      this.isDescending = column.order === "descending" ? true : false
+      this.getLookups(this.isDescending, '')
     },
-    getSegments(dataSourceName) {
-      this.$router.push(
-        { path: '/segment', query: { preLocation: "dataSource", dataSourceName: dataSourceName } }
-      )
+    clickIp(ip) {
+      this.historicalIp = ip
+      console.log(this.historicalIp, "ip")
     },
-
-    fillShowTableData() {
-      this.showTableData = []
-      var position = (this.currentPage - 1) * this.pageSize
-      var limit = (position + this.pageSize) >= this.dataSources.length ? this.dataSources.length - position : this.pageSize;
-      for (var i = 0; i < limit; i++) {
-        this.showTableData.push(this.dataSources[position + i])
-      }
+    addLookup() {
+      this.confirmType = "addLookup"
+      const title = this.$t('message.lookup.addLookup')
+      this.configDialog(title, '', true, "small", { minRows: 15, maxRows: 25 }, "addLookup", '')
+    },
+    async getInfo(lookupName) {
+      const info = await this.getLookupByName(lookupName)
+      const title = this.$t('message.lookup.lookupInfo')
+      const infoJSON = this.$common.methods.JSONUtils.toString(info)
+      this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "confirm", lookupName)
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.lookups, this.currentPage, this.pageSize)
     },
     handleSizeChange(newValue) {
       this.pageSize = newValue
-      this.fillShowTableData()
+      this.showTableData = this.$common.methods.fillShowTableData(this.lookups, this.currentPage, this.pageSize)
     },
-    handleSort(column) {
-      this.isAscending = column.order === "ascending" ? true : false
-      this.getDataSources(this.isAscending)
+    clickConfirm() {
+      if (this.confirmType === "addLookup") {
+        this.postAddLookup()
+      }
+      this.dialogVisible = false
     },
-    async onSearch() {
-      const url = `${this.$common.apis.dataSource}?full`
-      const response = await this.$http.get(url, {
-        params: {
-          isAscending: this.isAscending,
-          searchString: this.formInline.name
+    async postAddLookup() {
+      const remindMessage = `${this.$t('message.lookup.addLookupWarning')}\n${this.lookupNameInput}`
+      try {
+        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+          confirmButtonText: this.$t('message.common.confirm'),
+          cancelButtonText: this.$t('message.common.cancle'),
+          closeOnClickModal: false,
+          type: 'warning'
+        })
+        try {
+          const url = `${this.$common.apis.lookupsHis}/${this.lookupNameInput}`
+          const addResponse = await this.$http.post(url, this.dialogMessage, {
+            params: {
+              ip: this.historicalIp
+            }
+          })
+          window.setTimeout(this.init, 500)
+          this.$message({
+            type: 'success',
+            message: this.$t('message.common.addSuccess')
+          })
+        } catch (err) {
+          this.$message({
+            type: 'warning',
+            message: this.$t('message.common.addFail')
+          })
         }
-      })
-      this.dataSources = []
-      this.$common.methods.pushData(response.data, this.dataSources)
-      this.fillShowTableData()
+      } catch (e) {
 
+      }
     },
-    async getDataSourceByName(dataSourceName) {
-      const url = `${this.$common.apis.dataSource}?full`
-      const response = await this.$http.get(url, {
-        params: {
-          isAscending: this.isAscending,
-          searchString: dataSourceName
-        }
-      })
-      this.dataSources = []
-      this.$common.methods.pushData(response.data, this.dataSources)
-      this.fillShowTableData()
-
-    }
   }
 }
 </script>

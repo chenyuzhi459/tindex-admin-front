@@ -90,7 +90,7 @@ export default {
       }
       this.segments = []
       this.$common.methods.pushData(convertData, this.segments)
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
 
     },
     async getSegmentInfo(segmentName) {
@@ -119,11 +119,11 @@ export default {
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     },
     handleSizeChange(newValue) {
       this.pageSize = newValue
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     }
   }
 }
