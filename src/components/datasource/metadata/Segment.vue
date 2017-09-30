@@ -9,7 +9,7 @@
 
     <div style=" margin-left:20px;">
       <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
-      <el-button type="primary" @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</el-button>
+      <!-- <el-button type="primary" @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</el-button> -->
       <br></br>
       <el-button type="primary" size="small" @click="init">{{$t('message.segment.refresh')}}</el-button>
       <br></br>
@@ -33,9 +33,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                 font-size: 16px;
-                                 font-weight: 700;
-                                 color: #1f2d3d;">
+                                   font-size: 16px;
+                                   font-weight: 700;
+                                   color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -111,7 +111,13 @@ export default {
         { path: '/dataSource' }
       )
     },
-
+    clickSelect(tab) {
+      if (tab.name === "dataSourceSelect") {
+        this.getDataSources()
+      } else if (tab.name === "intervalSelect") {
+        this.getIntervalsByDataSourceName()
+      }
+    },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
       this.dialogTitle = dialogTitle
       this.dialogMessage = dialogMessage

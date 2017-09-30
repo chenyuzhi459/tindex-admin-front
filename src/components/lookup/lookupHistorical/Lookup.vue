@@ -5,7 +5,7 @@
       <span style="color: #242f42;font-size:20px;">
         <template>
           <el-tabs v-model="activeName" @tab-click="clickIp">
-            <el-tab-pane v-for="ip in historicalIps" :key="ip" :label="ip" :name="ip">
+            <el-tab-pane v-for="ip in historicalIps" :key="ip" :label="ip" :name="ip" size="large">
               <span style="color: #242f42;font-size:20px;">
                 <b>{{$t('message.lookup.lookupCoordinator.lookupTitle')}}</b>
               </span>
@@ -18,7 +18,7 @@
 
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-         <el-form-item :label="$t('message.common.name')">
+        <el-form-item :label="$t('message.common.name')">
           <el-input v-model="formInline.name" :placeholder="$t('message.lookup.inputLookupName')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
@@ -37,10 +37,10 @@
         <el-table-column prop="lookup" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
-            <el-button size="mini" @click="getInfo(scope.row.lookup)">
-              {{$t('message.common.info')}}</el-button>
+            <el-button size="mini" @click="getInfo(scope.row.lookup)">{{$t('message.common.info')}}</el-button>
+            <el-button size="mini" @click="updataLookup(scope.row.lookup)">{{$t('message.common.update')}}</el-button>
             <el-button size="mini" type="danger" @click="deleteLookup(scope.row.lookup)">{{$t('message.common.delete')}}</el-button>
-</template>
+          </template>
         </el-table-column>
       </el-table>
 
@@ -51,9 +51,9 @@
 
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize">
         <template slot="title">
-  <div style="line-height: 1;font-size: 16px; font-weight: 700; color: #1f2d3d;">
-    {{dialogTitle}}
-  </div>
+          <div style="line-height: 1;font-size: 16px; font-weight: 700; color: #1f2d3d;">
+            {{dialogTitle}}
+          </div>
 </template>
 
         <el-input :placeholder="$t('message.lookup.lookupNameIndex')" v-model="lookupNameInput">
@@ -106,7 +106,6 @@ export default {
     },
     async getLookups(isDescending, searchValue) {
       const url = `${this.$common.apis.lookupsHis}/sortAndSearch`
-      console.log(searchValue, "searchValue")
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
@@ -114,9 +113,6 @@ export default {
           ip: this.historicalIp
         }
       })
-      console.log(url, "LookupsUrl")
-      console.log(searchValue, "searchValue")
-      console.log(isDescending, "isDescending")
       this.lookups = []
       for (let i = 0; i < response.data.length; i++) {
         for (var key in response.data[i]) {
@@ -134,6 +130,12 @@ export default {
         }
       })
       return response.data
+    },
+    async updataLookup(lookupName) {
+      const info = await this.getLookupByName(lookupName)
+      const title = this.$t('message.lookup.lookupInfo')
+      const infoJSON = this.$common.methods.JSONUtils.toString(info)
+      this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "updateLookup", lookupName)
     },
     async deleteLookup(lookupName) {
       const remindMessage = `${this.$t('message.common.deleteWarning')}\n${lookupName}`
@@ -216,12 +218,14 @@ export default {
     },
     clickConfirm() {
       if (this.confirmType === "addLookup") {
-        this.postAddLookup()
+        this.postLookup(this.$t('message.lookup.addLookupWarning'), this.$t('message.common.addSuccess'), this.$t('message.common.addFail'))
+      } else if (this.confirmType === "updateLookup") {
+        this.postLookup(this.$t('message.lookup.updateLookupWarning'), this.$t('message.common.updateSuccess'), this.$t('message.common.updateFail'))
       }
       this.dialogVisible = false
     },
-    async postAddLookup() {
-      const remindMessage = `${this.$t('message.lookup.addLookupWarning')}\n${this.lookupNameInput}`
+    async postLookup(warningMessage, successMessage, failMessage) {
+      const remindMessage = `${warningMessage}\n${this.lookupNameInput}`
       try {
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
           confirmButtonText: this.$t('message.common.confirm'),
@@ -239,12 +243,12 @@ export default {
           window.setTimeout(this.init, 500)
           this.$message({
             type: 'success',
-            message: this.$t('message.common.addSuccess')
+            message: successMessage
           })
         } catch (err) {
           this.$message({
             type: 'warning',
-            message: this.$t('message.common.addFail')
+            message: failMessage
           })
         }
       } catch (e) {

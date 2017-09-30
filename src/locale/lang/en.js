@@ -183,6 +183,7 @@ export default {
           lookupName: "Lookup Name",
           lookupNameIndex: "Please input the lookup name",
           addLookupWarning: "Do you really want to add lookup:",
+          updateLookupWarning: "Do you really want to update lookup:",
           inputLookupName: "Please input lookup name"
         },
         common: {
@@ -201,6 +202,8 @@ export default {
           deleteSuccess: 'Delete Success!',
           deleteFail: 'Delete Fail!',
           addSuccess: "Add Success!",
+          updateSuccess: "Update Success!",
+          updateFail: "Update Fail!",
           addFail: "Add Fail!",
           items: 'items',
           disable: 'disable',

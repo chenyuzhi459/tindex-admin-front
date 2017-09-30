@@ -2,17 +2,18 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b>{{$t('message.segment.segmentTitle')}}</b>
+        <!-- <b>{{$t('message.segment.segmentTitle')}}</b> -->
+        <el-tabs v-model="activeName" @tab-click="clickSelect">
+          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect"></el-tab-pane>
+        </el-tabs>
       </span>
-      <br></br>
     </div>
 
     <div style=" margin-left:20px;">
-      <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
+      Path: &nbsp&nbsp<el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
       <el-button type="text" @click="getInterval">{{this.intervalName}}</el-button>
-
-      <el-button type="primary" @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</el-button>
-      <el-button type="primary" @click="getIntervals">{{$t('message.dataSource.intervals')}}</el-button>
       <br></br>
       <el-button type="primary" size="small" @click="init">{{$t('message.segment.refresh')}}</el-button>
       <br></br>
@@ -37,9 +38,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                       font-size: 16px;
-                                       font-weight: 700;
-                                       color: #1f2d3d;">
+                                           font-size: 16px;
+                                           font-weight: 700;
+                                           color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -69,7 +70,8 @@ export default {
       pageSize: 15,
       currentPage: 1,
       dataSourceName: '',
-      intervalName: ''
+      intervalName: '',
+      activeName: 'segmentSelect'
     }
   },
   created: function() {
@@ -168,6 +170,13 @@ export default {
       this.$router.push(
         { path: '/interval', query: { dataSourceName: this.dataSourceName } }
       )
+    },
+    clickSelect(tab) {
+      if (tab.name === "dataSourceSelect") {
+        this.getDataSources()
+      } else if (tab.name === "intervalSelect") {
+        this.getIntervals()
+      }
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
       this.dialogTitle = dialogTitle

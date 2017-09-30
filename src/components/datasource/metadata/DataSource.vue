@@ -95,14 +95,13 @@ export default {
     init() {
 
       if (this.$route.query.preLocation === 'segment') {
-        this.getDataSourceByName(this.$route.query.dataSourceName)
+        this.getDataSourceByName(this.dataSourceName)
       } else {
         this.getDataSources("true", "name")
       }
     },
     async getDataSources(isDescending, sortName) {
       const url = `${this.$common.apis.mDataSource}/sortAndSearch?full`
-      console.log(url)
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
@@ -140,10 +139,8 @@ export default {
       this.getInfoFromUrl(url, this.$t('message.dataSource.rulesHistory'))
     },
     async getInfoFromUrl(url, title) {
-      console.log(url)
       const response = await this.$http.get(url)
       this.dataSourceInfo = response.data
-      console.log(this.dataSourceInfo)
       const message = this.$common.methods.JSONUtils.toString(this.dataSourceInfo)
       let size = "small"
       if (title === this.$t('message.dataSource.dataSourceInfo')) {
@@ -240,7 +237,6 @@ export default {
     },
     async getDataSourceByName(dataSourceName) {
       const url = `${this.$common.apis.mDataSource}/${dataSourceName}?full`
-      console.log("url:  " + url)
       const response = await this.$http.get(url)
       this.dataSources = []
       let message = new Array()

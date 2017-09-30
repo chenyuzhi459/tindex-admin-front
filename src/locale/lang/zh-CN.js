@@ -170,6 +170,7 @@ export default {
       lookupName: "分群名称",
       lookupNameIndex: "请输入分群名称",
       addLookupWarning: "你确定要添加分群：",
+      updateLookupWarning: "你确定要更新分群：",
       inputLookupName: "请输入分群名称"
     },
     common: {
@@ -188,6 +189,8 @@ export default {
       deleteSuccess: "删除成功!",
       deleteFail: "删除失败!",
       addSuccess: "添加成功！",
+      updateSuccess: "更新成功！",
+      updateFail: "更新失败！",
       addFail: "添加失败！",
       items: "条目明细",
       disable: "失效",

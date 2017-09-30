@@ -2,17 +2,18 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b @click="getIntervalsByDataSourceName">{{$t('message.interval.intervalTitle')}}</b>
+        <el-tabs v-model="activeName" @tab-click="clickSelect">
+          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect" disabled></el-tab-pane>
+        </el-tabs>
       </span>
-      <br></br>
     </div>
 
     <div style=" margin-left:20px;">
+      Path: &nbsp&nbsp
       <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
-
-      <el-button type="primary" @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</el-button>
       <br></br>
-
       <el-button type="primary" size="small" @click="init">{{$t('message.interval.refresh')}}</el-button>
       <br></br>
     </div>
@@ -48,6 +49,7 @@ export default {
       currentPage: 1,
       dataSource: '',
       segment: '',
+      activeName: 'intervalSelect'
     }
   },
   created: function() {
@@ -62,19 +64,36 @@ export default {
     getIntervals() {
       let url
       if (this.$route.query.preLocation === 'segment') {
-        const interval = new Map()
-        interval['name'] = this.$route.query.intervalName
-        const intervalArr = []
-        intervalArr[0] = interval
-        this.$common.methods.pushData(intervalArr, this.intervals)
-        this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
+        // const interval = new Map()
+        // interval['name'] = this.$route.query.intervalName
+        // const intervalArr = []
+        // intervalArr[0] = interval
+        // this.$common.methods.pushData(intervalArr, this.intervals)
+        // this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
+        this.getInterval()
       } else {
         this.getIntervalsByDataSourceName()
       }
     },
+    async getInterval() {
+      const intervalNameHandle = this.$route.query.intervalName.replace("/","_")
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${intervalNameHandle}`
+      console.log(url,"url")
+      const response = await this.$http.get(url)
+      const data = this.getDataFromResponse(response)
+      this.intervals = []
+      this.$common.methods.pushData(data, this.intervals)
+      this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
+    },
     async getIntervalsByDataSourceName() {
       const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals?full`
       const response = await this.$http.get(url)
+      const data = this.getDataFromResponse(response)
+      this.intervals = []
+      this.$common.methods.pushData(data, this.intervals)
+      this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
+    },
+    getDataFromResponse(response) {
       const convertData = new Array()
       for (let key in response.data) {
         let itemMap = new Map()
@@ -82,11 +101,7 @@ export default {
         itemMap["segmentCount"] = Object.getOwnPropertyNames(response.data[key]).length
         convertData.push(itemMap)
       }
-
-      this.intervals = []
-      this.$common.methods.pushData(convertData, this.intervals)
-      this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
-
+      return convertData
     },
     getSegments(intervalName) {
       this.$router.push(
@@ -103,6 +118,13 @@ export default {
       this.$router.push(
         { path: '/dataSource' }
       )
+    },
+    clickSelect(tab) {
+      if (tab.name === "dataSourceSelect") {
+        this.getDataSources()
+      } else if (tab.name === "intervalSelect") {
+        this.getIntervalsByDataSourceName()
+      }
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
