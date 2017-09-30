@@ -199,7 +199,8 @@ export default {
           deleteFail: 'Delete Fail!',
           addSuccess: "Add Success!",
           addFail: "Add Fail!",
-          items: 'items'
+          items: 'items',
+          disable: 'disable'
         }
 
     }

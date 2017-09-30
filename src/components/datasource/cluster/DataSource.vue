@@ -36,7 +36,7 @@
             <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
             <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button>
-            <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">{{$t('message.common.delete')}}</el-button>
+            <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">{{$t('message.common.disable')}}</el-button>
           </template>
         </el-table-column>
       </el-table>

@@ -58,10 +58,7 @@ export default {
       offsets: 'offsets'
     },
     supervisors: {
-      supervisorManager: 'Supervisor管理',
-      supervisorTasks: 'Supervisor任务',
       runningSuperviorTitle: '运行supervisors',
-      completeSupervisorsTitle: '已完成Supervisors',
       searchTips: '请输入id',
       search: '搜索',
       refresh: '刷新',
@@ -82,20 +79,6 @@ export default {
       killTips: '你确定要删除',
       killSuccess: '删除成功!',
       killFailed: '删除失败,请查看overlord日志',
-      version: '版本',
-      taskDuration: '运行时间',
-      type: '类型',
-      topic: 'topic',
-      reuse: '重用',
-      supervisorStatusTitle: 'Supervisor状态',
-      supervisorSpec: 'Supervisor说明',
-      createSupervisor: '创建Supervisor',
-      format: '格式化',
-      createDialogConfirm: '创建',
-      jsonSyntaxError: 'json格式错误',
-      creatSuccess: '创建成功, id',
-      createFailedFront: '创建失败,状态码',
-      createFailedLast: 'please check overlord logs'
     },
     sideBar: {
       dataAccess: {
@@ -148,7 +131,7 @@ export default {
       rulesHistory: '规则（历史信息）',
       addRulesSuccess: '添加规则成功！',
       addRulesFail: '添加规则失败！',
-      addRuleWarning: '你确定要添加规则?'
+      addRuleWarning: '你确定要添加规则？'
     },
     interval: {
       intervalTitle: "区间",
@@ -189,7 +172,7 @@ export default {
     },
     common: {
       more: "更多",
-      info: "信息",
+      info: "详情",
       delete: "删除",
       size: "大小",
       confirm: "确 认",
@@ -204,7 +187,8 @@ export default {
       deleteFail: "删除失败!",
       addSuccess: "添加成功！",
       addFail: "添加失败！",
-      items: "条目明细"
+      items: "条目明细",
+      disable: "失效"
     }
   }
 }

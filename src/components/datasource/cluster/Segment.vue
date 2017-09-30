@@ -22,7 +22,7 @@
         <el-table-column :label="$t('message.segment.more')" width="200">
           <template scope="scope">
             <el-button size="mini" @click="getSegmentInfo(scope.row.name)">{{$t('message.segment.info')}}</el-button>
-            <el-button size="mini" @click="deleteSegment(scope.row.name)" type="danger">{{$t('message.segment.delete')}}</el-button>
+            <el-button size="mini" @click="deleteSegment(scope.row.name)" type="danger">{{$t('message.common.disable')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
