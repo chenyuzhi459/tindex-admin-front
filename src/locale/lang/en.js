@@ -143,14 +143,16 @@ export default {
             rulesHistory: 'Rules History',
             addRulesSuccess: 'Add Rules Success!',
             addRulesFail: 'Add Rules Fail!',
-            addRuleWarning: 'Do you really add rule?'
+            addRuleWarning: 'Do you really add rule?',
+            
         },
         interval: {
             intervalTitle: "Intervals",
             refresh: "Refresh",
             name: "name",
             segments: "segments",
-            more: "more"
+            more: "more",
+            segmentCount: "segment count"
         },
         segment: {
             segmentTitle: "Segments",
@@ -180,7 +182,8 @@ export default {
           addLookup: "Create Lookup",
           lookupName: "Lookup Name",
           lookupNameIndex: "Please input the lookup name",
-          addLookupWarning: "Do you really want to add lookup:"
+          addLookupWarning: "Do you really want to add lookup:",
+          inputLookupName: "Please input lookup name"
         },
         common: {
           more: "more",
@@ -200,7 +203,9 @@ export default {
           addSuccess: "Add Success!",
           addFail: "Add Fail!",
           items: 'items',
-          disable: 'disable'
+          disable: 'disable',
+          inputName: "Please input name",
+          update: "update"
         }
 
     }

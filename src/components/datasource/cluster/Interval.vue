@@ -9,6 +9,8 @@
 
     <div style=" margin-left:20px;">
       <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
+
+      <el-button type="primary" @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</el-button>
       <br></br>
 
       <el-button type="primary" size="small" @click="init">{{$t('message.interval.refresh')}}</el-button>
@@ -19,9 +21,10 @@
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
         <el-table-column prop="name" :label="$t('message.interval.name')" sortable></el-table-column>
+        <el-table-column prop="segmentCount" :label="$t('message.interval.segmentCount')"></el-table-column>
         <el-table-column :label="$t('message.interval.more')">
           <template scope="scope">
-            <el-button size="mini" @click="getSegments(scope.row.name)">{{$t('message.interval.segments')}}</el-button>
+            <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.interval.segments')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -61,7 +64,6 @@ export default {
       if (this.$route.query.preLocation === 'segment') {
         const interval = new Map()
         interval['name'] = this.$route.query.intervalName
-        console.log(interval)
         const intervalArr = []
         intervalArr[0] = interval
         this.$common.methods.pushData(intervalArr, this.intervals)
@@ -71,15 +73,16 @@ export default {
       }
     },
     async getIntervalsByDataSourceName() {
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals`
-      console.log(url)
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals?full`
       const response = await this.$http.get(url)
       const convertData = new Array()
-      for (var i = 0, len = response.data.length; i < len; i++) {
-        var map = new Map()
-        map['name'] = response.data[i]
-        convertData[i] = map
+      for (let key in response.data) {
+        let itemMap = new Map()
+        itemMap["name"] = key
+        itemMap["segmentCount"] = Object.getOwnPropertyNames(response.data[key]).length
+        convertData.push(itemMap)
       }
+
       this.intervals = []
       this.$common.methods.pushData(convertData, this.intervals)
       this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
@@ -94,6 +97,11 @@ export default {
     getDataSource() {
       this.$router.push(
         { path: '/dataSource', query: { preLocation: "interval", dataSourceName: this.dataSourceName } }
+      )
+    },
+    getDataSources() {
+      this.$router.push(
+        { path: '/dataSource' }
       )
     },
     handleCurrentChange(newValue) {

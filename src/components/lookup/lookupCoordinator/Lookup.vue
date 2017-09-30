@@ -35,8 +35,8 @@
 
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item :label="$t('message.lookup.userGroupLookup')">
-          <el-input v-model="formInline.name" :placeholder="$t('message.lookup.userGroupLookup')" size="small"></el-input>
+        <el-form-item :label="$t('message.common.name')">
+          <el-input v-model="formInline.name" :placeholder="$t('message.lookup.inputLookupName')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
@@ -57,6 +57,7 @@
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <el-button size="mini" @click="getInfo(scope.row.lookup)">{{$t('message.common.info')}}</el-button>
+            <el-button size="mini" @click="updataLookup(scope.row.lookup)">{{$t('message.common.update')}}</el-button>
             <el-button size="mini" type="danger" @click="deleteLookup(scope.row.lookup)">{{$t('message.common.delete')}}</el-button>
           </template>
         </el-table-column>
@@ -71,9 +72,9 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize">
       <template slot="title">
         <div style=" line-height: 1;
-                                                                                font-size: 16px;
-                                                                                font-weight: 700;
-                                                                                color: #1f2d3d;">
+                                                                                  font-size: 16px;
+                                                                                  font-weight: 700;
+                                                                                  color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -241,7 +242,6 @@ export default {
         })
         try {
           const url = `${this.$common.apis.lookups}/${this.tierName}/${lookupName}`
-          console.log(url, "deleteUrl")
           const addResponse = await this.$http.delete(url)
           window.setTimeout(this.init, 500)
           this.$message({

@@ -3,17 +3,23 @@
 
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b>{{historicalIp}}</b>
-        <br/>
-        <el-button v-for="ip in historicalIps" :key="ip" type="text" size="large" @click="clickIp(ip)">{{ip}}</el-button>
+        <template>
+          <el-tabs v-model="activeName" @tab-click="clickIp">
+            <el-tab-pane v-for="ip in historicalIps" :key="ip" :label="ip" :name="ip">
+              <span style="color: #242f42;font-size:20px;">
+                <b>{{$t('message.lookup.lookupCoordinator.lookupTitle')}}</b>
+              </span>
+            </el-tab-pane>
+          </el-tabs>
+        </template>
         <br/>
       </span>
     </div>
 
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item :label="$t('message.lookup.userGroupLookup')">
-          <el-input v-model="formInline.name" :placeholder="$t('message.lookup.userGroupLookup')" size="small"></el-input>
+         <el-form-item :label="$t('message.common.name')">
+          <el-input v-model="formInline.name" :placeholder="$t('message.lookup.inputLookupName')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
@@ -29,12 +35,12 @@
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column prop="lookup" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
-        <!-- <el-table-column prop="version" :label="$t('message.lookup.version')"></el-table-column> -->
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
-            <el-button size="mini" @click="getInfo(scope.row.lookup)">{{$t('message.common.info')}}</el-button>
+            <el-button size="mini" @click="getInfo(scope.row.lookup)">
+              {{$t('message.common.info')}}</el-button>
             <el-button size="mini" type="danger" @click="deleteLookup(scope.row.lookup)">{{$t('message.common.delete')}}</el-button>
-          </template>
+</template>
         </el-table-column>
       </el-table>
 
@@ -45,15 +51,16 @@
 
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize">
         <template slot="title">
-          <div style="line-height: 1;font-size: 16px; font-weight: 700; color: #1f2d3d;">
-            {{dialogTitle}}
-          </div>
-        </template>
+  <div style="line-height: 1;font-size: 16px; font-weight: 700; color: #1f2d3d;">
+    {{dialogTitle}}
+  </div>
+</template>
 
         <el-input :placeholder="$t('message.lookup.lookupNameIndex')" v-model="lookupNameInput">
-          <template slot="prepend">{{$t('message.lookup.lookupName')}}</template>
+          <template slot="prepend">
+   {{$t('message.lookup.lookupName')}}
+</template>
         </el-input>
-        <!-- <b>标签一</b><el-input v-model="formInline.name" :placeholder="$t('message.lookup.userGroupLookup')" size="small" ></el-input> -->
         <br/><br/>
         <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
         </el-input>
@@ -86,6 +93,7 @@ export default {
       dialogSize: 'large',
       dialogInputAutosize: {},
       dialogVisible: false,
+      activeName: '192.168.0.225:8083'
     }
   },
   created: function() {
@@ -98,7 +106,7 @@ export default {
     },
     async getLookups(isDescending, searchValue) {
       const url = `${this.$common.apis.lookupsHis}/sortAndSearch`
-      console.log(searchValue,"searchValue")
+      console.log(searchValue, "searchValue")
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
@@ -106,18 +114,15 @@ export default {
           ip: this.historicalIp
         }
       })
-      console.log(url,"LookupsUrl")
-      console.log(searchValue,"searchValue")
-      console.log(isDescending,"isDescending")
+      console.log(url, "LookupsUrl")
+      console.log(searchValue, "searchValue")
+      console.log(isDescending, "isDescending")
       this.lookups = []
-      for(let i=0; i<response.data.length; i++) {
-
-        for (var key in response.data) {
-          response.data[key]["lookup"] = key
+      for (let i = 0; i < response.data.length; i++) {
+        for (var key in response.data[i]) {
+          response.data[i]["lookup"] = key
         }
       }
-        console.log(response.data,"response")
-
       this.$common.methods.pushData(response.data, this.lookups)
       this.showTableData = this.$common.methods.fillShowTableData(this.lookups, this.currentPage, this.pageSize)
     },
@@ -141,7 +146,6 @@ export default {
         })
         try {
           const url = `${this.$common.apis.lookupsHis}/${lookupName}`
-          console.log(url, "deleteUrl")
           const addResponse = await this.$http.delete(url, {
             params: {
               ip: this.historicalIp
@@ -187,9 +191,9 @@ export default {
       this.isDescending = column.order === "descending" ? true : false
       this.getLookups(this.isDescending, '')
     },
-    clickIp(ip) {
-      this.historicalIp = ip
-      console.log(this.historicalIp, "ip")
+    clickIp(tab, event) {
+      this.historicalIp = tab.name
+      this.getLookups(this.isDescending, '')
     },
     addLookup() {
       this.confirmType = "addLookup"

@@ -9,6 +9,7 @@
 
     <div style=" margin-left:20px;">
       <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
+      <el-button type="primary" @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</el-button>
       <br></br>
       <el-button type="primary" size="small" @click="init">{{$t('message.segment.refresh')}}</el-button>
       <br></br>
@@ -32,9 +33,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                               font-size: 16px;
-                               font-weight: 700;
-                               color: #1f2d3d;">
+                                 font-size: 16px;
+                                 font-weight: 700;
+                                 color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -80,7 +81,6 @@ export default {
     },
     async getSegments() {
       const url = `${this.$common.apis.mDataSource}/${this.$route.query.dataSourceName}/segments`
-      console.log(url)
       const response = await this.$http.get(url)
       var convertData = new Array()
       for (var i = 0, len = response.data.length; i < len; i++) {
@@ -95,18 +95,20 @@ export default {
     },
     async getSegmentInfo(segmentName) {
       const url = `${this.$common.apis.mDataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}?full`
-      console.log(url)
       const response = await this.$http.get(url)
       this.segmentInfo = response.data
-      console.log(this.segmentInfo)
       var message = this.$common.methods.JSONUtils.toString(this.segmentInfo)
       this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "full", { minRows: 15, maxRows: 40 })
 
     },
     getDataSource() {
-      console.log(this.dataSourceName)
       this.$router.push(
         { path: '/mDataSource', query: { preLocation: "segment", dataSourceName: this.dataSourceName } }
+      )
+    },
+    getDataSources() {
+      this.$router.push(
+        { path: '/dataSource' }
       )
     },
 
