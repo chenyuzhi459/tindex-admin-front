@@ -5,7 +5,7 @@
       <span style="color: #242f42;font-size:20px;">
         <template>
           <el-tabs v-model="activeName" @tab-click="clickIp">
-            <el-tab-pane v-for="ip in historicalIps" :key="ip" :label="ip" :name="ip" size="large">
+            <el-tab-pane v-for="ip in historicalIps" :key="ip" :label="ip" :name="ip">
               <span style="color: #242f42;font-size:20px;">
                 <b>{{$t('message.lookup.lookupCoordinator.lookupTitle')}}</b>
               </span>

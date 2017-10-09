@@ -36,6 +36,9 @@ export default {
               title: 'Lookup Manage',
               lookupCoordinator: 'Lookup Coordinator',
               lookupHistorical: 'Lookup Historical'
+            },
+            systemConfig: {
+              title: 'System Config'
             }
         },
         tasks: {
@@ -209,8 +212,10 @@ export default {
           disable: 'disable',
           inputName: "Please input name",
           update: "update"
+        },
+        systemConfig: {
+          systemConfigTitle: "System Config"
         }
-
     }
 
 }

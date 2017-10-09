@@ -111,13 +111,7 @@ export default {
         { path: '/dataSource' }
       )
     },
-    clickSelect(tab) {
-      if (tab.name === "dataSourceSelect") {
-        this.getDataSources()
-      } else if (tab.name === "intervalSelect") {
-        this.getIntervalsByDataSourceName()
-      }
-    },
+
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
       this.dialogTitle = dialogTitle
       this.dialogMessage = dialogMessage

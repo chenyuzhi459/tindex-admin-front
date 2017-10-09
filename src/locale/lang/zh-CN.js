@@ -100,6 +100,9 @@ export default {
         title: '用户分群管理',
         lookupCoordinator: '用户分群（Coordinator）',
         lookupHistorical: '用户分群（Historical）'
+      },
+      systemConfig: {
+        title: '系统配置'
       }
     },
     dataSource: {
@@ -196,6 +199,9 @@ export default {
       disable: "失效",
       inputName: "请输入名称",
       update: "更新"
+    },
+    systemConfig: {
+      systemConfigTitle: "系统配置"
     }
   }
 }

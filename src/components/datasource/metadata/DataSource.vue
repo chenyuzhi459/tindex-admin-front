@@ -93,7 +93,6 @@ export default {
   },
   methods: {
     init() {
-
       if (this.$route.query.preLocation === 'segment') {
         this.getDataSourceByName(this.dataSourceName)
       } else {

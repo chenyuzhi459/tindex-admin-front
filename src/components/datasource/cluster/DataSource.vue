@@ -221,7 +221,6 @@ export default {
       this.dataSources = []
       this.$common.methods.pushData(response.data, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
-
     },
     async getDataSourceByName(dataSourceName) {
       const url = `${this.$common.apis.dataSource}?full`

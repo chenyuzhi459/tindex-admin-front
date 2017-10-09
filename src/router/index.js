@@ -102,6 +102,10 @@ export default new Router({
                 {
                   path: '/lookupHistorical',
                   component: resolve => require(['../components/lookup/lookupHistorical/Lookup.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                  path: '/systemConfig',
+                  component: resolve => require(['../components/systemConfig/SystemConfig.vue'], resolve)    // 拖拽列表组件
                 }
             ]
         },
