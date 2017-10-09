@@ -201,7 +201,8 @@ export default {
       update: "更新"
     },
     systemConfig: {
-      systemConfigTitle: "系统配置"
+      systemConfigTitle: "系统配置",
+      updateConfig: "你确认要更新配置吗？"
     }
   }
 }

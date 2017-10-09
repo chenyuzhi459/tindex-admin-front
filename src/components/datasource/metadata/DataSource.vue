@@ -151,7 +151,7 @@ export default {
 
 
     editRule(dataSourceName) {
-      this.ruleDataSource =  dataSourceName
+      this.ruleDataSource = dataSourceName
       this.configDialog(this.$t('message.dataSource.rulesInfo'), '', true, "small", { minRows: 15, maxRows: 25 }, "addRule")
     },
 
@@ -217,7 +217,7 @@ export default {
         try {
           const url = `${this.$common.apis.rules}/${this.ruleDataSource}`
           const editResponse = await this.$http.post(url, postData, {
-            header:{ContentType:"application/json"}
+            header: { ContentType: "application/json" }
           })
           window.setTimeout(this.init, 500)
           this.$message({

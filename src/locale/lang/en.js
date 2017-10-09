@@ -214,7 +214,8 @@ export default {
           update: "update"
         },
         systemConfig: {
-          systemConfigTitle: "System Config"
+          systemConfigTitle: "System Config",
+          updateConfig: "Do you really want to update config?"
         }
     }
 
