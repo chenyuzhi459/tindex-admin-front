@@ -19,16 +19,31 @@
         </el-form>
 
         <div class="table" style=" margin-left:20px;">
-            <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
+            <el-table :data="showTableData" border stripe style="width: 100%"
+             @sort-change="sortChange" @expand="expand">
+                <el-table-column type="expand">
+                    <template scope="props">
+                        <el-form label-position="left" inline class="demo-table-expand">
+                            <el-form-item :label="$t('message.tasks.status')">
+                                <span>{{ props.row.status }}</span>
+                            </el-form-item>
+                            <el-form-item :label="$t('message.tasks.offsets')">
+                                <span>{{ props.row.offset }}</span>
+                            </el-form-item>
+                            <el-form-item :label="$t('message.tasks.location')">
+                                <span>{{ props.row.location }}</span>
+                            </el-form-item>
+                            <el-form-item :label="$t('message.tasks.queueInsertTime')">
+                                <span>{{ props.row.queueInsertionTime }}</span>
+                            </el-form-item>
+                        </el-form>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="id" label="id" min-width="150"></el-table-column>
                 <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207"></el-table-column>
-                <el-table-column prop="queueInsertionTime" :label="$t('message.tasks.queueInsertTime')" width="207"></el-table-column>
-                <el-table-column prop="location" :label="$t('message.tasks.location')" width="175"></el-table-column>
-                <el-table-column :label="$t('message.tasks.operation')" width="380">
+                <el-table-column :label="$t('message.tasks.operation')" width="270">
                     <template scope="scope">
-                        <el-button size="mini" @click="getOffset(scope.row)">{{$t('message.tasks.offsets')}}</el-button>
                         <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
-                        <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
                         <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
                         <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
                         <el-button size="mini" style="width:35px" type="danger" @click="killTask(scope.row.id)">{{$t('message.tasks.delete')}}</el-button>
@@ -67,6 +82,8 @@ export default {
         return {
             runningTasks: [],
             showTableData: [],
+            taskStatus: '',
+            taskOffset: '',
             dialogMessage: '',
             dialogTitle: '',
             dialogSize: 'full',
@@ -96,13 +113,14 @@ export default {
             let { data } = await this.$http.get(this.$common.apis.runningTasks)
 
             data.map(s => {
+                s.offset = ''
+                s.status = ''
                 if (undefined !== s.location) {
                     s.location = s.location.host + ":" + s.location.port
                     return s
                 }
             })
-            // console.log("hloo");
-            // console.log("task data:", data);
+
             this.runningTasks = []
             this.$common.methods.pushData(data, this.runningTasks)
             this.totalNum = this.runningTasks.length
@@ -110,15 +128,27 @@ export default {
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
+        async expand(row, expanded) {
+            if (expanded) {
+                try {
+                    row.status = (await this.getTaskStatus(row.id)).status.status
+                } catch (e) {
+                    console.log('err')
+                }
+                row.offset = await this.getOffset(row).catch(err => {
+                    console.log('err')
+                })
+
+            }
+        },
         async getOffset(row) {
             const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/offsets/current`
             const { data } = await this.$http.get(url, {
                 params: {
-                    location:row.location
+                    location: row.location
                 }
             })
-            const message = this.$common.methods.JSONUtils.toString(data, null, 2)
-            this.configDialog(this.$t('message.tasks.taskOffsetTitle'), message, true, "small", {})
+            return data
         },
         async getTaskInfo(taskId) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}`
@@ -129,8 +159,7 @@ export default {
         async getTaskStatus(taskId) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}/status`
             const { data } = await this.$http.get(url)
-            const message = this.$common.methods.JSONUtils.toString(data, null, 2)
-            this.configDialog(this.$t('message.tasks.taskStatusTitle'), message, true, "small", {})
+            return data
 
         },
         getTasklog(taskId, offset) {
@@ -233,3 +262,17 @@ export default {
     }
 }
 </script>
+<style>
+.demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 107px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 30%;
+  }
+</style>
