@@ -18,17 +18,20 @@
 
         <div class="table" style=" margin-left:20px;">
             <el-table :data="completeSupervisors" border stripe style="width: 100%" @sort-change="sortChange">
-                <el-table-column prop="id" label="id" min-width="300"></el-table-column>
+                <el-table-column label="id" min-width="350">
+                       <template scope="scope">
+                          <el-button type="text" style=" font-size: 14px;color: #1f2d3d;"  @click="getTasks(scope.row.id)">{{scope.row.id}}</el-button>
+                    </template>
+                </el-table-column>
                 <el-table-column sortable="custom" prop="version" :label="$t('message.supervisors.version')" width="207">
                 </el-table-column>
                 <el-table-column prop="type" :label="$t('message.supervisors.type')" width="200"></el-table-column>
 
                 <el-table-column prop="taskDuration" :label="$t('message.supervisors.taskDuration')" width="150"></el-table-column>
-                <el-table-column prop="topic" :label="$t('message.supervisors.topic')" width="250"></el-table-column>
+                <el-table-column prop="topic" :label="$t('message.supervisors.topic')" width="200"></el-table-column>
 
-                <el-table-column :label="$t('message.tasks.operation')" width="200">
+                <el-table-column :label="$t('message.tasks.operation')" width="140">
                     <template scope="scope">
-                        <el-button size="mini" @click="getTasks(scope.row.id)">{{$t('message.supervisors.tasks')}}</el-button>
                         <el-button size="mini" @click="getStatus(scope.row.id)">{{$t('message.supervisors.status')}}</el-button>
                         <el-button size="mini" @click="getSpec(scope.row.id,scope.row.version)">{{$t('message.supervisors.reuse')}}</el-button>
                     </template>
@@ -45,9 +48,9 @@
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
                 <div style=" line-height: 1;
-                                                font-size: 16px;
-                                                font-weight: 700;
-                                                color: #1f2d3d;">
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #1f2d3d;">
                     {{dialogTitle}}
                 </div>
             </template>
@@ -157,7 +160,6 @@ export default {
 
             this.supervisorSpecJson = this.$common.methods.JSONUtils.toString(tmpSpec, null, 2)
             this.createDialogVisible = true
-            //this.configDialog(this.$t('message.supervisors.supervisorSpec'), message, true, "small", { minRows: 15, maxRows: 25 })
         },
         format() {
             let jsonObject
@@ -182,7 +184,7 @@ export default {
                 })
                 this.createDialogVisible = false
                 const successMessage = `${this.$t('message.supervisors.creatSuccess')}:${response.data.id}`
-                this.$common.eventBus.$emit('updateRunningSupervisors')
+                this.$common.eventBus.$emit('updateAllSupervisors')
                 this.$message({
                     showClose: true,
                     message: successMessage,
@@ -210,7 +212,6 @@ export default {
                 params: {
                     offset: (this.currentPage - 1) * this.pageSize,
                     size: this.pageSize
-
                 }
             })
             let _data = data.map(s => {
@@ -227,7 +228,7 @@ export default {
             this.completeSupervisors = []
             this.$common.methods.pushData(_data, this.completeSupervisors)
         },
-        async getShowTasks(currentPage, pageSize, sortDimension, isDescending) {
+        async getShowSupervisors(currentPage, pageSize, sortDimension, isDescending) {
             let paramsData = {
                 offset: (currentPage - 1) * pageSize,
                 size: pageSize
@@ -275,7 +276,7 @@ export default {
 
             this.isSearching = true
             this.currentPage = 1
-            this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
+            this.getShowSupervisors(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
 
         },
         sortChange(column, prop, order) {
@@ -284,15 +285,15 @@ export default {
             }
             this.sortDimension = column.prop
             this.isDescending = column.order === "ascending" ? false : true
-            this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
+            this.getShowSupervisors(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
         },
         handleCurrentChange(newValue) {
             this.currentPage = newValue
-            this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
+            this.getShowSupervisors(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
         },
         handleSizeChange(newValue) {
             this.pageSize = newValue
-            this.getShowTasks(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
+            this.getShowSupervisors(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
         }
     },
     mounted() {

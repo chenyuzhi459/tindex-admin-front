@@ -8,6 +8,17 @@ export default {
             ruleMessage2: 'please input password',
             errorTips: 'username or password is wrong'
         },
+        status: {
+            version: 'Version:',
+            module: 'System Modules',
+            name: 'name',
+            artifact: 'artifact',
+            _version: 'version',
+            usedMemory: 'usedMemory',
+            freeMemory: 'freeMemory',
+            totalMemory: 'totalMemory',
+            maxMemory: 'maxMemory'
+        },
         header: {
             title: 'Tindex Backstage Manager System',
             logout: 'Logout',
@@ -30,12 +41,12 @@ export default {
                 title: 'DataSource Manage',
                 dataSource: 'DataSources(cluster)',
                 metadata: 'DataSources(Metadata)'
-                
+
             },
             lookup: {
-              title: 'Lookup Manage',
-              lookupCoordinator: 'Lookup Coordinator',
-              lookupHistorical: 'Lookup Historical'
+                title: 'Lookup Manage',
+                lookupCoordinator: 'Lookup Coordinator',
+                lookupHistorical: 'Lookup Historical'
             }
         },
         tasks: {
@@ -166,41 +177,42 @@ export default {
             cancleButtonTextL: "Cancle"
         },
         lookup: {
-          lookupCoordinator: {
-            lookupTitle: "Lookup"
-          },
-          lookupHistorical: {
+            lookupCoordinator: {
+                lookupTitle: "Lookup"
+            },
+            lookupHistorical: {
 
-          },
-          lookups: "Lookup Tier",
-          userGroupLookup: "Lookup",
-          type: "type",
-          version: "version",
-          lookupInfo: "Lookup Info",
-          addLookup: "Create Lookup",
-          lookupName: "Lookup Name",
-          lookupNameIndex: "Please input the lookup name",
-          addLookupWarning: "Do you really want to add lookup:"
+            },
+            lookups: "Lookup Tier",
+            userGroupLookup: "Lookup",
+            type: "type",
+            version: "version",
+            lookupInfo: "Lookup Info",
+            addLookup: "Create Lookup",
+            lookupName: "Lookup Name",
+            lookupNameIndex: "Please input the lookup name",
+            addLookupWarning: "Do you really want to add lookup:"
         },
         common: {
-          more: "more",
-          info: "info",
-          delete: "delete",
-          size: "size",
-          confirm: "Cofirm",
-          cancle: "Cancle",
-          refresh: "Refresh",
-          name: "name",
-          count: "count",
-          search: 'Search',
-          warning: 'Warning',
-          deleteWarning: 'Do you really want to delete:',
-          deleteSuccess: 'Delete Success!',
-          deleteFail: 'Delete Fail!',
-          addSuccess: "Add Success!",
-          addFail: "Add Fail!",
-          items: 'items',
-          disable: 'disable'
+            more: "more",
+            info: "info",
+            delete: "delete",
+            size: "size",
+            confirm: "Cofirm",
+            cancle: "Cancle",
+            refresh: "Refresh",
+            name: "name",
+            count: "count",
+            search: 'Search',
+            warning: 'Warning',
+            deleteWarning: 'Do you really want to delete:',
+            deleteSuccess: 'Delete Success!',
+            deleteFail: 'Delete Fail!',
+            addSuccess: "Add Success!",
+            addFail: "Add Fail!",
+            items: 'items',
+            disable: 'disable',
+            return: 'Back'
         }
 
     }

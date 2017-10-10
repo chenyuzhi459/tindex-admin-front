@@ -8,6 +8,17 @@ export default {
       ruleMessage2: '请输入密码',
       errorTips: '用户名或密码错误'
     },
+    status: {
+      version: '版本:',
+      module: '系统模块',
+      name: '名称',
+      artifact: '模块',
+      _version: '版本',
+      usedMemory: '已用内存',
+      freeMemory: '可用内存',
+      totalMemory: '总内存',
+      maxMemory: '最大内存'
+    },
     header: {
       title: 'Tindex后台管理系统',
       logout: '退出',
@@ -58,7 +69,10 @@ export default {
       offsets: 'offsets'
     },
     supervisors: {
+      supervisorManager: 'Supervisor管理',
+      supervisorTasks: 'Supervisor任务',
       runningSuperviorTitle: '运行supervisors',
+      completeSupervisorsTitle: '已完成Supervisors',
       searchTips: '请输入id',
       search: '搜索',
       refresh: '刷新',
@@ -79,6 +93,21 @@ export default {
       killTips: '你确定要删除',
       killSuccess: '删除成功!',
       killFailed: '删除失败,请查看overlord日志',
+
+      version: '版本',
+      taskDuration: '任务持续时间',
+      type: '类型',
+      topic: 'topic',
+      reuse: '重用',
+      supervisorStatusTitle: 'Supervisor 状态',
+      supervisorSpec: 'Supervisor 说明',
+      createSupervisor: '创建Supervisor',
+      format: '格式化',
+      createDialogConfirm: '创建',
+      jsonSyntaxError: 'json格式错误',
+      creatSuccess: '创建成功, id',
+      createFailedFront: '创建失败,状态码',
+      createFailedLast: '请查看overlord日志'
     },
     sideBar: {
       dataAccess: {
@@ -188,7 +217,8 @@ export default {
       addSuccess: "添加成功！",
       addFail: "添加失败！",
       items: "条目明细",
-      disable: "失效"
+      disable: "失效",
+      return: '返回'
     }
   }
 }

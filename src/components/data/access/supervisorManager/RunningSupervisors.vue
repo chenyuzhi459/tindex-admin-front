@@ -20,10 +20,13 @@
 
         <div class="table" style=" margin-left:20px;">
             <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
-                <el-table-column prop="id" label="id"></el-table-column>
-                <el-table-column :label="$t('message.supervisors.operation')" width="300">
+                <el-table-column  label="id" >
+                     <template scope="scope">
+                          <el-button type="text" style=" font-size: 14px;color: #1f2d3d;"  @click="getTasks(scope.row.id)">{{scope.row.id}}</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="$t('message.supervisors.operation')" width="230">
                     <template scope="scope">
-                         <el-button size="mini" @click="getTasks(scope.row.id)">{{$t('message.supervisors.tasks')}}</el-button>
                         <el-button size="mini" @click="getSpec(scope.row.id)">{{$t('message.supervisors.spec')}}</el-button>
                         <el-button size="mini" @click="getStatus(scope.row.id)">{{$t('message.supervisors.status')}}</el-button>
                         <el-button size="mini" @click="doReset(scope.row.id,0)">{{$t('message.supervisors.reset')}}</el-button>
