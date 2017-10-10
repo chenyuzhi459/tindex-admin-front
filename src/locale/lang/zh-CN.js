@@ -226,16 +226,13 @@ export default {
       addFail: "添加失败！",
       items: "条目明细",
       disable: "失效",
-<<<<<<< HEAD
-      return: '返回'
-=======
+      return: '返回',
       inputName: "请输入名称",
       update: "更新"
     },
     systemConfig: {
       systemConfigTitle: "系统配置",
       updateConfig: "你确认要更新配置吗？"
->>>>>>> e4b9819d58dfbf7c14e91fcdb58b1984afb2225d
     }
   }
 }

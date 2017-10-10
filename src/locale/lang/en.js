@@ -44,18 +44,12 @@ export default {
 
             },
             lookup: {
-<<<<<<< HEAD
-                title: 'Lookup Manage',
-                lookupCoordinator: 'Lookup Coordinator',
-                lookupHistorical: 'Lookup Historical'
-=======
               title: 'Lookup Manage',
               lookupCoordinator: 'Lookup Coordinator',
               lookupHistorical: 'Lookup Historical'
             },
             systemConfig: {
               title: 'System Config'
->>>>>>> e4b9819d58dfbf7c14e91fcdb58b1984afb2225d
             }
         },
         tasks: {
@@ -192,41 +186,7 @@ export default {
                 lookupTitle: "Lookup"
             },
             lookupHistorical: {
-
-<<<<<<< HEAD
             },
-            lookups: "Lookup Tier",
-            userGroupLookup: "Lookup",
-            type: "type",
-            version: "version",
-            lookupInfo: "Lookup Info",
-            addLookup: "Create Lookup",
-            lookupName: "Lookup Name",
-            lookupNameIndex: "Please input the lookup name",
-            addLookupWarning: "Do you really want to add lookup:"
-        },
-        common: {
-            more: "more",
-            info: "info",
-            delete: "delete",
-            size: "size",
-            confirm: "Cofirm",
-            cancle: "Cancle",
-            refresh: "Refresh",
-            name: "name",
-            count: "count",
-            search: 'Search',
-            warning: 'Warning',
-            deleteWarning: 'Do you really want to delete:',
-            deleteSuccess: 'Delete Success!',
-            deleteFail: 'Delete Fail!',
-            addSuccess: "Add Success!",
-            addFail: "Add Fail!",
-            items: 'items',
-            disable: 'disable',
-            return: 'Back'
-=======
-          },
           lookups: "Lookup Tier",
           userGroupLookup: "Lookup",
           type: "type",
@@ -261,12 +221,12 @@ export default {
           items: 'items',
           disable: 'disable',
           inputName: "Please input name",
-          update: "update"
+          update: "update",
+          return: 'Back'
         },
         systemConfig: {
           systemConfigTitle: "System Config",
           updateConfig: "Do you really want to update config?"
->>>>>>> e4b9819d58dfbf7c14e91fcdb58b1984afb2225d
         }
     }
 
