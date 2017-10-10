@@ -2,9 +2,11 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b @click="getDataSources(true,'name')">{{$t('message.dataSource.dataSourceTitle')}}</b>
+        <el-tabs v-model="activeName" @tab-click="clickSelect">
+          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect" disabled></el-tab-pane>
+        </el-tabs>
       </span>
-      <br></br>
     </div>
 
     <div style=" margin-left:20px;">
@@ -84,7 +86,8 @@ export default {
       isDescending: "descending",
       isSearching: false,
       confirmType: '',
-      ruleDataSource: ''
+      ruleDataSource: '',
+      activeName: "dataSourceSelect"
     }
   },
   created: function() {
@@ -97,6 +100,11 @@ export default {
         this.getDataSourceByName(this.dataSourceName)
       } else {
         this.getDataSources("true", "name")
+      }
+    },
+    clickSelect(tab) {
+      if (tab.name === "dataSourceSelect") {
+        this.getDataSources()
       }
     },
     async getDataSources(isDescending, sortName) {

@@ -22,10 +22,11 @@
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
-        <el-table-column prop="name" :label="$t('message.segment.name')"></el-table-column>
+        <el-table-column prop="name" :label="$t('message.segment.name')" width="700"></el-table-column>
+        <el-table-column prop="segmentSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.segment.more')" width="200">
           <template scope="scope">
-            <el-button size="mini" @click="getSegmentInfo(scope.row.name)">{{$t('message.segment.info')}}</el-button>
+            <el-button size="mini" @click="getSegmentInfoOnPage(scope.row.name)">{{$t('message.segment.info')}}</el-button>
             <el-button size="mini" @click="deleteSegment(scope.row.name)" type="danger">{{$t('message.common.disable')}}</el-button>
           </template>
         </el-table-column>
@@ -89,40 +90,38 @@ export default {
         this.getSegmentsFromInterval()
       }
     },
-    async getSegments() {
-      const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments`
+    async handleSegmentData(url) {
       const response = await this.$http.get(url)
       var convertData = new Array()
       for (var i = 0, len = response.data.length; i < len; i++) {
-        var map = new Map()
+        let map = new Map()
         map['name'] = response.data[i]
+        let segmentInfo  = await this.getSegmentInfo(map['name'])
+        map['segmentSize'] = segmentInfo['metadata']['size']
         convertData[i] = map
       }
       this.segments = []
       this.$common.methods.pushData(convertData, this.segments)
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
+    },
+    async getSegments() {
+      const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments`
+      this.handleSegmentData(url)
     },
     async getSegmentsFromInterval() {
       const intervalNameDeal = this.$route.query.intervalName.replace("/", "_")
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/intervals/${intervalNameDeal}`
-      const response = await this.$http.get(url)
-      var convertData = new Array()
-      for (var i = 0, len = response.data.length; i < len; i++) {
-        var map = new Map()
-        map['name'] = response.data[i]
-        convertData[i] = map
-      }
-      this.segments = []
-      this.$common.methods.pushData(convertData, this.segments)
-      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
-    },
+      this.handleSegmentData(url)
+    },  
     async getSegmentInfo(segmentName) {
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}?full`
       const response = await this.$http.get(url)
-      this.segmentInfo = response.data
+      return response.data
+    },
+    async getSegmentInfoOnPage(segmentName) {
+      this.segmentInfo = await this.getSegmentInfo(segmentName)
       var message = this.$common.methods.JSONUtils.toString(this.segmentInfo)
       this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "full", { minRows: 15, maxRows: 40 })
-
     },
     getDataSource() {
       this.$router.push(
