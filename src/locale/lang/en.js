@@ -187,12 +187,7 @@ export default {
                 lookupTitle: "Lookup"
             },
             lookupHistorical: {
-<<<<<<< HEAD
             },
-=======
-
-          },
->>>>>>> 1a0d04b9ea02bd5e49298c90b38945bd22fc5e31
           lookups: "Lookup Tier",
           userGroupLookup: "Lookup",
           type: "type",

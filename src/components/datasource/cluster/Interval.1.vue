@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <!-- <div style=" margin-left:20px;">
+    <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <el-tabs v-model="activeName" @tab-click="clickSelect">
           <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
@@ -8,7 +8,8 @@
           <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect" disabled></el-tab-pane>
         </el-tabs>
       </span>
-    </div> -->
+    </div>
+
     <div style=" margin-left:20px;">
       Path: &nbsp&nbsp
       <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
@@ -46,23 +47,23 @@ export default {
       showTableData: [],
       pageSize: 15,
       currentPage: 1,
+      dataSource: '',
       segment: '',
-      preLocation: '',
-      intervalName: '',
-      dataSourceName: ''
+      activeName: 'intervalSelect'
     }
   },
   created: function() {
-    
     this.init()
   },
   methods: {
     init() {
+      this.dataSourceName = this.$route.query.dataSourceName
+      this.segmentName = this.$route.query.segmentName
       this.getIntervals()
     },
     getIntervals() {
       let url
-      if (this.preLocation === 'segment') {
+      if (this.$route.query.preLocation === 'segment') {
         // const interval = new Map()
         // interval['name'] = this.$route.query.intervalName
         // const intervalArr = []
@@ -75,12 +76,11 @@ export default {
       }
     },
     async getInterval() {
-      const intervalNameHandle = this.intervalName.replace("/","_")
+      const intervalNameHandle = this.$route.query.intervalName.replace("/","_")
       const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${intervalNameHandle}`
-      console.log(url,"get interval url")
+      console.log(url,"url")
       const response = await this.$http.get(url)
       const data = this.getDataFromResponse(response)
-      console.log(data)
       this.intervals = []
       this.$common.methods.pushData(data, this.intervals)
       this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
@@ -104,12 +104,15 @@ export default {
       return convertData
     },
     getSegments(intervalName) {
-      const preLocation = 'interval'
-      this.$common.eventBus.$emit('activeNameSegment',preLocation,this.dataSourceName,intervalName)
+      this.$router.push(
+        { path: '/segment', query: { preLocation: "interval", intervalName: intervalName, dataSourceName: this.dataSourceName } }
+      )
+
     },
     getDataSource() {
-      const preLocation = 'interval'
-      this.$common.eventBus.$emit('activeNameDataSource',preLocation,this.dataSourceName)
+      this.$router.push(
+        { path: '/dataSource', query: { preLocation: "interval", dataSourceName: this.dataSourceName } }
+      )
     },
     getDataSources() {
       this.$router.push(
@@ -131,15 +134,6 @@ export default {
       this.pageSize = newValue
       this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
     }
-  },
-  mounted() {
-    let self = this
-    this.$common.eventBus.$on("activeNameInterval", (preLocation,dataSourceName,intervalName) => {
-      this.preLocation = preLocation
-      this.dataSourceName = dataSourceName
-      this.intervalName = intervalName
-      self.init()
-    })
   }
 }
 </script>

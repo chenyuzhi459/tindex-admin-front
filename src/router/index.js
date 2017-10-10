@@ -77,7 +77,7 @@ export default new Router({
 
                 {
                     path: '/dataSource',
-                    component: resolve => require(['../components/datasource/cluster/DataSource.vue'], resolve)    // 拖拽列表组件
+                    component: resolve => require(['../components/datasource/cluster/DataSourceManager.vue'], resolve)    // 拖拽列表组件
                 },
                 {
                     path: '/interval',

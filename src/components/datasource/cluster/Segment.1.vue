@@ -1,18 +1,18 @@
 <template>
   <div class="main">
-    <!-- <div style=" margin-left:20px;">
-            <span style="color: #242f42;font-size:20px;">
-              <el-tabs v-model="activeName" @tab-click="clickSelect">
-                <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
-                <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect"></el-tab-pane>
-                <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect"></el-tab-pane>
-              </el-tabs>
-            </span>
-          </div> -->
+    <div style=" margin-left:20px;">
+      <span style="color: #242f42;font-size:20px;">
+        <!-- <b>{{$t('message.segment.segmentTitle')}}</b> -->
+        <el-tabs v-model="activeName" @tab-click="clickSelect">
+          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect"></el-tab-pane>
+        </el-tabs>
+      </span>
+    </div>
 
     <div style=" margin-left:20px;">
-      Path: &nbsp&nbsp
-      <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
+      Path: &nbsp&nbsp<el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
       <el-button type="text" @click="getInterval">{{this.intervalName}}</el-button>
       <br></br>
       <el-button type="primary" size="small" @click="init">{{$t('message.segment.refresh')}}</el-button>
@@ -22,7 +22,7 @@
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
-        <el-table-column prop="name" :label="$t('message.segment.name')" width="900"></el-table-column>
+        <el-table-column prop="name" :label="$t('message.segment.name')" width="700"></el-table-column>
         <el-table-column prop="segmentSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.segment.more')" width="200">
           <template scope="scope">
@@ -39,9 +39,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                                 font-size: 16px;
-                                                 font-weight: 700;
-                                                 color: #1f2d3d;">
+                                           font-size: 16px;
+                                           font-weight: 700;
+                                           color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -72,17 +72,21 @@ export default {
       currentPage: 1,
       dataSourceName: '',
       intervalName: '',
-      preLocation: ''
+      activeName: 'segmentSelect'
     }
   },
   created: function() {
+    this.dataSourceName = this.$route.query.dataSourceName
+    this.intervalName = this.$route.query.intervalName
     this.init()
   },
   methods: {
     init() {
-      if (this.preLocation === "dataSource") {
+      const preLocation = this.$route.query.preLocation
+
+      if (preLocation === "dataSource") {
         this.getSegments()
-      } else if (this.preLocation === "interval") {
+      } else if (preLocation === "interval") {
         this.getSegmentsFromInterval()
       }
     },
@@ -92,7 +96,7 @@ export default {
       for (var i = 0, len = response.data.length; i < len; i++) {
         let map = new Map()
         map['name'] = response.data[i]
-        let segmentInfo = await this.getSegmentInfo(map['name'])
+        let segmentInfo  = await this.getSegmentInfo(map['name'])
         map['segmentSize'] = segmentInfo['metadata']['size']
         convertData[i] = map
       }
@@ -101,16 +105,16 @@ export default {
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     },
     async getSegments() {
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments`
+      const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments`
       this.handleSegmentData(url)
     },
     async getSegmentsFromInterval() {
-      const intervalNameDeal = this.intervalName.replace("/", "_")
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${intervalNameDeal}`
+      const intervalNameDeal = this.$route.query.intervalName.replace("/", "_")
+      const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/intervals/${intervalNameDeal}`
       this.handleSegmentData(url)
-    },
+    },  
     async getSegmentInfo(segmentName) {
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}?full`
+      const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}?full`
       const response = await this.$http.get(url)
       return response.data
     },
@@ -120,20 +124,14 @@ export default {
       this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "full", { minRows: 15, maxRows: 40 })
     },
     getDataSource() {
-
-      const preLocation = 'segment'
-      this.$common.eventBus.$emit('activeNameDataSource', preLocation, this.dataSourceName)
-      // this.$router.push(
-      //   { path: '/dataSource', query: { preLocation: "segment", dataSourceName: this.dataSourceName } }
-      // )
+      this.$router.push(
+        { path: '/dataSource', query: { preLocation: "segment", dataSourceName: this.dataSourceName } }
+      )
     },
     getInterval() {
-      const preLocation = 'segment'
-      this.$common.eventBus.$emit('activeNameInterval', preLocation, this.dataSourceName, this.intervalName)
-    
-      // this.$router.push(
-      //   { path: '/interval', query: { preLocation: "segment", intervalName: this.intervalName, dataSourceName: this.dataSourceName } }
-      // )
+      this.$router.push(
+        { path: '/interval', query: { preLocation: "segment", intervalName: this.intervalName, dataSourceName: this.dataSourceName } }
+      )
     },
     async deleteSegment(segmentName) {
       const remindMessage = `${this.$t('message.common.deleteWarning')}\n${segmentName}`
@@ -145,7 +143,7 @@ export default {
           type: 'warning'
         })
         try {
-          const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}`
+          const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}`
           const deleteResponse = await this.$http.delete(url)
           window.setTimeout(this.init, 500)
           this.$message({
@@ -173,6 +171,7 @@ export default {
       )
     },
     clickSelect(tab) {
+      console.log(tab.name);
       // if (tab.name === "dataSourceSelect") {
       //   this.getDataSources()
       // } else if (tab.name === "intervalSelect") {
@@ -194,15 +193,6 @@ export default {
       this.pageSize = newValue
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     }
-  },
-  mounted() {
-    let self = this
-    this.$common.eventBus.$on("activeNameSegment", (preLocation, dataSource, interval) => {
-      this.dataSourceName = dataSource
-      this.intervalName = interval
-      this.preLocation = preLocation
-      self.init()
-    })
   }
 }
 </script>
