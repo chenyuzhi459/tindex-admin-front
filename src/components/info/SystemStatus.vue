@@ -21,7 +21,7 @@
         </div>
         <br><br>
         <div style=" margin-left:20px;">
-            <span style="color: #242f42;font-size:20px;">内存</span>
+            <span style="color: #242f42;font-size:20px;">{{$t('message.status.memory')}}</span>
             <br></br>
         </div>
 

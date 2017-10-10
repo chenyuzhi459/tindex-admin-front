@@ -8,17 +8,6 @@ export default {
       ruleMessage2: '请输入密码',
       errorTips: '用户名或密码错误'
     },
-    status: {
-      version: '版本:',
-      module: '系统模块',
-      name: '名称',
-      artifact: '模块',
-      _version: '版本',
-      usedMemory: '已用内存',
-      freeMemory: '可用内存',
-      totalMemory: '总内存',
-      maxMemory: '最大内存'
-    },
     header: {
       title: 'Tindex后台管理系统',
       logout: '退出',
@@ -135,6 +124,25 @@ export default {
         title: '系统配置'
       }
     },
+    status: {
+      version: '版本:',
+      module: '系统模块',
+      name: '名称',
+      artifact: '模块',
+      _version: '版本',
+      memory: '内存',
+      usedMemory: '已用内存',
+      freeMemory: '可用内存',
+      totalMemory: '总内存',
+      maxMemory: '最大内存'
+    },
+    serversInfo: {
+      servers: '节点',
+      tier: 'tier',
+      priority: '优先级',
+      currSize: '当前大小',
+      maxSize: '最大大小'
+    },
     dataSource: {
       dataSourceTitle: "数据源",
       search: "搜索",
@@ -229,7 +237,10 @@ export default {
       disable: "失效",
       return: '返回',
       inputName: "请输入名称",
-      update: "更新"
+      update: "更新",
+      return: '返回',
+      type: '类型',
+      operation: '操作'
     },
     systemConfig: {
       systemConfigTitle: "系统配置",

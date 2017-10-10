@@ -8,17 +8,6 @@ export default {
             ruleMessage2: 'please input password',
             errorTips: 'username or password is wrong'
         },
-        status: {
-            version: 'Version:',
-            module: 'System Modules',
-            name: 'name',
-            artifact: 'artifact',
-            _version: 'version',
-            usedMemory: 'usedMemory',
-            freeMemory: 'freeMemory',
-            totalMemory: 'totalMemory',
-            maxMemory: 'maxMemory'
-        },
         header: {
             title: 'Tindex Backstage Manager System',
             logout: 'Logout',
@@ -44,13 +33,33 @@ export default {
 
             },
             lookup: {
-              title: 'Lookup Manage',
-              lookupCoordinator: 'Lookup Coordinator',
-              lookupHistorical: 'Lookup Historical'
+                title: 'Lookup Manage',
+                lookupCoordinator: 'Lookup Coordinator',
+                lookupHistorical: 'Lookup Historical'
             },
             systemConfig: {
-              title: 'System Config'
+                title: 'System Config'
             }
+        },
+        status: {
+            version: 'Version:',
+            module: 'System Modules',
+            name: 'name',
+            artifact: 'artifact',
+            _version: 'version',
+            memory: 'Memory',
+            usedMemory: 'usedMemory',
+            freeMemory: 'freeMemory',
+            totalMemory: 'totalMemory',
+            maxMemory: 'maxMemory'
+        },
+        serversInfo: {
+            servers: 'servers',
+            tier: 'tier',
+            priority: 'priority',
+            currSize: 'currSize',
+            maxSize: 'maxSize',
+            segments: 'segments'
         },
         tasks: {
             runningTasksTitle: 'Running Tasks',
@@ -69,7 +78,7 @@ export default {
             search: 'Search',
             refresh: 'Refresh',
             createdTime: 'createdTime',
-            queueInsertTime: 'queueInsertionTime',
+            queueInsertTime: 'queueInsertTime',
             location: 'location',
             operation: 'more',
             taskPayloadTitle: 'Task Payload',
@@ -159,7 +168,7 @@ export default {
             addRulesSuccess: 'Add Rules Success!',
             addRulesFail: 'Add Rules Fail!',
             addRuleWarning: 'Do you really add rule?',
-            
+
         },
         interval: {
             intervalTitle: "Intervals",
@@ -187,6 +196,7 @@ export default {
                 lookupTitle: "Lookup"
             },
             lookupHistorical: {
+<<<<<<< HEAD
             },
           lookups: "Lookup Tier",
           userGroupLookup: "Lookup",
@@ -224,10 +234,52 @@ export default {
           inputName: "Please input name",
           update: "update",
           return: 'Back'
+=======
+
+            },
+            lookups: "Lookup Tier",
+            userGroupLookup: "Lookup",
+            type: "type",
+            version: "version",
+            lookupInfo: "Lookup Info",
+            addLookup: "Create Lookup",
+            lookupName: "Lookup Name",
+            lookupNameIndex: "Please input the lookup name",
+            addLookupWarning: "Do you really want to add lookup:",
+            updateLookupWarning: "Do you really want to update lookup:",
+            inputLookupName: "Please input lookup name"
+        },
+        common: {
+            more: "more",
+            info: "info",
+            delete: "delete",
+            size: "size",
+            confirm: "Cofirm",
+            cancle: "Cancle",
+            refresh: "Refresh",
+            name: "name",
+            count: "count",
+            search: 'Search',
+            warning: 'Warning',
+            deleteWarning: 'Do you really want to delete:',
+            deleteSuccess: 'Delete Success!',
+            deleteFail: 'Delete Fail!',
+            addSuccess: "Add Success!",
+            updateSuccess: "Update Success!",
+            updateFail: "Update Fail!",
+            addFail: "Add Fail!",
+            items: 'items',
+            disable: 'disable',
+            inputName: "Please input name",
+            update: "update",
+            return: 'Back',
+            type: 'type',
+            operation: 'operation'
+>>>>>>> da69754b3e0a596809b9006124df61fb29fdeb31
         },
         systemConfig: {
-          systemConfigTitle: "System Config",
-          updateConfig: "Do you really want to update config?"
+            systemConfigTitle: "System Config",
+            updateConfig: "Do you really want to update config?"
         }
     }
 
