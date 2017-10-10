@@ -1,19 +1,9 @@
 <<template>
 <div>
-    <div >
-        <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ name: 'supervisorManager' }">
-                <span style="font-size:14px;">
-                    {{$t('message.supervisors.supervisorManager')}}
-                </span>
-            </el-breadcrumb-item>
-            <el-breadcrumb-item>
-                <span style="font-size:14px;">
-                    {{$t('message.supervisors.supervisorTasks')}}
-                </span>
-            </el-breadcrumb-item>
-        </el-breadcrumb>
-        <br>
+    <div style="text-align:right; margin-right:20px;">
+         <el-button size="small" icon="arrow-left"  type="primary" @click="getBack">
+             {{$t('message.common.return')}}
+        </el-button> 
     </div>
 
     <running-tasks :supervisor-id="$route.params.supervisorId"></running-tasks>
@@ -43,6 +33,13 @@ export default {
         'complete-tasks': CompleteTasks,
         'pending-tasks': PendingTasks,
         'waiting-tasks': WaitingTasks
+    },
+    methods: {
+        getBack() {
+            this.$router.push({
+                name: 'supervisorManager'
+            })
+        }
     }
 }
 </script>

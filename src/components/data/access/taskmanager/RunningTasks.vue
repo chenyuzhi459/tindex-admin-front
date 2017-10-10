@@ -24,8 +24,9 @@
                 <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207"></el-table-column>
                 <el-table-column prop="queueInsertionTime" :label="$t('message.tasks.queueInsertTime')" width="207"></el-table-column>
                 <el-table-column prop="location" :label="$t('message.tasks.location')" width="175"></el-table-column>
-                <el-table-column :label="$t('message.tasks.operation')" width="320">
+                <el-table-column :label="$t('message.tasks.operation')" width="380">
                     <template scope="scope">
+                        <el-button size="mini" @click="getOffset(scope.row)">{{$t('message.tasks.offsets')}}</el-button>
                         <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
                         <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
                         <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
@@ -93,18 +94,24 @@ export default {
         },
         async getRunningTasks() {
             let { data } = await this.$http.get(this.$common.apis.runningTasks)
+            
             data.map(s => {
                 if (undefined !== s.location) {
                     s.location = s.location.host + ":" + s.location.port
                     return s
                 }
             })
+            console.log("hloo");
+            console.log("task data:", data);
             this.runningTasks = []
             this.$common.methods.pushData(data, this.runningTasks)
             this.totalNum = this.runningTasks.length
             const resultData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
+        },
+        async getOffset(row){
+
         },
         async getTaskInfo(taskId) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}`

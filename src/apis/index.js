@@ -15,6 +15,7 @@ export default {
     pendingTasks: `${base}/druid/indexer/v1/pendingTasks`,
     waitingTasks: `${base}/druid/indexer/v1/waitingTasks`,
     searchCompleteTasks: `${base}/druid/indexer/v1/search/completeTasks`,
+    taskChatUrl: `${base}/druid/worker/v1/task`,
     baseTaskUrl: `${base}/druid/indexer/v1/task`,
     overlordUrl: `${base}/druid/indexer/v1`,
     supervisor:`${base}/druid/indexer/v1/supervisor`,

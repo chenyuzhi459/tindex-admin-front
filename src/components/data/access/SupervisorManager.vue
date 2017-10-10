@@ -1,10 +1,12 @@
 <template>
     <div>
+        <div style="text-align:right;  margin-left:20px;">
+            <el-button type="primary" size="small" @click="createDialogVisible = true">{{$t('message.supervisors.createSupervisor')}}</el-button>
+            <br>
+            <br>
+        </div>
         <running-supervisors></running-supervisors>
         <complete-supervisors></complete-supervisors>
-        <div style=" margin-left:20px;">
-            <el-button type="primary" size="small" @click="createDialogVisible = true">{{$t('message.supervisors.createSupervisor')}}</el-button>
-        </div>
 
         <el-dialog :visible.sync="createDialogVisible" size="small" :title="$t('message.supervisors.supervisorSpec')" :close-on-click-modal="false">
             <el-button type="primary" @click="format">{{$t('message.supervisors.format')}}</el-button>
