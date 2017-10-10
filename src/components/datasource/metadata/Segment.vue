@@ -2,9 +2,11 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b>{{$t('message.segment.segmentTitle')}}</b>
+        <el-tabs v-model="activeName" @tab-click="clickSelect">
+          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect"></el-tab-pane>
+        </el-tabs>
       </span>
-      <br></br>
     </div>
 
     <div style=" margin-left:20px;">
@@ -33,9 +35,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                   font-size: 16px;
-                                   font-weight: 700;
-                                   color: #1f2d3d;">
+                                       font-size: 16px;
+                                       font-weight: 700;
+                                       color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -65,6 +67,7 @@ export default {
       pageSize: 15,
       currentPage: 1,
       dataSourceName: '',
+      activeName: 'segmentSelect'
     }
   },
   created: function() {
@@ -106,9 +109,14 @@ export default {
         { path: '/mDataSource', query: { preLocation: "segment", dataSourceName: this.dataSourceName } }
       )
     },
+    clickSelect(tab) {
+      if (tab.name === "dataSourceSelect") {
+        this.getDataSources()
+      }
+    },
     getDataSources() {
       this.$router.push(
-        { path: '/dataSource' }
+        { path: '/mDataSource' }
       )
     },
 
