@@ -94,15 +94,15 @@ export default {
         },
         async getRunningTasks() {
             let { data } = await this.$http.get(this.$common.apis.runningTasks)
-            
+
             data.map(s => {
                 if (undefined !== s.location) {
                     s.location = s.location.host + ":" + s.location.port
                     return s
                 }
             })
-            console.log("hloo");
-            console.log("task data:", data);
+            // console.log("hloo");
+            // console.log("task data:", data);
             this.runningTasks = []
             this.$common.methods.pushData(data, this.runningTasks)
             this.totalNum = this.runningTasks.length
@@ -110,8 +110,15 @@ export default {
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
-        async getOffset(row){
-
+        async getOffset(row) {
+            const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/offsets/current`
+            const { data } = await this.$http.get(url, {
+                params: {
+                    location:row.location
+                }
+            })
+            const message = this.$common.methods.JSONUtils.toString(data, null, 2)
+            this.configDialog(this.$t('message.tasks.taskOffsetTitle'), message, true, "small", {})
         },
         async getTaskInfo(taskId) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}`
