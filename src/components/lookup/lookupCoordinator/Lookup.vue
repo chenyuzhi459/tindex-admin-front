@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <br/><br/><br/>
+    <br/>
 
     <div style=" margin-left:20px;">
       <span style="color: blue;font-size:20px;">
@@ -35,8 +35,8 @@
 
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item :label="$t('message.lookup.userGroupLookup')">
-          <el-input v-model="formInline.name" :placeholder="$t('message.lookup.userGroupLookup')" size="small"></el-input>
+        <el-form-item :label="$t('message.common.name')">
+          <el-input v-model="formInline.name" :placeholder="$t('message.lookup.inputLookupName')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
@@ -57,6 +57,7 @@
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <el-button size="mini" @click="getInfo(scope.row.lookup)">{{$t('message.common.info')}}</el-button>
+            <el-button size="mini" @click="updataLookup(scope.row.lookup)">{{$t('message.common.update')}}</el-button>
             <el-button size="mini" type="danger" @click="deleteLookup(scope.row.lookup)">{{$t('message.common.delete')}}</el-button>
           </template>
         </el-table-column>
@@ -71,9 +72,9 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize">
       <template slot="title">
         <div style=" line-height: 1;
-                                                                                font-size: 16px;
-                                                                                font-weight: 700;
-                                                                                color: #1f2d3d;">
+                                                                                    font-size: 16px;
+                                                                                    font-weight: 700;
+                                                                                    color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -112,7 +113,7 @@ export default {
       pageSizeLookup: 10,
       currentPageTier: 1,
       currentPageLookup: 1,
-      isAscending: "ascending",
+      isDescending: "Descending",
       isSearching: false,
       tiers: [],
       lookups: [],
@@ -154,16 +155,21 @@ export default {
       })
       for (let i = 0; i < response.data.length; i++) {
         let itemMap = new Map()
-        response.data[i] = await this.getLookupByName(response.data[i])
+        response.data[i] = await this.getLookupByNameAddName(response.data[i])
       }
       this.lookups = []
       this.$common.methods.pushData(response.data, this.lookups)
       this.showTableDataLookup = this.$common.methods.fillShowTableData(this.lookups, this.currentPageLookup, this.pageSizeLookup)
     },
-    async getLookupByName(lookupName) {
+    async getLookupByNameAddName(lookupName) {
       const url = `${this.$common.apis.lookups}/${this.tierName}/${lookupName}`
       const response = await this.$http.get(url)
       response.data["lookup"] = lookupName
+      return response.data
+    },
+    async getLookupByName(lookupName) {
+      const url = `${this.$common.apis.lookups}/${this.tierName}/${lookupName}`
+      const response = await this.$http.get(url)
       return response.data
     },
     async getInfo(lookupName) {
@@ -171,6 +177,12 @@ export default {
       const title = this.$t('message.lookup.lookupInfo')
       const infoJSON = this.$common.methods.JSONUtils.toString(info)
       this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "confirm", lookupName)
+    },
+    async updataLookup(lookupName) {
+      const info = await this.getLookupByName(lookupName)
+      const title = this.$t('message.lookup.lookupInfo')
+      const infoJSON = this.$common.methods.JSONUtils.toString(info)
+      this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "updateLookup", lookupName)
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize, confirmType, lookupNameInput) {
       this.dialogTitle = dialogTitle
@@ -197,8 +209,8 @@ export default {
       const title = this.$t('message.lookup.addLookup')
       this.configDialog(title, '', true, "small", { minRows: 15, maxRows: 25 }, "addLookup", '')
     },
-    async postAddLookup() {
-      const remindMessage = `${this.$t('message.lookup.addLookupWarning')}\n${this.lookupNameInput}`
+    async postLookup(warningMessage,successMessage,failMessage) {
+      const remindMessage = `${warningMessage}\n${this.lookupNameInput}`
       try {
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
           confirmButtonText: this.$t('message.common.confirm'),
@@ -212,12 +224,12 @@ export default {
           window.setTimeout(this.init, 500)
           this.$message({
             type: 'success',
-            message: this.$t('message.common.addSuccess')
+            message: successMessage
           })
         } catch (err) {
           this.$message({
             type: 'warning',
-            message: this.$t('message.common.addFail')
+            message: failMessage
           })
         }
       } catch (e) {
@@ -225,8 +237,10 @@ export default {
       }
     },
     clickConfirm() {
-      if (this.confirmType === "addLookup") {
-        this.postAddLookup()
+      if (this.confirmType === "addLookup"){
+        this.postLookup(this.$t('message.lookup.addLookupWarning'), this.$t('message.common.addSuccess'), this.$t('message.common.addFail'))
+      } else if(this.confirmType === "updateLookup"){
+        this.postLookup(this.$t('message.lookup.updateLookupWarning'), this.$t('message.common.updateSuccess'), this.$t('message.common.updateFail'))
       }
       this.dialogVisible = false
     },
@@ -241,7 +255,6 @@ export default {
         })
         try {
           const url = `${this.$common.apis.lookups}/${this.tierName}/${lookupName}`
-          console.log(url, "deleteUrl")
           const addResponse = await this.$http.delete(url)
           window.setTimeout(this.init, 500)
           this.$message({

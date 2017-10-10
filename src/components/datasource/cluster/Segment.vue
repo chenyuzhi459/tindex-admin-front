@@ -2,13 +2,17 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b>{{$t('message.segment.segmentTitle')}}</b>
+        <!-- <b>{{$t('message.segment.segmentTitle')}}</b> -->
+        <el-tabs v-model="activeName" @tab-click="clickSelect">
+          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect"></el-tab-pane>
+        </el-tabs>
       </span>
-      <br></br>
     </div>
 
     <div style=" margin-left:20px;">
-      <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
+      Path: &nbsp&nbsp<el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
       <el-button type="text" @click="getInterval">{{this.intervalName}}</el-button>
       <br></br>
       <el-button type="primary" size="small" @click="init">{{$t('message.segment.refresh')}}</el-button>
@@ -34,9 +38,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                     font-size: 16px;
-                                     font-weight: 700;
-                                     color: #1f2d3d;">
+                                           font-size: 16px;
+                                           font-weight: 700;
+                                           color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -66,7 +70,8 @@ export default {
       pageSize: 15,
       currentPage: 1,
       dataSourceName: '',
-      intervalName: ''
+      intervalName: '',
+      activeName: 'segmentSelect'
     }
   },
   created: function() {
@@ -86,7 +91,6 @@ export default {
     },
     async getSegments() {
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments`
-      console.log(url)
       const response = await this.$http.get(url)
       var convertData = new Array()
       for (var i = 0, len = response.data.length; i < len; i++) {
@@ -101,7 +105,6 @@ export default {
     async getSegmentsFromInterval() {
       const intervalNameDeal = this.$route.query.intervalName.replace("/", "_")
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/intervals/${intervalNameDeal}`
-      console.log(url)
       const response = await this.$http.get(url)
       var convertData = new Array()
       for (var i = 0, len = response.data.length; i < len; i++) {
@@ -115,22 +118,18 @@ export default {
     },
     async getSegmentInfo(segmentName) {
       const url = `${this.$common.apis.dataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}?full`
-      console.log(url)
       const response = await this.$http.get(url)
       this.segmentInfo = response.data
-      console.log(this.segmentInfo)
       var message = this.$common.methods.JSONUtils.toString(this.segmentInfo)
       this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "full", { minRows: 15, maxRows: 40 })
 
     },
     getDataSource() {
-      console.log(this.dataSourceName)
       this.$router.push(
         { path: '/dataSource', query: { preLocation: "segment", dataSourceName: this.dataSourceName } }
       )
     },
     getInterval() {
-      console.log(this.dataSourceName + "==== dataSourceName")
       this.$router.push(
         { path: '/interval', query: { preLocation: "segment", intervalName: this.intervalName, dataSourceName: this.dataSourceName } }
       )
@@ -160,6 +159,23 @@ export default {
         }
       } catch (e) {
 
+      }
+    },
+    getDataSources() {
+      this.$router.push(
+        { path: '/dataSource' }
+      )
+    },
+    getIntervals() {
+      this.$router.push(
+        { path: '/interval', query: { dataSourceName: this.dataSourceName } }
+      )
+    },
+    clickSelect(tab) {
+      if (tab.name === "dataSourceSelect") {
+        this.getDataSources()
+      } else if (tab.name === "intervalSelect") {
+        this.getIntervals()
       }
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {

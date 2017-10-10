@@ -2,14 +2,19 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <b @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</b>
+        <!-- <b @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</b> -->
+
+        <el-tabs v-model="activeName" @tab-click="clickSelect">
+          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
+          <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect" disabled></el-tab-pane>
+          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect" disabled></el-tab-pane>
+        </el-tabs>
       </span>
-      <br></br>
     </div>
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item :label="$t('message.common.name')">
-          <el-input v-model="formInline.name" :placeholder="$t('message.common.name')" size="small"></el-input>
+          <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
@@ -21,21 +26,20 @@
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column prop="name" :label="$t('message.common.name')" sortable="custom" width="310"></el-table-column>
-        <el-table-column prop="tiers" :label="$t('message.dataSource.tiers')" width="115"></el-table-column>
+        <el-table-column prop="tiers" :label="$t('message.dataSource.tiers')" width="130"></el-table-column>
         <el-table-column :label="$t('message.dataSource.segments')" align="center">
           <el-table-column prop="properties.segments.count" :label="$t('message.common.count')" width="80"></el-table-column>
           <el-table-column prop="properties.segments.size" :label="$t('message.common.size')" width="120"></el-table-column>
           <el-table-column prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
           <el-table-column prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
         </el-table-column>
-        <el-table-column :label="$t('message.common.more')" width="480">
+        <el-table-column :label="$t('message.common.more')" width="400">
           <template scope="scope">
-            <!-- <el-button size="mini" @click="getTiers(scope.row.name)">{{$t('message.dataSource.tiers')}}</el-button> -->
-            <el-button size="mini" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button>
-            <el-button size="mini" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
+            <el-button size="mini" type="info" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button>
+            <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
-            <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button>
+            <!-- <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button> -->
             <el-button size="mini" type="danger" @click="deleteDataSource(scope.row.name)">{{$t('message.common.disable')}}</el-button>
           </template>
         </el-table-column>
@@ -50,9 +54,9 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
       <template slot="title">
         <div style=" line-height: 1;
-                                      font-size: 16px;
-                                      font-weight: 700;
-                                      color: #1f2d3d;">
+                                        font-size: 16px;
+                                        font-weight: 700;
+                                        color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -85,6 +89,7 @@ export default {
       currentPage: 1,
       isAscending: "ascending",
       isSearching: false,
+      activeName: "dataSourceSelect"
     }
   },
   created: function() {
@@ -94,38 +99,37 @@ export default {
   methods: {
     init() {
       if (this.$route.query.preLocation === 'interval') {
-        this.getDataSourceByName(this.$route.query.dataSourceName)
+        this.getDataSourceByName(this.dataSourceName)
       } else if (this.$route.query.preLocation === 'segment') {
-        this.getDataSourceByName(this.$route.query.dataSourceName)
+        this.getDataSourceByName(this.dataSourceName)
       } else {
         this.getDataSources("true")
       }
     },
     async getDataSources(isAscending) {
       const url = `${this.$common.apis.dataSource}?full`
-      console.log(url)
       const response = await this.$http.get(url, {
         params: {
           isAscending: isAscending
         }
       })
+      const data = this.getDataFromResponse(response)
+      this.dataSources = []
+      this.$common.methods.pushData(data, this.dataSources)
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+
+    },
+    getDataFromResponse(response) {
       let dataSourceMap = new Map()
-      for(let i=0; i<response.data.length;i++) {
+      for (let i = 0; i < response.data.length; i++) {
         dataSourceMap = response.data[i]["properties"]["tiers"]
         let tierName
-        for(var key in dataSourceMap) {
+        for (var key in dataSourceMap) {
           tierName = key
         }
         response.data[i]["tiers"] = tierName
       }
-      this.dataSources = []
-      this.$common.methods.pushData(response.data, this.dataSources)
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
-
-    },
-    async getTiers(dataSourceName) {
-      const url = `${this.$common.apis.dataSource}/${dataSourceName}`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.tiersInfo'))
+      return response.data
     },
     getDimensions(dataSourceName) {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/dimensions`
@@ -135,19 +139,16 @@ export default {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/metrics`
       this.getInfoFromUrl(url, this.$t('message.dataSource.metricsInfo'))
     },
-    getCandidates(dataSourceName) {
-      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
-    },
+    // getCandidates(dataSourceName) {
+    //   const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
+    //   this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
+    // },
     async getInfoFromUrl(url, title) {
-      console.log(url)
       const response = await this.$http.get(url)
       const info = response.data
-      console.log(info)
       const message = this.$common.methods.JSONUtils.toString(info)
       this.configDialog(title, message, true, "small", { minRows: 15, maxRows: 25 })
     },
-
     async deleteDataSource(dataSourceName) {
       const remindMessage = `${this.$t('message.common.deleteWarning')}\n${dataSourceName}`
       try {
@@ -173,6 +174,11 @@ export default {
         }
       } catch (e) {
 
+      }
+    },
+    clickSelect(tab) {
+      if(tab.name === "dataSourceSelect") {
+        this.getDataSources()
       }
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
@@ -215,7 +221,6 @@ export default {
       this.dataSources = []
       this.$common.methods.pushData(response.data, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
-
     },
     async getDataSourceByName(dataSourceName) {
       const url = `${this.$common.apis.dataSource}?full`
@@ -225,8 +230,9 @@ export default {
           searchString: dataSourceName
         }
       })
+      const data = this.getDataFromResponse(response)
       this.dataSources = []
-      this.$common.methods.pushData(response.data, this.dataSources)
+      this.$common.methods.pushData(data, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
 
     }

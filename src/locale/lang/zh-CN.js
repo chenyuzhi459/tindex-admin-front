@@ -129,6 +129,9 @@ export default {
         title: '用户分群管理',
         lookupCoordinator: '用户分群（Coordinator）',
         lookupHistorical: '用户分群（Historical）'
+      },
+      systemConfig: {
+        title: '系统配置'
       }
     },
     dataSource: {
@@ -148,10 +151,10 @@ export default {
       tiersInfo: "等级信息",
       createTime: "创建时间",
       dimensions: '维度',
-      metrics: '度量',
+      metrics: '指标',
       candidates: 'candidates',
       dimensionsInfo: '维度信息',
-      metricsInfo: '度量信息',
+      metricsInfo: '指标信息',
       candidatesInfo: 'Candidates信息',
       rules: '规则',
       history: '历史',
@@ -160,14 +163,15 @@ export default {
       rulesHistory: '规则（历史信息）',
       addRulesSuccess: '添加规则成功！',
       addRulesFail: '添加规则失败！',
-      addRuleWarning: '你确定要添加规则？'
+      addRuleWarning: '你确定要添加规则？',
     },
     interval: {
       intervalTitle: "区间",
       refresh: "刷新",
       name: "名称",
       segments: "数据段",
-      more: "更多"
+      more: "更多",
+      segmentCount: "数据段数量"
     },
     segment: {
       segmentTitle: "数据段",
@@ -197,7 +201,9 @@ export default {
       addLookup: "创建分群",
       lookupName: "分群名称",
       lookupNameIndex: "请输入分群名称",
-      addLookupWarning: "你确定要添加分群："
+      addLookupWarning: "你确定要添加分群：",
+      updateLookupWarning: "你确定要更新分群：",
+      inputLookupName: "请输入分群名称"
     },
     common: {
       more: "更多",
@@ -215,10 +221,21 @@ export default {
       deleteSuccess: "删除成功!",
       deleteFail: "删除失败!",
       addSuccess: "添加成功！",
+      updateSuccess: "更新成功！",
+      updateFail: "更新失败！",
       addFail: "添加失败！",
       items: "条目明细",
       disable: "失效",
+<<<<<<< HEAD
       return: '返回'
+=======
+      inputName: "请输入名称",
+      update: "更新"
+    },
+    systemConfig: {
+      systemConfigTitle: "系统配置",
+      updateConfig: "你确认要更新配置吗？"
+>>>>>>> e4b9819d58dfbf7c14e91fcdb58b1984afb2225d
     }
   }
 }

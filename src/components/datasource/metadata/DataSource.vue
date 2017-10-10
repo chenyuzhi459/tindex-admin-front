@@ -10,7 +10,7 @@
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item :label="$t('message.common.name')">
-          <el-input v-model="formInline.name" :placeholder="$t('message.common.name')" size="small"></el-input>
+          <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
@@ -33,8 +33,8 @@
 
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
+            <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
-            <el-button size="mini" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
             <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button>
@@ -93,16 +93,14 @@ export default {
   },
   methods: {
     init() {
-
       if (this.$route.query.preLocation === 'segment') {
-        this.getDataSourceByName(this.$route.query.dataSourceName)
+        this.getDataSourceByName(this.dataSourceName)
       } else {
         this.getDataSources("true", "name")
       }
     },
     async getDataSources(isDescending, sortName) {
       const url = `${this.$common.apis.mDataSource}/sortAndSearch?full`
-      console.log(url)
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
@@ -140,10 +138,8 @@ export default {
       this.getInfoFromUrl(url, this.$t('message.dataSource.rulesHistory'))
     },
     async getInfoFromUrl(url, title) {
-      console.log(url)
       const response = await this.$http.get(url)
       this.dataSourceInfo = response.data
-      console.log(this.dataSourceInfo)
       const message = this.$common.methods.JSONUtils.toString(this.dataSourceInfo)
       let size = "small"
       if (title === this.$t('message.dataSource.dataSourceInfo')) {
@@ -155,7 +151,7 @@ export default {
 
 
     editRule(dataSourceName) {
-      this.ruleDataSource =  dataSourceName
+      this.ruleDataSource = dataSourceName
       this.configDialog(this.$t('message.dataSource.rulesInfo'), '', true, "small", { minRows: 15, maxRows: 25 }, "addRule")
     },
 
@@ -221,7 +217,7 @@ export default {
         try {
           const url = `${this.$common.apis.rules}/${this.ruleDataSource}`
           const editResponse = await this.$http.post(url, postData, {
-            header:{ContentType:"application/json"}
+            header: { ContentType: "application/json" }
           })
           window.setTimeout(this.init, 500)
           this.$message({
@@ -240,7 +236,6 @@ export default {
     },
     async getDataSourceByName(dataSourceName) {
       const url = `${this.$common.apis.mDataSource}/${dataSourceName}?full`
-      console.log("url:  " + url)
       const response = await this.$http.get(url)
       this.dataSources = []
       let message = new Array()

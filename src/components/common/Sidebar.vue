@@ -87,6 +87,10 @@ export default {
           ]
         },
         {
+          index: 'systemConfig',
+          title: this.$t('message.sideBar.systemConfig.title')
+        },
+        {
           icon: 'el-icon-menu',
           index: '2',
           title: '表格',

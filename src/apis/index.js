@@ -26,7 +26,8 @@ export default {
     rules: `${base}/druid/coordinator/v1/rules`,
     lookups: `${base}/druid/coordinator/v1/lookups`,
     historicalIps: `${base}/system/ip/historical`,
-    lookupsHis: `${base}/druid/listen/v1/lookups`
+    lookupsHis: `${base}/druid/listen/v1/lookups`,
+    systemConfig: `${base}/druid/systemConfig`
     // lookupCoordinator:
     // lookupHistorical:
 }
