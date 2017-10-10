@@ -66,7 +66,8 @@ export default {
       statusItem3: '失败',
       duration: '运行时长',
       topic: 'topic',
-      offsets: 'offsets'
+      offsets: 'offsets',
+      taskOffsetTitle: 'Offset'
     },
     supervisors: {
       supervisorManager: 'Supervisor管理',
@@ -226,7 +227,10 @@ export default {
       addFail: "添加失败！",
       items: "条目明细",
       disable: "失效",
+<<<<<<< HEAD
       return: '返回',
+=======
+>>>>>>> 1a0d04b9ea02bd5e49298c90b38945bd22fc5e31
       inputName: "请输入名称",
       update: "更新"
     },
