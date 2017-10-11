@@ -194,18 +194,7 @@ export default {
       }
       this.getDataSources(this.isDescending, name)
     },
-    async onSearch() {
-      const url = `${this.$common.apis.mDataSource}/sortAndSearch?full`
-      const response = await this.$http.get(url, {
-        params: {
-          isDescending: this.isDescending,
-          searchValue: this.formInline.name
-        }
-      })
-      this.dataSources = []
-      this.$common.methods.pushData(response.data, this.dataSources)
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
-    },
+
     clickConfirm() {
       if (this.confirmType === "addRule") {
         this.addRule()
@@ -250,7 +239,19 @@ export default {
       message[0] = response.data
       this.$common.methods.pushData(message, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
-    }
+    },
+    async onSearch() {
+      const url = `${this.$common.apis.mDataSource}/sortAndSearch?full`
+      const response = await this.$http.get(url, {
+        params: {
+          isDescending: this.isDescending,
+          searchValue: this.formInline.name
+        }
+      })
+      this.dataSources = []
+      this.$common.methods.pushData(response.data, this.dataSources)
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+    },
   }
 }
 </script>

@@ -1,14 +1,5 @@
 <template>
   <div class="main">
-    <!-- <div style=" margin-left:20px;">
-        <span style="color: #242f42;font-size:20px;">
-          <el-tabs v-model="activeName" @tab-click="clickSelect">
-            <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
-            <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect" disabled></el-tab-pane>
-            <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect" disabled></el-tab-pane>
-          </el-tabs>
-        </span>
-      </div> -->
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item :label="$t('message.common.name')">
@@ -52,9 +43,9 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
       <template slot="title">
         <div style=" line-height: 1;
-                                          font-size: 16px;
-                                          font-weight: 700;
-                                          color: #1f2d3d;">
+                                            font-size: 16px;
+                                            font-weight: 700;
+                                            color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -194,7 +185,7 @@ export default {
       this.$common.eventBus.$emit('activeNameInterval', preLocation, dataSourceName)
     },
     getSegments(dataSourceName) {
-      this.$common.eventBus.$emit('activeNameSegment','dataSource',dataSourceName)
+      this.$common.eventBus.$emit('activeNameSegment', 'dataSource', dataSourceName)
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
@@ -209,16 +200,7 @@ export default {
       this.getDataSources(this.isAscending)
     },
     async onSearch() {
-      const url = `${this.$common.apis.dataSource}?full`
-      const response = await this.$http.get(url, {
-        params: {
-          isAscending: this.isAscending,
-          searchString: this.formInline.name
-        }
-      })
-      this.dataSources = []
-      this.$common.methods.pushData(response.data, this.dataSources)
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+      this.getDataSourceByName(this.formInline.name)
     },
     async getDataSourceByName(dataSourceName) {
       const url = `${this.$common.apis.dataSource}?full`
@@ -232,13 +214,16 @@ export default {
       this.dataSources = []
       this.$common.methods.pushData(data, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
-
     }
   },
   mounted() {
     let self = this
-    this.$common.eventBus.$on("activeNameDataSource", (preLocation,dataSourceName) => {
+    this.$common.eventBus.$on("activeNameDataSource", (preLocation, dataSourceName) => {
       this.dataSourceName = dataSourceName
+      this.preLocation = preLocation
+      self.init()
+    })
+    this.$common.eventBus.$on("getAllDataSources", (preLocation) => {
       this.preLocation = preLocation
       self.init()
     })

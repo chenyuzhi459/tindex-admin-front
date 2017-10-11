@@ -6,10 +6,10 @@
           <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect">
             <my-datasource :active-name.sync="activeName"></my-datasource>
           </el-tab-pane>
-          <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect">
+          <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect" :disabled="intervalDisabled" >
             <my-interval :active-name="activeName"></my-interval>
           </el-tab-pane>
-          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect">
+          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect" :disabled="segmentDisabled">
             <my-segment :active-name.sync="activeName"></my-segment>
           </el-tab-pane>
         </el-tabs>
@@ -26,7 +26,9 @@ import Segment from './Segment'
 export default {
   data() {
     return {
-      activeName: "dataSourceSelect"
+      activeName: "dataSourceSelect",
+      intervalDisabled: true,
+      segmentDisabled: true
     }
   },
   components: {
@@ -37,9 +39,11 @@ export default {
   methods: {
     clickSelect(tab) {
 
-      // if (tab.name === "dataSourceSelect") {
-      //   this.getDataSources()
-      // }
+      if (tab.name === "dataSourceSelect") {
+        this.$common.eventBus.$emit('getAllDataSources','dataSource')
+      } else if (tab.name === "intervalSelect") {
+        this.$common.eventBus.$emit('getAllIntervals', 'dataSource')
+      }
     },
   },
   // watch: {
@@ -54,9 +58,11 @@ export default {
     })
     this.$common.eventBus.$on("activeNameInterval", () => {
       self.activeName = "intervalSelect"
+      this.intervalDisabled = false
     })
     this.$common.eventBus.$on("activeNameSegment", () => {
       self.activeName = "segmentSelect"
+      this.segmentDisabled = false
     })
   }
 }
