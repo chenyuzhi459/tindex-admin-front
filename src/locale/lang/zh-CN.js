@@ -141,7 +141,9 @@ export default {
       tier: 'tier',
       priority: '优先级',
       currSize: '当前大小',
-      maxSize: '最大大小'
+      maxSize: '最大大小',
+      segments: '数据段',
+      searchTips: '请输入名称'
     },
     dataSource: {
       dataSourceTitle: "数据源",
@@ -241,7 +243,8 @@ export default {
       update: "更新",
       return: '返回',
       type: '类型',
-      operation: '操作'
+      operation: '操作',
+      detail: '详情'
     },
     systemConfig: {
       systemConfigTitle: "系统配置",

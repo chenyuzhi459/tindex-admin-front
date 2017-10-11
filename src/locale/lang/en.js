@@ -59,7 +59,8 @@ export default {
             priority: 'priority',
             currSize: 'currSize',
             maxSize: 'maxSize',
-            segments: 'segments'
+            segments: 'segments',
+            searchTips: 'please input name'
         },
         tasks: {
             runningTasksTitle: 'Running Tasks',
@@ -235,7 +236,8 @@ export default {
             update: "update",
             return: 'Back',
             type: 'type',
-            operation: 'operation'
+            operation: 'operation',
+            detail: 'detail'
         },
         systemConfig: {
             systemConfigTitle: "System Config",

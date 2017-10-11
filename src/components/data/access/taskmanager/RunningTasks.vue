@@ -94,6 +94,8 @@ export default {
             totalNum: 0,
             sortDimension: 'createdTime',
             isDescending: true,
+            isSearching: false,
+            sourceData: [],
             formInline: {
                 searchValue1: ''
             }
@@ -106,6 +108,7 @@ export default {
         init() {
             this.sortDimension = 'createdTime'
             this.isDescending = true
+            this.isSearching = false
             this.currentPage = 1
             this.getRunningTasks()
         },
@@ -230,25 +233,21 @@ export default {
                 this.isDescending = true
                 direction = 'desc'
             }
-            const sortedData = this.$common.methods.sortArray(this.runningTasks, this.sortDimension, direction)
-            this.runningTasks = []
-            this.$common.methods.pushData(sortedData, this.runningTasks)
-            const resultData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
-            this.showTableData = []
-            this.$common.methods.pushData(resultData, this.showTableData)
+            this.runningTasks = this.$common.methods.sortArray(this.runningTasks, this.sortDimension, direction)
+            this.showTableData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
         },
         onSearch() {
             if (_.isEqual(this.formInline.searchValue1, '')) {
                 return
             }
+            if(!this.isSearching){
+                this.sourceData = this.runningTasks
+            }
+            this.isSearching = true
             this.currentPage = 1
-            const searchedData = this.$common.methods.searchArray(this.runningTasks, 'id', this.formInline.searchValue1)
-            this.runningTasks = []
-            this.$common.methods.pushData(searchedData, this.runningTasks)
+            this.runningTasks = this.$common.methods.searchArray(this.sourceData, 'id', this.formInline.searchValue1)
             this.totalNum = this.runningTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
-            this.showTableData = []
-            this.$common.methods.pushData(resultData, this.showTableData)
+            this.showTableData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
         }
     },
     mounted() {
