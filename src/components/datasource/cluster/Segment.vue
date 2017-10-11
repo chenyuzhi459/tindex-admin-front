@@ -16,8 +16,8 @@
         <el-table-column prop="segentSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.segment.more')" width="200">
           <template scope="scope">
-            <el-button size="mini" @click="getSegmentInfoOnPage(scope.row.name)">{{$t('message.segment.info')}}</el-button>
-            <el-button size="mini" @click="deleteSegment(scope.row.name)" type="danger">{{$t('message.common.disable')}}</el-button>
+            <el-button size="mini" @click="getSegmentInfoOnPage(scope.row.identifier)">{{$t('message.segment.info')}}</el-button>
+            <el-button size="mini" @click="deleteSegment(scope.row.identifier)" type="danger">{{$t('message.common.disable')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -122,6 +122,7 @@ export default {
     },
     async getSegmentInfo(segmentName) {
       const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}?full`
+      console.log("info url",url)
       const response = await this.$http.get(url)
       return response.data
     },

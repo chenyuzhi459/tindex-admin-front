@@ -1,17 +1,7 @@
 <template>
   <div class="main">
     <div style=" margin-left:20px;">
-      <span style="color: #242f42;font-size:20px;">
-        <el-tabs v-model="activeName" @tab-click="clickSelect">
-          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
-          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect"></el-tab-pane>
-        </el-tabs>
-      </span>
-    </div>
-
-    <div style=" margin-left:20px;">
       <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
-      <!-- <el-button type="primary" @click="getDataSources">{{$t('message.dataSource.dataSourceTitle')}}</el-button> -->
       <br></br>
       <el-button type="primary" size="small" @click="init">{{$t('message.segment.refresh')}}</el-button>
       <br></br>
@@ -20,10 +10,11 @@
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
-        <el-table-column prop="name" :label="$t('message.segment.name')"></el-table-column>
+        <el-table-column prop="identifier" :label="$t('message.segment.name')"  width="900"></el-table-column>
+        <el-table-column prop="size" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.segment.more')" width="200">
           <template scope="scope">
-            <el-button size="mini" @click="getSegmentInfo(scope.row.name)">{{$t('message.segment.info')}}</el-button>
+            <el-button size="mini" @click="getSegmentInfo(scope.row.identifier)">{{$t('message.segment.info')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -35,9 +26,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                font-size: 16px;
-                font-weight: 700;
-                color: #1f2d3d;">
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -67,37 +58,30 @@ export default {
       pageSize: 15,
       currentPage: 1,
       dataSourceName: '',
-      activeName: 'segmentSelect'
+      preLocation: ''
     }
   },
   created: function() {
-    this.dataSourceName = this.$route.query.dataSourceName
+    this.dataSourceName = this.dataSourceName
     this.init()
   },
   methods: {
     init() {
-      const preLocation = this.$route.query.preLocation
-
+      const preLocation = this.preLocation
       if (preLocation === "dataSource") {
         this.getSegments()
       }
     },
     async getSegments() {
-      const url = `${this.$common.apis.mDataSource}/${this.$route.query.dataSourceName}/segments`
+      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments?full`
       const response = await this.$http.get(url)
-      var convertData = new Array()
-      for (var i = 0, len = response.data.length; i < len; i++) {
-        var map = new Map()
-        map['name'] = response.data[i]
-        convertData[i] = map
-      }
       this.segments = []
-      this.$common.methods.pushData(convertData, this.segments)
+      this.$common.methods.pushData(response.data, this.segments)
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
 
     },
     async getSegmentInfo(segmentName) {
-      const url = `${this.$common.apis.mDataSource}/${this.$route.query.dataSourceName}/segments/${segmentName}?full`
+      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}?full`
       const response = await this.$http.get(url)
       this.segmentInfo = response.data
       var message = this.$common.methods.JSONUtils.toString(this.segmentInfo)
@@ -105,9 +89,8 @@ export default {
 
     },
     getDataSource() {
-      this.$router.push(
-        { path: '/mDataSource', query: { preLocation: "segment", dataSourceName: this.dataSourceName } }
-      )
+      const preLocation = 'segment'
+      this.$common.eventBus.$emit('activeNameDataSource', preLocation, this.dataSourceName)
     },
     clickSelect(tab) {
       if (tab.name === "dataSourceSelect") {
@@ -135,6 +118,14 @@ export default {
       this.pageSize = newValue
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
     }
+  },
+  mounted() {
+    let self = this
+    this.$common.eventBus.$on("activeNameSegment", (preLocation, dataSource) => {
+      this.dataSourceName = dataSource
+      this.preLocation = preLocation
+      self.init()
+    })
   }
 }
 </script>

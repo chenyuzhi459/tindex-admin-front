@@ -1,15 +1,6 @@
 <template>
   <div class="main">
     <div style=" margin-left:20px;">
-      <span style="color: #242f42;font-size:20px;">
-        <el-tabs v-model="activeName" @tab-click="clickSelect">
-          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
-          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect" disabled></el-tab-pane>
-        </el-tabs>
-      </span>
-    </div>
-
-    <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item :label="$t('message.common.name')">
           <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
@@ -87,16 +78,16 @@ export default {
       isSearching: false,
       confirmType: '',
       ruleDataSource: '',
-      activeName: "dataSourceSelect"
+      dataSourceName: '',
+      preLocation: ''
     }
   },
   created: function() {
-    this.dataSourceName = this.$route.query.dataSourceName
     this.init()
   },
   methods: {
     init() {
-      if (this.$route.query.preLocation === 'segment') {
+      if (this.preLocation === 'segment') {
         this.getDataSourceByName(this.dataSourceName)
       } else {
         this.getDataSources("true", "name")
@@ -172,9 +163,7 @@ export default {
       this.confirmType = confirmType
     },
     getSegments(dataSourceName) {
-      this.$router.push(
-        { path: '/mSegment', query: { preLocation: "dataSource", dataSourceName: dataSourceName } }
-      )
+      this.$common.eventBus.$emit('activeNameSegment', 'dataSource', dataSourceName)
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
@@ -252,6 +241,18 @@ export default {
       this.$common.methods.pushData(response.data, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
+  },
+  mounted() {
+    let self = this
+    this.$common.eventBus.$on("activeNameDataSource", (preLocation, dataSourceName) => {
+      this.dataSourceName = dataSourceName
+      this.preLocation = preLocation
+      self.init()
+    })
+    this.$common.eventBus.$on("getAllDataSources", (preLocation) => {
+      this.preLocation = preLocation
+      self.init()
+    })
   }
 }
 </script>
