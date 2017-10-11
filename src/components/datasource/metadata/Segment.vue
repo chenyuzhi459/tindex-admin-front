@@ -1,6 +1,7 @@
 <template>
   <div class="main">
     <div style=" margin-left:20px;">
+      Path: &nbsp&nbsp
       <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
       <br></br>
       <el-button type="primary" size="small" @click="init">{{$t('message.segment.refresh')}}</el-button>
