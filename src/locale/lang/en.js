@@ -22,9 +22,10 @@ export default {
                 task: 'Task Manager',
             },
             info: {
-                title: 'System Info',
+                title: 'System Manager',
                 status: 'System Status',
-                serversInfo: 'Servers Info'
+                serversInfo: 'Servers Info',
+                systemConfig: 'System Config'
             },
             dataSource: {
                 title: 'DataSource Manage',
@@ -37,9 +38,9 @@ export default {
                 lookupCoordinator: 'Lookup Coordinator',
                 lookupHistorical: 'Lookup Historical'
             },
-            systemConfig: {
-                title: 'System Config'
-            }
+            // systemConfig: {
+            //     title: 'System Config'
+            // }
         },
         status: {
             version: 'Version:',
@@ -237,7 +238,8 @@ export default {
             return: 'Back',
             type: 'type',
             operation: 'operation',
-            detail: 'detail'
+            detail: 'detail',
+            close: 'close'
         },
         systemConfig: {
             systemConfigTitle: "System Config",

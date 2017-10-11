@@ -106,9 +106,10 @@ export default {
         task: 'task管理'
       },
       info: {
-        title: '系统信息',
+        title: '系统管理',
         status: '系统状态',
-        serversInfo: '节点信息'
+        serversInfo: '节点信息',
+        systemConfig: '系统配置'
       },
       dataSource: {
         title: '数据源管理',
@@ -120,9 +121,9 @@ export default {
         lookupCoordinator: '用户分群（Coordinator）',
         lookupHistorical: '用户分群（Historical）'
       },
-      systemConfig: {
-        title: '系统配置'
-      }
+      // systemConfig: {
+      //   title: '系统配置'
+      // }
     },
     status: {
       version: '版本:',
@@ -244,7 +245,8 @@ export default {
       return: '返回',
       type: '类型',
       operation: '操作',
-      detail: '详情'
+      detail: '详情',
+      close: '关闭'
     },
     systemConfig: {
       systemConfigTitle: "系统配置",

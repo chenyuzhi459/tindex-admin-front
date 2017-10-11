@@ -1,6 +1,5 @@
 <template>
     <div class="main">
-
         <div style=" margin-left:20px;">
             <span style="color: #242f42;font-size:20px;">
                 <b>{{$t('message.tasks.runningTasksTitle')}}</b>
@@ -54,7 +53,6 @@
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
                 </el-pagination>
             </div>
-            <br>
         </div>
 
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
@@ -66,8 +64,8 @@
             <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
             </el-input>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">{{$t('message.tasks.dialogCancel')}}</el-button>
-                <el-button type="primary" @click="dialogVisible = false">{{$t('message.tasks.dialogConfirm')}}</el-button>
+                <el-button @click="dialogVisible = false">{{$t('message.common.close')}}</el-button>
+                <!-- <el-button type="primary" @click="dialogVisible = false">{{$t('message.tasks.dialogConfirm')}}</el-button> -->
             </span>
         </el-dialog>
 

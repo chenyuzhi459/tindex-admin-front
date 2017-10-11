@@ -77,7 +77,7 @@ export default {
                     header: { ContentType: "application/json" }
                 })
                 localStorage.setItem('ms_username', formObject.username);
-                this.$router.push('/readme');
+                this.$router.push('/index');
             } catch (err) {
                 this.hasError = true
             }
