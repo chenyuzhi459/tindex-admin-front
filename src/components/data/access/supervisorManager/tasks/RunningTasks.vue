@@ -93,6 +93,8 @@ export default {
             totalNum: 0,
             sortDimension: 'createdTime',
             isDescending: true,
+            isSearching: false,
+            sourceData: [],
             formInline: {
                 searchValue1: ''
             }
@@ -105,6 +107,7 @@ export default {
         init() {
             this.sortDimension = 'createdTime'
             this.isDescending = true
+            this.isSearching = false
             this.currentPage = 1
             this.getRunningTasks()
         },
@@ -241,14 +244,14 @@ export default {
             if (_.isEqual(this.formInline.searchValue1, '')) {
                 return
             }
+            if(!this.isSearching){
+                this.sourceData = this.runningTasks
+            }
+            this.isSearching = true
             this.currentPage = 1
-            const searchedData = this.$common.methods.searchArray(this.runningTasks, 'id', this.formInline.searchValue1)
-            this.runningTasks = []
-            this.$common.methods.pushData(searchedData, this.runningTasks)
+            this.runningTasks = this.$common.methods.searchArray(this.sourceData, 'id', this.formInline.searchValue1)
             this.totalNum = this.runningTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
-            this.showTableData = []
-            this.$common.methods.pushData(resultData, this.showTableData)
+            this.showTableData = this.$common.methods.fillShowTableData(this.runningTasks, this.currentPage, this.pageSize)
         }
     },
     mounted() {
@@ -266,14 +269,16 @@ export default {
 <style>
 .demo-table-expand {
     font-size: 0;
-  }
-  .demo-table-expand label {
+}
+
+.demo-table-expand label {
     width: 107px;
     color: #99a9bf;
-  }
-  .demo-table-expand .el-form-item {
+}
+
+.demo-table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
     width: 30%;
-  }
+}
 </style>

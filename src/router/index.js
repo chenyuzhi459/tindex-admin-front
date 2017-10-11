@@ -21,8 +21,14 @@ export default new Router({
                     component: resolve => require(['../components/info/SystemStatus.vue'], resolve)
                 },
                 {
+                     name: 'serversInfo',
                     path: '/serversInfo',
                     component: resolve => require(['../components/info/ServersInfo.vue'], resolve)
+                },
+                {
+                    name: 'serversSegment',
+                    path: '/serversSegment/:serverName',
+                    component: resolve => require(['../components/info/servers/ServersSegment.vue'], resolve)
                 },
                 {
                     name: 'supervisorManager',
@@ -31,7 +37,7 @@ export default new Router({
                 },
                 {
                     name: 'supervisorTasks',
-                    path: '/:supervisorId/supervisorTasks', 
+                    path: '/:supervisorId/supervisorTasks',
                     component: resolve => require(['../components/data/access/supervisorManager/SupervisorTasks.vue'], resolve)
                 },
                 {
@@ -92,20 +98,20 @@ export default new Router({
                     component: resolve => require(['../components/datasource/metadata/DataSource.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/mSegment',
-                  component: resolve => require(['../components/datasource/metadata/Segment.vue'], resolve)    // 拖拽列表组件
+                    path: '/mSegment',
+                    component: resolve => require(['../components/datasource/metadata/Segment.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/lookupCoordinator',
-                  component: resolve => require(['../components/lookup/lookupCoordinator/Lookup.vue'], resolve)    // 拖拽列表组件
+                    path: '/lookupCoordinator',
+                    component: resolve => require(['../components/lookup/lookupCoordinator/Lookup.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/lookupHistorical',
-                  component: resolve => require(['../components/lookup/lookupHistorical/Lookup.vue'], resolve)    // 拖拽列表组件
+                    path: '/lookupHistorical',
+                    component: resolve => require(['../components/lookup/lookupHistorical/Lookup.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                  path: '/systemConfig',
-                  component: resolve => require(['../components/systemConfig/SystemConfig.vue'], resolve)    // 拖拽列表组件
+                    path: '/systemConfig',
+                    component: resolve => require(['../components/systemConfig/SystemConfig.vue'], resolve)    // 拖拽列表组件
                 }
             ]
         },

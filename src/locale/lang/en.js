@@ -59,7 +59,8 @@ export default {
             priority: 'priority',
             currSize: 'currSize',
             maxSize: 'maxSize',
-            segments: 'segments'
+            segments: 'segments',
+            searchTips: 'please input name'
         },
         tasks: {
             runningTasksTitle: 'Running Tasks',
@@ -196,45 +197,6 @@ export default {
                 lookupTitle: "Lookup"
             },
             lookupHistorical: {
-<<<<<<< HEAD
-            },
-          lookups: "Lookup Tier",
-          userGroupLookup: "Lookup",
-          type: "type",
-          version: "version",
-          lookupInfo: "Lookup Info",
-          addLookup: "Create Lookup",
-          lookupName: "Lookup Name",
-          lookupNameIndex: "Please input the lookup name",
-          addLookupWarning: "Do you really want to add lookup:",
-          updateLookupWarning: "Do you really want to update lookup:",
-          inputLookupName: "Please input lookup name"
-        },
-        common: {
-          more: "more",
-          info: "info",
-          delete: "delete",
-          size: "size",
-          confirm: "Cofirm",
-          cancle: "Cancle",
-          refresh: "Refresh",
-          name: "name",
-          count: "count",
-          search: 'Search',
-          warning: 'Warning',
-          deleteWarning: 'Do you really want to delete:',
-          deleteSuccess: 'Delete Success!',
-          deleteFail: 'Delete Fail!',
-          addSuccess: "Add Success!",
-          updateSuccess: "Update Success!",
-          updateFail: "Update Fail!",
-          addFail: "Add Fail!",
-          items: 'items',
-          disable: 'disable',
-          inputName: "Please input name",
-          update: "update",
-          return: 'Back'
-=======
 
             },
             lookups: "Lookup Tier",
@@ -274,8 +236,8 @@ export default {
             update: "update",
             return: 'Back',
             type: 'type',
-            operation: 'operation'
->>>>>>> da69754b3e0a596809b9006124df61fb29fdeb31
+            operation: 'operation',
+            detail: 'detail'
         },
         systemConfig: {
             systemConfigTitle: "System Config",

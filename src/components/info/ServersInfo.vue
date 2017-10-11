@@ -25,7 +25,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="server" :label="$t('message.serversInfo.servers')"></el-table-column>
-        <el-table-column :label="$t('message.common.operation')" >
+        <el-table-column :label="$t('message.common.operation')"  width="100">
           <template scope="scope">
             <el-button size="mini" @click="getSegments(scope.row.server)">{{$t('message.serversInfo.segments')}}</el-button>
           </template>
@@ -75,13 +75,15 @@ export default {
           }
         })
         this.$common.methods.fillObject(data, row)
-        console.log("data:", row);
       }
     },
-    fillObject(source, target) {
-      for (let item in source) {
-        target[item] = source[item]
-      }
+    getSegments(serverName){
+       this.$router.push({
+                name: 'serversSegment',
+                params: {
+                    serverName: serverName
+                }
+            })
     }
   }
 
@@ -94,7 +96,7 @@ export default {
 }
 
 .demo-table-expand label {
-  width: 60px;
+  width: 70px;
   color: #99a9bf;
 }
 

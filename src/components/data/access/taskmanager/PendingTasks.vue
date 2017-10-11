@@ -76,6 +76,8 @@ export default {
             totalNum: 0,
             sortDimension: 'createdTime',
             isDescending: true,
+            isSearching: false,
+            sourceData: [],
             formInline: {
                 searchValue1: ''
             }
@@ -88,6 +90,7 @@ export default {
         init() {
             this.sortDimension = 'createdTime'
             this.isDescending = true
+            this.isSearching = false
             this.currentPage = 1
             this.getPendingTasks()
         },
@@ -193,14 +196,14 @@ export default {
             if (_.isEqual(this.formInline.searchValue1, '')) {
                 return
             }
+            if(!this.isSearching){
+                this.sourceData = this.pendingTasks
+            }
+            this.isSearching = true
             this.currentPage = 1
-            const searchedData = this.$common.methods.searchArray(this.pendingTasks, 'id', this.formInline.searchValue1)
-            this.pendingTasks = []
-            this.$common.methods.pushData(searchedData, this.pendingTasks)
+            this.pendingTasks = this.$common.methods.searchArray(this.sourceData, 'id', this.formInline.searchValue1)
             this.totalNum = this.pendingTasks.length
-            const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
-            this.showTableData = []
-            this.$common.methods.pushData(resultData, this.showTableData)
+            this.showTableData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
         }
     },
     mounted() {
