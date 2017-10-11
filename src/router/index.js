@@ -86,20 +86,8 @@ export default new Router({
                     component: resolve => require(['../components/datasource/cluster/DataSourceManager.vue'], resolve)    // 拖拽列表组件
                 },
                 {
-                    path: '/interval',
-                    component: resolve => require(['../components/datasource/cluster/Interval.vue'], resolve)    // 拖拽列表组件
-                },
-                {
-                    path: '/segment',
-                    component: resolve => require(['../components/datasource/cluster/Segment.vue'], resolve)    // 拖拽列表组件
-                },
-                {
                     path: '/mDataSource',
-                    component: resolve => require(['../components/datasource/metadata/DataSource.vue'], resolve)    // 拖拽列表组件
-                },
-                {
-                    path: '/mSegment',
-                    component: resolve => require(['../components/datasource/metadata/Segment.vue'], resolve)    // 拖拽列表组件
+                    component: resolve => require(['../components/datasource/metadata/DataSourceManager.vue'], resolve)    // 拖拽列表组件
                 },
                 {
                     path: '/lookupCoordinator',

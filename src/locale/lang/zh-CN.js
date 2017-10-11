@@ -175,6 +175,7 @@ export default {
       addRulesSuccess: '添加规则成功！',
       addRulesFail: '添加规则失败！',
       addRuleWarning: '你确定要添加规则？',
+      dataSourceInfo: '数据源信息'
     },
     interval: {
       intervalTitle: "区间",

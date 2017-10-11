@@ -1,14 +1,5 @@
 <template>
   <div class="main">
-    <!-- <div style=" margin-left:20px;">
-      <span style="color: #242f42;font-size:20px;">
-        <el-tabs v-model="activeName" @tab-click="clickSelect">
-          <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect"></el-tab-pane>
-          <el-tab-pane :label=" $t('message.interval.intervalTitle') " name="intervalSelect"></el-tab-pane>
-          <el-tab-pane :label=" $t('message.segment.segmentTitle') " name="segmentSelect" disabled></el-tab-pane>
-        </el-tabs>
-      </span>
-    </div> -->
     <div style=" margin-left:20px;">
       Path: &nbsp&nbsp
       <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
@@ -20,8 +11,9 @@
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
-        <el-table-column prop="name" :label="$t('message.interval.name')" sortable></el-table-column>
+        <el-table-column prop="name" :label="$t('message.interval.name')" sortable width="800"></el-table-column>
         <el-table-column prop="segmentCount" :label="$t('message.interval.segmentCount')"></el-table-column>
+        <el-table-column prop="intervalSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.interval.more')">
           <template scope="scope">
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.interval.segments')}}</el-button>
@@ -52,10 +44,6 @@ export default {
       dataSourceName: ''
     }
   },
-  created: function() {
-    
-    this.init()
-  },
   methods: {
     init() {
       this.getIntervals()
@@ -63,30 +51,22 @@ export default {
     getIntervals() {
       let url
       if (this.preLocation === 'segment') {
-        // const interval = new Map()
-        // interval['name'] = this.$route.query.intervalName
-        // const intervalArr = []
-        // intervalArr[0] = interval
-        // this.$common.methods.pushData(intervalArr, this.intervals)
-        // this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
         this.getInterval()
       } else {
         this.getIntervalsByDataSourceName()
       }
     },
     async getInterval() {
-      const intervalNameHandle = this.intervalName.replace("/","_")
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${intervalNameHandle}`
-      console.log(url,"get interval url")
+      const intervalNameHandle = this.intervalName.replace("/", "_")
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${intervalNameHandle}?simple`
       const response = await this.$http.get(url)
       const data = this.getDataFromResponse(response)
-      console.log(data)
       this.intervals = []
       this.$common.methods.pushData(data, this.intervals)
       this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
     },
     async getIntervalsByDataSourceName() {
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals?full`
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals?simple`
       const response = await this.$http.get(url)
       const data = this.getDataFromResponse(response)
       this.intervals = []
@@ -98,30 +78,19 @@ export default {
       for (let key in response.data) {
         let itemMap = new Map()
         itemMap["name"] = key
-        itemMap["segmentCount"] = Object.getOwnPropertyNames(response.data[key]).length
+        itemMap["segmentCount"] = response.data[key]["count"]
+        itemMap["intervalSize"] = response.data[key]["size"]
         convertData.push(itemMap)
       }
       return convertData
     },
     getSegments(intervalName) {
       const preLocation = 'interval'
-      this.$common.eventBus.$emit('activeNameSegment',preLocation,this.dataSourceName,intervalName)
+      this.$common.eventBus.$emit('activeNameSegment', preLocation, this.dataSourceName, intervalName)
     },
     getDataSource() {
       const preLocation = 'interval'
-      this.$common.eventBus.$emit('activeNameDataSource',preLocation,this.dataSourceName)
-    },
-    getDataSources() {
-      this.$router.push(
-        { path: '/dataSource' }
-      )
-    },
-    clickSelect(tab) {
-      if (tab.name === "dataSourceSelect") {
-        this.getDataSources()
-      } else if (tab.name === "intervalSelect") {
-        this.getIntervalsByDataSourceName()
-      }
+      this.$common.eventBus.$emit('activeNameDataSource', preLocation, this.dataSourceName)
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
@@ -134,11 +103,15 @@ export default {
   },
   mounted() {
     let self = this
-    this.$common.eventBus.$on("activeNameInterval", (preLocation,dataSourceName,intervalName) => {
+    this.$common.eventBus.$on("activeNameInterval", (preLocation, dataSourceName, intervalName) => {
       this.preLocation = preLocation
       this.dataSourceName = dataSourceName
       this.intervalName = intervalName
       self.init()
+    })
+    this.$common.eventBus.$on("getAllIntervals", (preLocation) => {
+      this.preLocation = preLocation
+      this.getIntervalsByDataSourceName()
     })
   }
 }

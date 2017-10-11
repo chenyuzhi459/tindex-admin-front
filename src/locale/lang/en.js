@@ -169,7 +169,7 @@ export default {
             addRulesSuccess: 'Add Rules Success!',
             addRulesFail: 'Add Rules Fail!',
             addRuleWarning: 'Do you really add rule?',
-
+            dataSourceInfo: 'DataSource Info'
         },
         interval: {
             intervalTitle: "Intervals",
