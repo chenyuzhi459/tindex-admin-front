@@ -15,7 +15,6 @@
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column prop="name" :label="$t('message.common.name')" sortable="custom" width="310"></el-table-column>
-        <el-table-column prop="properties.created" :label="$t('message.dataSource.createTime')" sortable="custom"></el-table-column>
         <el-table-column :label="$t('message.dataSource.rules')">
           <template scope="scope">
             <el-button size="mini" @click="getRuleInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>

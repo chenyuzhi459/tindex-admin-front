@@ -63,6 +63,10 @@ export default {
           title: this.$t('message.sideBar.dataSource.title'),
           subs: [
             {
+              index: '/dataSourceManager',
+              title: this.$t('message.sideBar.dataSource.dataSource')
+            },
+            {
               index: '/dataSource',
               title: this.$t('message.sideBar.dataSource.dataSource')
             },

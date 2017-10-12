@@ -7,34 +7,15 @@
       <br></br>
     </div>
 
-    <div class="table" style=" margin-left:20px;">
-
-      <el-table :data="showTableDataTier" border style="width: 100%" ref="multipleTable">
-        <el-table-column prop="lookups" :label="$t('message.lookup.lookups')"></el-table-column>
-        <el-table-column :label="$t('message.common.more')">
-          <template scope="scope">
-            <el-button size="mini" @click="getItems(scope.row.lookups)">{{$t('message.common.items')}}</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <div class="pagination">
-        <el-pagination @size-change="handleSizeChangeTier" @current-change="handleCurrentChangeTier" :current-page="currentPageTier" :page-sizes="[5, 10, 15, 25, 50, 100]" :page-size="pageSizeTier" layout="total, sizes, prev, pager, next, jumper" :total="tiers.length">
-        </el-pagination>
-      </div>
-    </div>
-
-    <br/>
-
-    <div style=" margin-left:20px;">
-      <span style="color: blue;font-size:20px;">
-        <b>{{tierName}}</b>
-      </span>
-      <br></br>
-    </div>
-
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <tr>
+          <el-form-item :label="$t('message.lookup.lookups')">
+            <el-select v-model="form.region" placeholder="请选择" @change="clickSelect">
+              <el-option v-for="item in tiers" :key="item" :label="item" :value="item"></el-option>
+            </el-select>
+          </el-form-item>
+        </tr>
         <el-form-item :label="$t('message.common.name')">
           <el-input v-model="formInline.name" :placeholder="$t('message.lookup.inputLookupName')" size="small"></el-input>
         </el-form-item>
@@ -72,9 +53,9 @@
     <el-dialog :visible.sync="dialogVisible" :size="dialogSize">
       <template slot="title">
         <div style=" line-height: 1;
-                                                                                    font-size: 16px;
-                                                                                    font-weight: 700;
-                                                                                    color: #1f2d3d;">
+                                                                                            font-size: 16px;
+                                                                                            font-weight: 700;
+                                                                                            color: #1f2d3d;">
           {{dialogTitle}}
         </div>
       </template>
@@ -82,7 +63,6 @@
       <el-input :placeholder="$t('message.lookup.lookupNameIndex')" v-model="lookupNameInput">
         <template slot="prepend">{{$t('message.lookup.lookupName')}}</template>
       </el-input>
-      <!-- <b>标签一</b><el-input v-model="formInline.name" :placeholder="$t('message.lookup.userGroupLookup')" size="small" ></el-input> -->
       <br/><br/>
       <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
       </el-input>
@@ -109,6 +89,9 @@ export default {
       formInline: {
         name: '',
       },
+      form: {
+        region: '__default'
+      },
       pageSizeTier: 5,
       pageSizeLookup: 10,
       currentPageTier: 1,
@@ -134,15 +117,7 @@ export default {
     async getTiers() {
       const url = `${this.$common.apis.lookups}`
       const response = await this.$http.get(url)
-
-      for (let i = 0; i < response.data.length; i++) {
-        let itemMap = new Map()
-        itemMap["lookups"] = response.data[i]
-        response.data[i] = itemMap
-      }
-      this.tiers = []
-      this.$common.methods.pushData(response.data, this.tiers)
-      this.showTableDataTier = this.$common.methods.fillShowTableData(this.tiers, this.currentPageTier, this.pageSizeTier)
+      this.tiers = response.data
     },
     async getLookups(tierName, isDescending, searchValue) {
       const url = `${this.$common.apis.lookups}/${tierName}`
@@ -209,7 +184,7 @@ export default {
       const title = this.$t('message.lookup.addLookup')
       this.configDialog(title, '', true, "small", { minRows: 15, maxRows: 25 }, "addLookup", '')
     },
-    async postLookup(warningMessage,successMessage,failMessage) {
+    async postLookup(warningMessage, successMessage, failMessage) {
       const remindMessage = `${warningMessage}\n${this.lookupNameInput}`
       try {
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
@@ -237,9 +212,9 @@ export default {
       }
     },
     clickConfirm() {
-      if (this.confirmType === "addLookup"){
+      if (this.confirmType === "addLookup") {
         this.postLookup(this.$t('message.lookup.addLookupWarning'), this.$t('message.common.addSuccess'), this.$t('message.common.addFail'))
-      } else if(this.confirmType === "updateLookup"){
+      } else if (this.confirmType === "updateLookup") {
         this.postLookup(this.$t('message.lookup.updateLookupWarning'), this.$t('message.common.updateSuccess'), this.$t('message.common.updateFail'))
       }
       this.dialogVisible = false
@@ -270,6 +245,13 @@ export default {
       } catch (e) {
 
       }
+    },
+
+    clickSelect() {
+      this.tierName = this.form.region
+      this.getLookups(this.tierName, this.isDescending, '')
+
+
     },
 
     handleCurrentChangeTier(newValue) {
