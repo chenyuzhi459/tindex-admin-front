@@ -6,7 +6,7 @@
           <el-tab-pane :label=" $t('message.dataSource.dataSourceTitle') " name="dataSourceSelect">
             <my-datasource :active-name.sync="activeName"></my-datasource>
           </el-tab-pane>
-          <el-tab-pane v-if="showSegmentSelect" :label=" $t('message.segment.segmentTitle') " name="segmentSelect" :disabled="segmentDisabled" visiable=false>
+          <el-tab-pane v-if="showSegmentSelect" :label=" $t('message.segment.segmentTitle') " name="segmentSelect" >
             <my-segment :active-name.sync="activeName"></my-segment>
           </el-tab-pane>
         </el-tabs>
@@ -17,13 +17,13 @@
 
 <script>
 
-import DataSource from './metadata/DataSource'
-import Segment from './metadata/Segment'
+import DataSource from './DataSource'
+import Segment from './Segment'
 export default {
   data() {
     return {
       activeName: "dataSourceSelect",
-      segmentDisabled: true,
+      // segmentDisabled: true
       showSegmentSelect: false
     }
   },
@@ -45,7 +45,8 @@ export default {
     })
     this.$common.eventBus.$on("activeNameSegment", () => {
       self.activeName = "segmentSelect"
-      this.segmentDisabled = false
+      this.showSegmentSelect = true
+      // this.segmentDisabled = false
     })
   }
 }

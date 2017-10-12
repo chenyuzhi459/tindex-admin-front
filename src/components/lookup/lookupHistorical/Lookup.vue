@@ -5,14 +5,9 @@
       <span style="color: #242f42;font-size:20px;">
         <template>
           <el-tabs v-model="activeName" @tab-click="clickIp">
-            <el-tab-pane v-for="ip in historicalIps" :key="ip" :label="ip" :name="ip">
-              <span style="color: #242f42;font-size:20px;">
-                <b>{{$t('message.lookup.lookupCoordinator.lookupTitle')}}</b>
-              </span>
-            </el-tab-pane>
+            <el-tab-pane v-for="ip in historicalIps" :key="ip" :label="ip" :name="ip"></el-tab-pane>
           </el-tabs>
         </template>
-        <br/>
       </span>
     </div>
 
@@ -65,7 +60,7 @@
         <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
         </el-input>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+          <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
           <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
         </span>
       </el-dialog>
@@ -93,7 +88,8 @@ export default {
       dialogSize: 'large',
       dialogInputAutosize: {},
       dialogVisible: false,
-      activeName: '192.168.0.225:8083'
+      activeName: '192.168.0.225:8083',
+      showCancle: false
     }
   },
   created: function() {
@@ -135,6 +131,7 @@ export default {
       const info = await this.getLookupByName(lookupName)
       const title = this.$t('message.lookup.lookupInfo')
       const infoJSON = this.$common.methods.JSONUtils.toString(info)
+      this.showCancle = true
       this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "updateLookup", lookupName)
     },
     async deleteLookup(lookupName) {
@@ -200,12 +197,14 @@ export default {
     addLookup() {
       this.confirmType = "addLookup"
       const title = this.$t('message.lookup.addLookup')
+      this.showCancle = true
       this.configDialog(title, '', true, "small", { minRows: 15, maxRows: 25 }, "addLookup", '')
     },
     async getInfo(lookupName) {
       const info = await this.getLookupByName(lookupName)
       const title = this.$t('message.lookup.lookupInfo')
       const infoJSON = this.$common.methods.JSONUtils.toString(info)
+      this.showCancle = false
       this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "confirm", lookupName)
     },
     handleCurrentChange(newValue) {

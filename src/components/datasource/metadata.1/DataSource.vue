@@ -1,21 +1,13 @@
 <template>
   <div class="main">
     <div style=" margin-left:20px;">
-
-      <span style="color: #242f42;font-size:20px;">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item :to="{ path: '/ChildDataSource' }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
-        </el-breadcrumb>
-      </span>
-      <br/>
-      
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item :label="$t('message.common.name')">
           <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
-          <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
+          <el-button type="primary" size="small" @click="init">{{$t('message.common.refresh')}}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -33,7 +25,6 @@
 
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
-            <el-button size="mini" type="info" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button>
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
             <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
@@ -58,7 +49,7 @@
       <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+        <el-button @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
         <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
       </span>
     </el-dialog>
@@ -87,8 +78,7 @@ export default {
       confirmType: '',
       ruleDataSource: '',
       dataSourceName: '',
-      preLocation: '',
-      showCancle: false
+      preLocation: ''
     }
   },
   created: function() {
@@ -106,10 +96,6 @@ export default {
       if (tab.name === "dataSourceSelect") {
         this.getDataSources()
       }
-    },
-    refresh() {
-      this.formInline.name = ''
-      this.init()
     },
     async getDataSources(isDescending, sortName) {
       const url = `${this.$common.apis.mDataSource}/sortAndSearch?full`
@@ -153,33 +139,30 @@ export default {
       const response = await this.$http.get(url)
       this.dataSourceInfo = response.data
       const message = this.$common.methods.JSONUtils.toString(this.dataSourceInfo)
-      this.showCancle = false
-      this.confirmType = 'confirmInfo'
-      this.configDialog(title, message, true,'small', { minRows: 15, maxRows: 25 })
+      let size = "small"
+      if (title === this.$t('message.dataSource.dataSourceInfo')) {
+        size = "full"
+      }
+      this.configDialog(title, message, true, size, { minRows: 15, maxRows: 37 }, "")
 
     },
 
 
     editRule(dataSourceName) {
       this.ruleDataSource = dataSourceName
-      this.showCancle = true
-      this.confirmType = 'addRule'
-      console.log("confirmtype",this.confirmType)
-      this.configDialog(this.$t('message.dataSource.rulesInfo'), '', true, 'small', { minRows: 15, maxRows: 25 })
+      this.configDialog(this.$t('message.dataSource.rulesInfo'), '', true, "small", { minRows: 15, maxRows: 25 }, "addRule")
     },
 
-    configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
+    configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize, confirmType) {
       this.dialogTitle = dialogTitle
       this.dialogMessage = dialogMessage
       this.dialogVisible = dialogVisible
       this.dialogSize = dialogSize
       this.dialogInputAutosize = dialogInputAutosize
+      this.confirmType = confirmType
     },
     getSegments(dataSourceName) {
-      this.$router.push({path: '/ChildSegment', query: {preLocation: 'dataSource', dataSourceName: dataSourceName}})
-    },
-    getIntervals(dataSourceName) {
-      this.$router.push({path: '/ChildInterval', query: {preLocation: 'dataSource', dataSourceName: dataSourceName}})
+      this.$common.eventBus.$emit('activeNameSegment', 'dataSource', dataSourceName)
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
@@ -190,7 +173,7 @@ export default {
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
     handleSort(column) {
-      this.isDescending = column.order === 'descending' ? true : false
+      this.isDescending = column.order === "descending" ? true : false
       let name
       if (column.prop === "properties.created") {
         name = "created"
@@ -209,9 +192,6 @@ export default {
     async addRule() {
       const remindMessage = `${this.$t('message.dataSource.addRuleWarning')}`
       try {
-        // if(this.dialogMessage ==='') {
-        //   alert("cant be null")
-        // } 
         const postData = await this.$common.methods.JSONUtils.toJsonObject(this.dialogMessage)
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
           confirmButtonText: this.$t('message.common.confirm'),

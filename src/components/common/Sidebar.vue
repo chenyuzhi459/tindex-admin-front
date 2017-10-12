@@ -48,17 +48,12 @@ export default {
           title: this.$t('message.sideBar.dataSource.title'),
           subs: [
             {
-<<<<<<< HEAD
-              index: '/dataSourceManager',
-              title: this.$t('message.sideBar.dataSource.dataSource')
+              index: '/ClusterDataSource',
+              title: this.$t('message.dataSource.dataSourceTitle')
             },
             {
-              index: '/dataSource',
-=======
-              index: 'dataSource',
-              route: { path: '/dataSource' },
->>>>>>> 236b5a6626895d0e26224b883319d957f1ad5fae
-              title: this.$t('message.sideBar.dataSource.dataSource')
+              index: '/ClusterInterval',
+              title: this.$t('message.interval.intervalTitle')
             },
             {
               index: 'mDataSource',

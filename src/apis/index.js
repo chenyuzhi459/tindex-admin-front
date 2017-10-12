@@ -28,6 +28,4 @@ export default {
     historicalIps: `${base}/system/ip/historical`,
     lookupsHis: `${base}/druid/listen/v1/lookups`,
     systemConfig: `${base}/druid/systemConfig`
-    // lookupCoordinator:
-    // lookupHistorical:
 }

@@ -1,14 +1,17 @@
 <template>
   <div class="main">
-    <div style=" margin-left:20px;">
-      Path: &nbsp&nbsp
-      <el-button type="text" @click="getDataSource">{{this.dataSourceName}}</el-button>
+    <div class="table" style=" margin-left:20px;">
+      <span style="color: #242f42;font-size:20px;">
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item :to="{ path: '/ChildDataSource'}">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/ChildInterval'}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
+        </el-breadcrumb>
+      </span>
+      <br/>
+      <el-tag type="primary">{{$t('message.dataSource.dataSourceTitle')}} : {{this.dataSourceName}}</el-tag>
       <br></br>
       <el-button type="primary" size="small" @click="init">{{$t('message.interval.refresh')}}</el-button>
       <br></br>
-    </div>
-
-    <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
         <el-table-column prop="name" :label="$t('message.interval.name')" sortable width="800"></el-table-column>
@@ -44,28 +47,20 @@ export default {
       dataSourceName: ''
     }
   },
+  created: function() {
+    this.init()
+  },
   methods: {
     init() {
+      this.preLocation = this.$route.query.preLocation
+      this.dataSourceName = this.$route.query.dataSourceName
       this.getIntervals()
     },
     getIntervals() {
-      if (this.preLocation === 'segment') {
-        this.getInterval()
-      } else {
-        this.getIntervalsByDataSourceName()
-      }
-    },
-    async getInterval() {
-      const intervalNameHandle = this.intervalName.replace("/", "_")
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${intervalNameHandle}?simple`
-      const response = await this.$http.get(url)
-      const data = this.getDataFromResponse(response)
-      this.intervals = []
-      this.$common.methods.pushData(data, this.intervals)
-      this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
+      this.getIntervalsByDataSourceName()
     },
     async getIntervalsByDataSourceName() {
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals?simple`
+      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals?simple`
       const response = await this.$http.get(url)
       const data = this.getDataFromResponse(response)
       this.intervals = []
@@ -79,18 +74,13 @@ export default {
         let itemMap = new Map()
         itemMap["name"] = key
         itemMap["segmentCount"] = response.data[key]["count"]
-        itemMap["intervalSize"] = response.data[key]["size"]
+        itemMap["intervalSize"] = this.$common.methods.conver(response.data[key]["size"])
         convertData.push(itemMap)
       }
       return convertData
     },
     getSegments(intervalName) {
-      const preLocation = 'interval'
-      this.$common.eventBus.$emit('activeNameSegment', preLocation, this.dataSourceName, intervalName)
-    },
-    getDataSource() {
-      const preLocation = 'interval'
-      this.$common.eventBus.$emit('activeNameDataSource', preLocation, this.dataSourceName)
+      this.$router.push({path: '/ChildSegment', query: {preLocation: 'interval', dataSourceName: this.dataSourceName, intervalName: intervalName}})
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue

@@ -67,7 +67,7 @@
       <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+        <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
         <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
       </span>
     </el-dialog>
@@ -103,7 +103,8 @@ export default {
       tierName: '__default',
       isDescending: false,
       confirmType: '',
-      lookupNameInput: ''
+      lookupNameInput: '',
+      showCancle: false
     }
   },
   created: function() {
@@ -151,12 +152,14 @@ export default {
       const info = await this.getLookupByName(lookupName)
       const title = this.$t('message.lookup.lookupInfo')
       const infoJSON = this.$common.methods.JSONUtils.toString(info)
+      this.showCancle = false
       this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "confirm", lookupName)
     },
     async updataLookup(lookupName) {
       const info = await this.getLookupByName(lookupName)
       const title = this.$t('message.lookup.lookupInfo')
       const infoJSON = this.$common.methods.JSONUtils.toString(info)
+      this.showCancle =true
       this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "updateLookup", lookupName)
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize, confirmType, lookupNameInput) {
@@ -182,6 +185,7 @@ export default {
     addLookup() {
       this.confirmType = "addLookup"
       const title = this.$t('message.lookup.addLookup')
+      this.showCancle = true
       this.configDialog(title, '', true, "small", { minRows: 15, maxRows: 25 }, "addLookup", '')
     },
     async postLookup(warningMessage, successMessage, failMessage) {
