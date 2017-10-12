@@ -38,9 +38,6 @@ export default {
                 lookupCoordinator: 'Lookup Coordinator',
                 lookupHistorical: 'Lookup Historical'
             },
-            // systemConfig: {
-            //     title: 'System Config'
-            // }
         },
         status: {
             version: 'Version:',

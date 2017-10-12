@@ -9,11 +9,7 @@
         </div>
 
         <el-form :inline="true" :model="formInline" class="demo-form-inline" style=" margin-left:20px;">
-            <el-form-item label="id">
-                <el-input size="small" v-model="formInline.searchValue1" :placeholder="$t('message.tasks.searchTips')"></el-input>
-            </el-form-item>
             <el-form-item>
-                <el-button size="small" type="primary" @click="onSearch">{{$t('message.tasks.search')}}</el-button>
                 <el-button type="primary" size="small" @click="init">{{$t('message.tasks.refresh')}}</el-button>
             </el-form-item>
         </el-form>
@@ -38,7 +34,6 @@
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
                 </el-pagination>
             </div>
-            <br>
         </div>
 
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
@@ -76,8 +71,6 @@ export default {
             totalNum: 0,
             sortDimension: 'createdTime',
             isDescending: true,
-            isSearching: false,
-            sourceData: [],
             formInline: {
                 searchValue1: ''
             }
@@ -90,7 +83,6 @@ export default {
         init() {
             this.sortDimension = 'createdTime'
             this.isDescending = true
-            this.isSearching = false
             this.currentPage = 1
             this.getPendingTasks()
         },
@@ -191,19 +183,6 @@ export default {
             const resultData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
-        },
-        onSearch() {
-            if (_.isEqual(this.formInline.searchValue1, '')) {
-                return
-            }
-            if(!this.isSearching){
-                this.sourceData = this.pendingTasks
-            }
-            this.isSearching = true
-            this.currentPage = 1
-            this.pendingTasks = this.$common.methods.searchArray(this.sourceData, 'id', this.formInline.searchValue1)
-            this.totalNum = this.pendingTasks.length
-            this.showTableData = this.$common.methods.fillShowTableData(this.pendingTasks, this.currentPage, this.pageSize)
         }
     },
     mounted() {

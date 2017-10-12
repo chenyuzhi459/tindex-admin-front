@@ -7,7 +7,7 @@
             </span>
             <br></br>
         </div>
-
+        
         <el-form :inline="true" :model="formInline" class="demo-form-inline" style=" margin-left:20px;">
             <el-form-item label="id">
                 <el-input size="small" v-model="formInline.searchValue1" :placeholder="$t('message.supervisors.searchTips')"></el-input>
@@ -22,7 +22,8 @@
             <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
                 <el-table-column  label="id" >
                      <template scope="scope">
-                          <el-button type="text" style=" font-size: 14px;color: #1f2d3d;"  @click="getTasks(scope.row.id)">{{scope.row.id}}</el-button>
+                          <!-- <el-button type="text" style=" font-size: 14px;color: #1f2d3d;"  @click="getTasks(scope.row.id)">{{scope.row.id}}</el-button> -->
+                          <a style="color:#20a0ff;"  @click="getTasks(scope.row.id)">{{scope.row.id}}</a>
                     </template>
                 </el-table-column>
                 <el-table-column :label="$t('message.supervisors.operation')" width="230">

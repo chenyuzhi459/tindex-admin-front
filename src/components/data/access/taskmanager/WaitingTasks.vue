@@ -9,36 +9,32 @@
         </div>
 
         <el-form :inline="true" :model="formInline" class="demo-form-inline" style=" margin-left:20px;">
-            <el-form-item label="id">
-                <el-input size="small" v-model="formInline.searchValue1" :placeholder="$t('message.tasks.searchTips')"></el-input>
-            </el-form-item>
             <el-form-item>
-                <el-button size="small" type="primary" @click="onSearch">{{$t('message.tasks.search')}}</el-button>
                 <el-button type="primary" size="small" @click="init">{{$t('message.tasks.refresh')}}</el-button>
             </el-form-item>
         </el-form>
-
-        <div class="table" style=" margin-left:20px;">
-            <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
-                <el-table-column prop="id" label="id" min-width="150"></el-table-column>
-                <el-table-column prop="location.host" :label="$t('message.tasks.locationHost')" width="175"></el-table-column>
-                <el-table-column prop="location.port" :label="$t('message.tasks.locationPort')" width="175"></el-table-column>
-                <el-table-column :label="$t('message.tasks.operation')" width="320">
-                    <template scope="scope">
-                        <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
-                        <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
-                        <el-button size="mini" style="width:35px" type="danger" @click="killTask(scope.row.id)">{{$t('message.tasks.delete')}}</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div class="pagination">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
-                </el-pagination>
+        <template v-if="hasData">
+            <div class="table" style=" margin-left:20px;">
+                <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
+                    <el-table-column prop="id" label="id" min-width="150"></el-table-column>
+                    <el-table-column prop="location.host" :label="$t('message.tasks.locationHost')" width="175"></el-table-column>
+                    <el-table-column prop="location.port" :label="$t('message.tasks.locationPort')" width="175"></el-table-column>
+                    <el-table-column :label="$t('message.tasks.operation')" width="320">
+                        <template scope="scope">
+                            <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
+                            <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
+                            <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
+                            <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
+                            <el-button size="mini" style="width:35px" type="danger" @click="killTask(scope.row.id)">{{$t('message.tasks.delete')}}</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
+                    </el-pagination>
+                </div>
             </div>
-            <br>
-        </div>
+        </template>
 
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
@@ -66,6 +62,7 @@ export default {
         return {
             waitingTasks: [],
             showTableData: [],
+            hasData: false,
             dialogMessage: '',
             dialogTitle: '',
             dialogSize: 'full',
@@ -76,8 +73,6 @@ export default {
             totalNum: 0,
             sortDimension: 'createdTime',
             isDescending: true,
-            isSearching: false,
-            sourceData: [],
             formInline: {
                 searchValue1: ''
             }
@@ -85,20 +80,22 @@ export default {
     },
     created: function() {
         this.init()
-        //console.log(this._i18n.locale = 'en', 'this._i18n');
     },
     methods: {
         init() {
             this.sortDimension = 'createdTime'
             this.isDescending = true
-            this.isSearching = false
             this.currentPage = 1
             this.getWaitingTasks()
         },
         async getWaitingTasks() {
             const { data } = await this.$http.get(this.$common.apis.waitingTasks)
+            if (data.length === 0) {
+                this.hasData = false
+                return
+            }
+            this.hasData = true
             data.map(s => {
-                //console.log('11location:',s.location)
                 if (undefined !== s.location) {
                     s.location.host = _.isNull(s.location.host) ? 'null' : s.location.host
                     return s
@@ -193,20 +190,6 @@ export default {
             const resultData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
-        },
-        onSearch() {
-            if (_.isEqual(this.formInline.searchValue1, '')) {
-                return
-            }
-            if(!this.isSearching){
-                this.sourceData = this.waitingTasks
-            }
-            this.isSearching = true
-            this.currentPage = 1
-            this.waitingTasks = this.$common.methods.searchArray(this.sourceData, 'id', this.formInline.searchValue1)
-            this.totalNum = this.waitingTasks.length
-            this.showTableData = this.$common.methods.fillShowTableData(this.waitingTasks, this.currentPage, this.pageSize)
-
         }
     },
     mounted() {

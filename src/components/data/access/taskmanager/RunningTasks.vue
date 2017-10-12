@@ -18,8 +18,8 @@
         </el-form>
 
         <div class="table" style=" margin-left:20px;">
-            <el-table :data="showTableData" border stripe style="width: 100%"
-             @sort-change="sortChange" @expand="expand">
+            <el-table :data="showTableData" border stripe style="width: 100%" :row-key="getRowKey" 
+            :expand-row-keys="expandRowKeys" @sort-change="sortChange" @expand="expand">
                 <el-table-column type="expand">
                     <template scope="props">
                         <el-form label-position="left" inline class="demo-table-expand">
@@ -29,17 +29,17 @@
                             <el-form-item :label="$t('message.tasks.offsets')">
                                 <span>{{ props.row.offset }}</span>
                             </el-form-item>
-                            <el-form-item :label="$t('message.tasks.location')">
-                                <span>{{ props.row.location }}</span>
-                            </el-form-item>
-                            <el-form-item :label="$t('message.tasks.queueInsertTime')">
-                                <span>{{ props.row.queueInsertionTime }}</span>
-                            </el-form-item>
                         </el-form>
                     </template>
                 </el-table-column>
-                <el-table-column prop="id" label="id" min-width="150"></el-table-column>
+                <el-table-column label="id" min-width="150">
+                    <template scope="scope">
+                        <a class="click-a" @click="showExpand(scope.row)">{{scope.row.id}}</a>
+                    </template>
+                </el-table-column>
                 <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207"></el-table-column>
+                <el-table-column prop="queueInsertionTime" :label="$t('message.tasks.queueInsertTime')" width="210"></el-table-column>
+                <el-table-column prop="location" :label="$t('message.tasks.location')" width="180"></el-table-column>
                 <el-table-column :label="$t('message.tasks.operation')" width="270">
                     <template scope="scope">
                         <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
@@ -65,7 +65,6 @@
             </el-input>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">{{$t('message.common.close')}}</el-button>
-                <!-- <el-button type="primary" @click="dialogVisible = false">{{$t('message.tasks.dialogConfirm')}}</el-button> -->
             </span>
         </el-dialog>
 
@@ -80,6 +79,7 @@ export default {
         return {
             runningTasks: [],
             showTableData: [],
+            expandRowKeys: [],
             taskStatus: '',
             taskOffset: '',
             dialogMessage: '',
@@ -105,6 +105,7 @@ export default {
     methods: {
         init() {
             this.sortDimension = 'createdTime'
+            this.formInline.searchValue1 = ''
             this.isDescending = true
             this.isSearching = false
             this.currentPage = 1
@@ -129,8 +130,25 @@ export default {
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
+        getRowKey(row) {
+            return row.id
+        },
+        findInExpandRowKeys(target){
+            return  _.findIndex(this.expandRowKeys, s => {
+                return s === target
+            })
+        },
+        showExpand(row) {
+            const index = this.findInExpandRowKeys(row.id)
+            index < 0 ? this.expand(row,true) : this.expand(row,false)
+
+        },
         async expand(row, expanded) {
             if (expanded) {
+                const index = _.findIndex(this.expandRowKeys, s=>{return s === row.id}) 
+                if(index < 0){
+                    this.expandRowKeys.push(row.id)
+                }
                 try {
                     row.status = (await this.getTaskStatus(row.id)).status.status
                 } catch (e) {
@@ -138,8 +156,12 @@ export default {
                 }
                 row.offset = await this.getOffset(row).catch(err => {
                     console.log('err')
-                })
-
+                }) 
+            }else{
+                 const index = _.findIndex(this.expandRowKeys, s=>{return s === row.id}) 
+                 if(index >=0){
+                     this.expandRowKeys.splice(index,1)
+                 }
             }
         },
         async getOffset(row) {
@@ -238,7 +260,7 @@ export default {
             if (_.isEqual(this.formInline.searchValue1, '')) {
                 return
             }
-            if(!this.isSearching){
+            if (!this.isSearching) {
                 this.sourceData = this.runningTasks
             }
             this.isSearching = true
@@ -260,16 +282,27 @@ export default {
 }
 </script>
 <style>
+.click-a {
+    color: #20a0ff;
+    cursor: pointer;
+}
+
+.click-a:hover {
+    text-decoration: none
+}
+
 .demo-table-expand {
     font-size: 0;
-  }
-  .demo-table-expand label {
+}
+
+.demo-table-expand label {
     width: 107px;
     color: #99a9bf;
-  }
-  .demo-table-expand .el-form-item {
+}
+
+.demo-table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
     width: 30%;
-  }
+}
 </style>
