@@ -1,22 +1,22 @@
 <<template>
 <div>
-    <div style="text-align:right; margin-left:20px;">
+    <div style="float:right; margin-left:20px;">
         <el-button type="primary" size="small" @click="showCreateTaskDialog">{{$t('message.tasks.createTask')}}</el-button>
     </div>
     <running-tasks></running-tasks>
+    <complete-tasks></complete-tasks>
     <pending-tasks></pending-tasks>
     <waiting-tasks></waiting-tasks>
-    <complete-tasks></complete-tasks>
 
 
     <el-dialog  :visible.sync="createTaskDialogVisible" size="small" :title="$t('message.tasks.taskSpec')" :close-on-click-modal="false">
-        <el-button type="primary" @click="format">{{$t('message.tasks.format')}}</el-button> 
         <span style="color: red" v-if="jsonSyntaxError">{{$t('message.tasks.jsonSyntaxError')}}</span>
         <br></br>             
         <el-input type="textarea" :rows="25" v-model="taskJson">
         </el-input>
         <span slot="footer" class="dialog-footer">
-                <el-button @click="createTaskDialogVisible = false">{{$t('message.tasks.dialogCancel')}}</el-button> 
+            <el-button style="float:left" type="primary" @click="format">{{$t('message.tasks.format')}}</el-button> 
+            <el-button @click="createTaskDialogVisible = false">{{$t('message.tasks.dialogCancel')}}</el-button> 
             <el-button type="primary" @click="creatTask()">{{$t('message.tasks.createDialogConfirm')}}</el-button>
         </span>
     </el-dialog>

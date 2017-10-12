@@ -6,12 +6,12 @@
           <el-submenu :index="item.index">
             <template slot="title">
               <i :class="item.icon"></i>{{ item.title }}</template>
-            <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">{{ subItem.title }}
+            <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index" :route="subItem.route">{{ subItem.title }}
             </el-menu-item>
           </el-submenu>
         </template>
         <template v-else>
-          <el-menu-item :index="item.index">
+          <el-menu-item :index="item.index" :route="subItem.route">
             <i :class="item.icon"></i>{{ item.title }}
           </el-menu-item>
         </template>
@@ -24,54 +24,45 @@
 export default {
   data() {
     return {
+      // defaultSelect: 'supervisorManager',
       items: [
-        {
-          icon: 'el-icon-setting',
-          index: 'readme',
-          title: '自述'
-        },
         {
           index: 'dataAccess',
           title: this.$t('message.sideBar.dataAccess.title'),
           subs: [
             {
-              index: '/supervisorManager',
+              index: 'supervisorManager',
+              route: { path: '/supervisorManager' },
               title: this.$t('message.sideBar.dataAccess.supervisor')
             },
             {
-              index: '/taskManager',
+              index: 'taskManager',
+              route: { path: '/taskManager' },
               title: this.$t('message.sideBar.dataAccess.task')
             }
           ]
         },
-        {
-          index: 'info',
-          title: this.$t('message.sideBar.info.title'),
-          subs: [
-            {
-              index: '/status',
-              title: this.$t('message.sideBar.info.status')
-            },
-            {
-              index: '/serversInfo',
-              title: this.$t('message.sideBar.info.serversInfo')
-            }
-          ]
-        },
+
         {
           index: 'dataSource',
           title: this.$t('message.sideBar.dataSource.title'),
           subs: [
             {
+<<<<<<< HEAD
               index: '/dataSourceManager',
               title: this.$t('message.sideBar.dataSource.dataSource')
             },
             {
               index: '/dataSource',
+=======
+              index: 'dataSource',
+              route: { path: '/dataSource' },
+>>>>>>> 236b5a6626895d0e26224b883319d957f1ad5fae
               title: this.$t('message.sideBar.dataSource.dataSource')
             },
             {
-              index: '/mDataSource',
+              index: 'mDataSource',
+              route: { path: '/mDataSource' },
               title: this.$t('message.sideBar.dataSource.metadata')
             }
           ]
@@ -81,66 +72,88 @@ export default {
           title: this.$t('message.sideBar.lookup.title'),
           subs: [
             {
-              index: '/lookupCoordinator',
+              index: 'lookupCoordinator',
+              route: { path: '/lookupCoordinator' },
               title: this.$t('message.sideBar.lookup.lookupCoordinator')
             },
             {
-              index: '/lookupHistorical',
+              index: 'lookupHistorical',
+              route: { path: '/lookupHistorical' },
               title: this.$t('message.sideBar.lookup.lookupHistorical')
             }
           ]
         },
+
         {
-          index: 'systemConfig',
-          title: this.$t('message.sideBar.systemConfig.title')
-        },
-        {
-          icon: 'el-icon-menu',
-          index: '2',
-          title: '表格',
+          index: 'info',
+          title: this.$t('message.sideBar.info.title'),
           subs: [
             {
+              index: 'status',
+              route: { path: '/status' },
+              title: this.$t('message.sideBar.info.status')
+            },
+            {
+              index: 'serversInfo',
+              route: { path: '/serversInfo' },
+              title: this.$t('message.sideBar.info.serversInfo')
+            },
+            {
+              index: '/systemConfig',
+              route: { path: '/systemConfig' },
+              title: this.$t('message.sideBar.info.systemConfig')
+            },
+            {
               index: 'basetable',
+              route: { path: '/basetable' },
               title: '基础表格'
             },
             {
               index: 'vuetable',
+              route: { path: '/vuetable' },
               title: 'Vue表格组件'
-            }
-          ]
-        },
-        {
-          icon: 'el-icon-date',
-          index: '3',
-          title: '表单',
-          subs: [
+            },
             {
               index: 'baseform',
+              route: { path: '/baseform' },
               title: '基本表单'
             },
             {
-              index: 'vueeditor',
-              title: '编辑器'
-            },
-            {
-              index: 'markdown',
-              title: 'markdown'
-            },
-            {
               index: 'upload',
+              route: { path: '/upload' },
               title: '文件上传'
             }
           ]
         },
         // {
-        //   icon: 'el-icon-star-on',
-        //   index: 'basecharts',
-        //   title: '图表'
+        //   icon: 'el-icon-menu',
+        //   index: '2',
+        //   title: '表格',
+        //   subs: [
+        //     {
+        //       index: 'basetable',
+        //       title: '基础表格'
+        //     },
+        //     {
+        //       index: 'vuetable',
+        //       title: 'Vue表格组件'
+        //     }
+        //   ]
         // },
         // {
-        //   icon: 'el-icon-upload2',
-        //   index: 'drag',
-        //   title: '拖拽'
+        //   icon: 'el-icon-date',
+        //   index: '3',
+        //   title: '表单',
+        //   subs: [
+        //     {
+        //       index: 'baseform',
+        //       title: '基本表单'
+        //     },
+        //     {
+        //       index: 'upload',
+        //       title: '文件上传'
+        //     }
+        //   ]
         // }
       ]
     }

@@ -168,7 +168,7 @@ export default {
             }
             this.isSearching = true
             this.currentPage = 1
-            this.getShowSegments(this.currentPage, this.pageSize, this.sortDimension, this.isDescending)
+            this.getShowSegments()
         },
         getBack() {
             this.$router.push({

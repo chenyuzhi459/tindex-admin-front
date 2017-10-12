@@ -142,7 +142,7 @@ export default {
 
         },
         getTasks(id){
-            this.$router.push({
+            this.$router.replace({
                 name: 'supervisorTasks',
                 params: {
                     supervisorId: id

@@ -3,6 +3,7 @@ import Router from 'vue-router';
 Vue.use(Router);
 
 export default new Router({
+<<<<<<< HEAD
   routes: [
     {
       path: '/',
@@ -44,6 +45,68 @@ export default new Router({
           path: '/taskManager',
           component: resolve => require(['../components/data/access/TaskManager.vue'], resolve)
         },
+=======
+    routes: [
+        {
+            path: '/',
+            redirect: '/login'
+        },
+        {
+            path: '/index',
+            component: resolve => require(['../components/common/Home.vue'], resolve),
+            children: [
+                {
+                    path: '/',
+                    component: resolve => require(['../components/data/access/SupervisorManager.vue'], resolve)
+                },
+                {
+                    path: '/status',
+                    component: resolve => require(['../components/info/SystemStatus.vue'], resolve)
+                },
+                {
+                     name: 'serversInfo',
+                    path: '/serversInfo',
+                    component: resolve => require(['../components/info/ServersInfo.vue'], resolve)
+                },
+                {
+                    name: 'serversSegment',
+                    path: '/serversSegment/:serverName',
+                    component: resolve => require(['../components/info/servers/ServersSegment.vue'], resolve)
+                },
+                {
+                    name: 'supervisorManager',
+                    path: '/supervisorManager',
+                    component: resolve => require(['../components/data/access/SupervisorManager.vue'], resolve)
+                },
+                {
+                    name: 'supervisorTasks',
+                    path: '/:supervisorId/supervisorTasks',
+                    component: resolve => require(['../components/data/access/supervisorManager/SupervisorTasks.vue'], resolve)
+                },
+                {
+                    name: 'taskManager',
+                    path: '/taskManager',
+                    component: resolve => require(['../components/data/access/TaskManager.vue'], resolve)
+                },
+
+                {
+                    path: '/basetable',
+                    component: resolve => require(['../components/page/BaseTable.vue'], resolve)
+                },
+                {
+                    path: '/vuetable',
+                    component: resolve => require(['../components/page/VueTable.vue'], resolve)     // vue-datasource组件
+                },
+                {
+                    path: '/baseform',
+                    component: resolve => require(['../components/page/BaseForm.vue'], resolve)
+                },
+                {
+                    path: '/upload',
+                    component: resolve => require(['../components/page/Upload.vue'], resolve)       // Vue-Core-Image-Upload组件
+                },
+
+>>>>>>> 236b5a6626895d0e26224b883319d957f1ad5fae
 
         {
           path: '/basetable',
