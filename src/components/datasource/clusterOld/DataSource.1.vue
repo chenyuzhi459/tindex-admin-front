@@ -131,10 +131,6 @@ export default {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/metrics`
       this.getInfoFromUrl(url, this.$t('message.dataSource.metricsInfo'))
     },
-    // getCandidates(dataSourceName) {
-    //   const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
-    //   this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
-    // },
     async getInfoFromUrl(url, title) {
       const response = await this.$http.get(url)
       const info = response.data
@@ -183,6 +179,8 @@ export default {
     getIntervals(dataSourceName) {
       const preLocation = 'dataSource'
       this.$common.eventBus.$emit('activeNameInterval', preLocation, dataSourceName)
+
+      this.$common.eventBus.$emit('activeNameIntervalLater', preLocation, dataSourceName)
     },
     getSegments(dataSourceName) {
       this.$common.eventBus.$emit('activeNameSegment', 'dataSource', dataSourceName)

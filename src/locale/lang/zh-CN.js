@@ -225,7 +225,7 @@ export default {
       size: "大小",
       confirm: "确 认",
       cancle: "取 消",
-      refresh: "更新",
+      refresh: "刷新",
       name: "名称",
       count: "数量",
       search: "搜索",

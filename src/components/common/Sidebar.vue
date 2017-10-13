@@ -48,9 +48,12 @@ export default {
           title: this.$t('message.sideBar.dataSource.title'),
           subs: [
             {
-              index: 'dataSource',
-              route: { path: '/dataSource' },
-              title: this.$t('message.sideBar.dataSource.dataSource')
+              index: '/ClusterDataSource',
+              title: this.$t('message.dataSource.dataSourceTitle')
+            },
+            {
+              index: '/ClusterInterval',
+              title: this.$t('message.interval.intervalTitle')
             },
             {
               index: 'mDataSource',
