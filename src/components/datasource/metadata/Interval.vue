@@ -2,19 +2,32 @@
   <div class="main">
     <div class="table" style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <el-breadcrumb separator="/">
+        <el-breadcrumb separator=">">
           <el-breadcrumb-item :to="{ path: '/ChildDataSource'}">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
           <el-breadcrumb-item :to="{ path: '/ChildInterval'}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
-      <el-tag type="primary">{{$t('message.dataSource.dataSourceTitle')}} : {{this.dataSourceName}}</el-tag>
-      <br></br>
-      <el-button type="primary" size="small" @click="init">{{$t('message.interval.refresh')}}</el-button>
+      <el-tag type="primary">{{$t('message.dataSource.dataSource')}} : {{this.dataSourceName}}</el-tag>
       <br></br>
 
-      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
-        <el-table-column prop="name" :label="$t('message.interval.name')" sortable width="800"></el-table-column>
+      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item :label="$t('message.common.name')">
+          <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
+          <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
+          </el-switch>
+        </el-form-item>
+      </el-form>
+
+      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+        <el-table-column prop="interval" :label="$t('message.interval.name')" sortable="custom" width="800">
+          <template scope="scope">
+            <a class="click-link" @click="getSegments(scope.row.name)">{{scope.row.name}}</a>
+          </template>
+        </el-table-column>
         <el-table-column prop="segmentCount" :label="$t('message.interval.segmentCount')"></el-table-column>
         <el-table-column prop="intervalSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.interval.more')">
@@ -44,7 +57,11 @@ export default {
       segment: '',
       preLocation: '',
       intervalName: '',
-      dataSourceName: ''
+      dataSourceName: '',
+      isDescending: true,
+      formInline: {
+        name: ''
+      }
     }
   },
   created: function() {
@@ -56,12 +73,33 @@ export default {
       this.dataSourceName = this.$route.query.dataSourceName
       this.getIntervals()
     },
-    getIntervals() {
-      this.getIntervalsByDataSourceName()
+    refresh() {
+      this.formInline.name = ''
+      this.init()
     },
-    async getIntervalsByDataSourceName() {
+    getIntervals() {
+      this.getIntervalsByDataSourceName('interval', '', 'interval', this.isDescending)
+    },
+    handleSort(column) {
+      this.isDescending = column.order === 'descending' ? true : false
+      if (column.prop === null) {
+        column.prop = 'interval'
+      }
+      this.getIntervalsByDataSourceName('interval', '', column.prop, this.isDescending)
+    },
+    onSearch() {
+      this.getIntervalsByDataSourceName('interval', this.formInline.name, 'interval', this.isDescending)
+    },
+    async getIntervalsByDataSourceName(searchDimension, searchValue, sortDimension, isDescending) {
       const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals?simple`
-      const response = await this.$http.get(url)
+      const response = await this.$http.get(url, {
+        params: {
+          searchDimension: searchDimension,
+          searchValue: searchValue,
+          sortDimension: sortDimension,
+          isDescending: isDescending
+        }
+      })
       const data = this.getDataFromResponse(response)
       this.intervals = []
       this.$common.methods.pushData(data, this.intervals)
@@ -80,7 +118,7 @@ export default {
       return convertData
     },
     getSegments(intervalName) {
-      this.$router.push({path: '/ChildSegment', query: {preLocation: 'interval', dataSourceName: this.dataSourceName, intervalName: intervalName}})
+      this.$router.push({ path: '/ChildSegment', query: { preLocation: 'interval', dataSourceName: this.dataSourceName, intervalName: intervalName } })
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
@@ -90,19 +128,10 @@ export default {
       this.pageSize = newValue
       this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
     }
-  },
-  mounted() {
-    let self = this
-    this.$common.eventBus.$on("activeNameIntervalLater", (preLocation, dataSourceName, intervalName) => {
-      this.preLocation = preLocation
-      this.dataSourceName = dataSourceName
-      this.intervalName = intervalName
-      self.init()
-    })
-    this.$common.eventBus.$on("getAllIntervals", (preLocation) => {
-      this.preLocation = preLocation
-      this.getIntervalsByDataSourceName()
-    })
   }
 }
 </script>
+
+<style>
+@import "../../../../static/css/link.css";
+</style>

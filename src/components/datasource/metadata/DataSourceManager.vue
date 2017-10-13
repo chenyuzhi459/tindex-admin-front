@@ -3,12 +3,12 @@
     <div style=" margin-left:20px;">
 
       <span style="color: #242f42;font-size:20px;">
-        <el-breadcrumb separator="/">
+        <el-breadcrumb separator=">">
           <el-breadcrumb-item :to="{ path: '/ChildDataSource' }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
-      
+
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item :label="$t('message.common.name')">
           <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
@@ -16,14 +16,28 @@
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
           <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
+          <el-switch v-model="showEnable" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px; ">>
+          </el-switch>
         </el-form-item>
       </el-form>
     </div>
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
-        <el-table-column prop="name" :label="$t('message.common.name')" sortable="custom" width="310"></el-table-column>
-        <el-table-column :label="$t('message.dataSource.rules')">
+        <el-table-column :label="$t('message.common.name')" sortable="custom" width="310">
+          <template scope="scope">
+            <a class="click-link" @click="getIntervals(scope.row.name)">{{scope.row.name}}</a>
+          </template>
+        </el-table-column>
+
+
+        <el-table-column :label="$t('message.dataSource.segments')" align="center">
+          <el-table-column prop="properties.segments.count" :label="$t('message.common.count')" width="80"></el-table-column>
+          <el-table-column prop="properties.segments.size" :label="$t('message.common.size')" width="95"></el-table-column>
+          <el-table-column prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
+          <el-table-column prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
+        </el-table-column>
+        <el-table-column :label="$t('message.dataSource.rules')" width="170">
           <template scope="scope">
             <el-button size="mini" @click="getRuleInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
             <el-button size="mini" @click="editRule(scope.row.name)">{{$t('message.dataSource.add')}}</el-button>
@@ -33,12 +47,12 @@
 
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
-            <el-button size="mini" type="info" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button>
+            <!-- <el-button size="mini" type="info" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button> -->
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
-            <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
+            <!-- <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.common.info')}}</el-button> -->
             <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
-            <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button>
+            <!-- <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -88,7 +102,8 @@ export default {
       ruleDataSource: '',
       dataSourceName: '',
       preLocation: '',
-      showCancle: false
+      showCancle: false,
+      showEnable: true
     }
   },
   created: function() {
@@ -99,7 +114,7 @@ export default {
       if (this.preLocation === 'segment') {
         this.getDataSourceByName(this.dataSourceName)
       } else {
-        this.getDataSources("true", "name")
+        this.getDataSources("true", "name", "")
       }
     },
     clickSelect(tab) {
@@ -111,19 +126,27 @@ export default {
       this.formInline.name = ''
       this.init()
     },
-    async getDataSources(isDescending, sortName) {
-      const url = `${this.$common.apis.mDataSource}/sortAndSearch?full`
+    async getDataSources(isDescending, sortName, searchValue) {
+      const url = `${this.$common.apis.mDataSource}/sortAndSearch?simple`
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
-          sortDimension: sortName
+          sortDimension: sortName,
+          searchValue: searchValue
         }
       })
-      this.dataSources = []
+      for (let i = 0; i < response.data.length; i++) {
+        const size = response.data[i]['properties']['segments']['size']
+        response.data[i]['properties']['segments']['size'] = this.$common.methods.conver(size)
+      }
 
+      this.dataSources = []
       this.$common.methods.pushData(response.data, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
 
+    },
+    async onSearch() {
+      this.getDataSources(this.isDescending, "name", this.formInline.name)
     },
     getDataSourceInfo(dataSourceName) {
       const url = `${this.$common.apis.mDataSource}/${dataSourceName}`
@@ -137,10 +160,10 @@ export default {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/metrics`
       this.getInfoFromUrl(url, this.$t('message.dataSource.metricsInfo'))
     },
-    getCandidates(dataSourceName) {
-      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
-    },
+    // getCandidates(dataSourceName) {
+    //   const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
+    //   this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
+    // },
     getRuleInfo(dataSourceName) {
       const url = `${this.$common.apis.rules}/${dataSourceName}`
       this.getInfoFromUrl(url, this.$t('message.dataSource.rulesInfo'))
@@ -155,7 +178,7 @@ export default {
       const message = this.$common.methods.JSONUtils.toString(this.dataSourceInfo)
       this.showCancle = false
       this.confirmType = 'confirmInfo'
-      this.configDialog(title, message, true,'small', { minRows: 15, maxRows: 25 })
+      this.configDialog(title, message, true, 'small', { minRows: 15, maxRows: 25 })
 
     },
 
@@ -164,7 +187,7 @@ export default {
       this.ruleDataSource = dataSourceName
       this.showCancle = true
       this.confirmType = 'addRule'
-      console.log("confirmtype",this.confirmType)
+      console.log("confirmtype", this.confirmType)
       this.configDialog(this.$t('message.dataSource.rulesInfo'), '', true, 'small', { minRows: 15, maxRows: 25 })
     },
 
@@ -176,10 +199,10 @@ export default {
       this.dialogInputAutosize = dialogInputAutosize
     },
     getSegments(dataSourceName) {
-      this.$router.push({path: '/ChildSegment', query: {preLocation: 'dataSource', dataSourceName: dataSourceName}})
+      this.$router.push({ path: '/ChildSegment', query: { preLocation: 'dataSource', dataSourceName: dataSourceName } })
     },
     getIntervals(dataSourceName) {
-      this.$router.push({path: '/ChildInterval', query: {preLocation: 'dataSource', dataSourceName: dataSourceName}})
+      this.$router.push({ path: '/ChildInterval', query: { preLocation: 'dataSource', dataSourceName: dataSourceName } })
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
@@ -191,13 +214,8 @@ export default {
     },
     handleSort(column) {
       this.isDescending = column.order === 'descending' ? true : false
-      let name
-      if (column.prop === "properties.created") {
-        name = "created"
-      } else {
-        name = column.prop
-      }
-      this.getDataSources(this.isDescending, name)
+      this.formInline.name = ''
+      this.getDataSources(this.isDescending, column.prop)
     },
 
     clickConfirm() {
@@ -248,18 +266,6 @@ export default {
       this.$common.methods.pushData(message, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
-    async onSearch() {
-      const url = `${this.$common.apis.mDataSource}/sortAndSearch?full`
-      const response = await this.$http.get(url, {
-        params: {
-          isDescending: this.isDescending,
-          searchValue: this.formInline.name
-        }
-      })
-      this.dataSources = []
-      this.$common.methods.pushData(response.data, this.dataSources)
-      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
-    },
   },
   mounted() {
     let self = this
@@ -275,3 +281,7 @@ export default {
   }
 }
 </script>
+
+<style>
+    @import "../../../../static/css/link.css";
+</style>

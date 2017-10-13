@@ -34,6 +34,7 @@
       <el-table :data="showTableDataLookup" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column prop="lookup" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
         <el-table-column prop="type" :label="$t('message.lookup.type')"></el-table-column>
+        <el-table-column prop="dataFetcher.groupId" :label="$t('message.lookup.groupId')"></el-table-column>
         <el-table-column prop="version" :label="$t('message.lookup.version')"></el-table-column>
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">

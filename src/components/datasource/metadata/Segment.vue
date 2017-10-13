@@ -2,7 +2,7 @@
   <div class="main">
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
-        <el-breadcrumb separator="/">
+        <el-breadcrumb separator=">">
           <el-breadcrumb-item :to="{ path: '/ChildDataSource' }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
           <el-breadcrumb-item v-if="showIntervalName" :to="{ path: '/ChildInterval', query: { dataSourceName: dataSourceName}}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
           <el-breadcrumb-item :to="{ path: '/ChildSegment' }">{{$t('message.segment.segmentTitle')}}</el-breadcrumb-item>
@@ -10,23 +10,38 @@
       </span>
       <br/>
 
-      <el-tag type="primary">{{$t('message.dataSource.dataSourceTitle')}} : {{this.dataSourceName}}</el-tag>
-      <el-tag v-if="showIntervalName" type="primary">{{$t('message.interval.intervalTitle')}} : {{this.intervalName}}</el-tag>
+      <el-tag type="primary">{{$t('message.dataSource.dataSource')}} : {{this.dataSourceName}}</el-tag>
+      <el-tag v-if="showIntervalName" type="primary">{{$t('message.interval.interval')}} : {{this.intervalName}}</el-tag>
       <br></br>
-      <el-button type="primary" size="small" @click="init">{{$t('message.segment.refresh')}}</el-button>
-      <br></br>
+
+      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item :label="$t('message.common.name')">
+          <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
+          <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
+          <el-switch v-model="showEnable" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px; " @change="switchChange">
+          </el-switch>
+        </el-form-item>
+      </el-form>
     </div>
 
     <div class="table" style=" margin-left:20px;">
-
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
-        <el-table-column prop="identifier" :label="$t('message.segment.name')" width="900"></el-table-column>
+        <el-table-column :label="$t('message.segment.name')" width="900">
+          <template scope="scope">
+            <a class="click-link" @click="getSegmentInfo(scope.row.identifier)">{{scope.row.identifier}}</a>
+          </template>
+
+        </el-table-column>
         <el-table-column prop="segmentSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.segment.more')" width="200">
           <template scope="scope">
-            <el-button size="mini" @click="getSegmentInfo(scope.row.identifier)">{{$t('message.segment.info')}}</el-button>
-            <el-button size="mini" @click="disableSegment(scope.row.identifier)" type="danger">{{$t('message.common.disable')}}</el-button>
-            <el-button size="mini" @click="deleteSegment(scope.row.identifier)" type="danger">{{$t('message.common.delete')}}</el-button>
+            <!-- <el-button size="mini" @click="getSegmentInfo(scope.row.identifier)">{{$t('message.segment.info')}}</el-button> -->
+            <el-button v-if="showEnable" size="mini" @click="disableSegment(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="enableSegment(scope.row.identifier)" type="success">{{$t('message.common.enable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="deleteSegment(scope.row.identifier)" type="danger">{{$t('message.common.delete')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -38,9 +53,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                          font-size: 16px;
-                          font-weight: 700;
-                          color: #1f2d3d;">
+                                    font-size: 16px;
+                                    font-weight: 700;
+                                    color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -73,7 +88,11 @@ export default {
       intervalName: '',
       preLocation: '',
       showCancle: false,
-      showIntervalName: false
+      showIntervalName: false,
+      formInline: {
+        name: ''
+      },
+      showEnable: true
     }
   },
   created: function() {
@@ -94,7 +113,12 @@ export default {
       }
     },
     async getSegments() {
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments?full`
+      let url
+      if (this.showEnable) {
+        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments?full`
+      } else {
+        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments?full`
+      }
       const response = await this.$http.get(url)
       for (let i = 0; i < response.data.length; i++) {
         response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
@@ -104,19 +128,34 @@ export default {
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
 
     },
+    switchChange() {
+      console.log(this.showEnable)
+      this.init()
+    },
     async getSegmentsByInterval() {
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments?full`
-      console.log(url)
+      let url
+      if (this.showEnable) {
+        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments?full`
+      } else {
+        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments?full`
+      }
       let intervals = new Array()
       intervals.push(this.intervalName)
       console.log(intervals)
-      const response = await this.$http.post(url,intervals)
+      const response = await this.$http.post(url, intervals)
       for (let i = 0; i < response.data.length; i++) {
         response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
       }
       this.segments = []
       this.$common.methods.pushData(response.data, this.segments)
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
+
+    },
+    refresh() {
+      this.formInline.name = ''
+      this.init()
+    },
+    onSearch() {
 
     },
     async getSegmentInfo(segmentName) {
@@ -129,8 +168,7 @@ export default {
 
     },
     async disableSegment(segmentName) {
-      // this.showCancle = true
-      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${segmentName}`
+      const remindMessage = `${this.$t('message.common.disableWarning')}\n${segmentName}`
       try {
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
           confirmButtonText: this.$t('message.common.confirm'),
@@ -140,6 +178,33 @@ export default {
         })
         try {
           const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/disable`
+          const deleteResponse = await this.$http.delete(url)
+          window.setTimeout(this.init, 500)
+          this.$message({
+            type: 'success',
+            message: this.$t('message.common.disableSuccess')
+          })
+        } catch (err) {
+          this.$message({
+            type: 'warning',
+            message: this.$t('message.common.disableFail')
+          })
+        }
+      } catch (e) {
+
+      }
+    },
+    async deleteSegment(segmentName) {
+      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${segmentName}`
+      try {
+        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+          confirmButtonText: this.$t('message.common.confirm'),
+          cancelButtonText: this.$t('message.common.cancle'),
+          closeOnClickModal: false,
+          type: 'warning'
+        })
+        try {
+          const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/delete`
           const deleteResponse = await this.$http.delete(url)
           window.setTimeout(this.init, 500)
           this.$message({
@@ -156,8 +221,32 @@ export default {
 
       }
     },
-    async deleteSegment(segmentName) {
-      // this.showCancle = true
+    async enableSegment(segmentName) {
+      const remindMessage = `${this.$t('message.common.enableWarning')}\n${segmentName}`
+      try {
+        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+          confirmButtonText: this.$t('message.common.confirm'),
+          cancelButtonText: this.$t('message.common.cancle'),
+          closeOnClickModal: false,
+          type: 'warning'
+        })
+        try {
+          const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/enable`
+          const deleteResponse = await this.$http.post(url)
+          window.setTimeout(this.init, 500)
+          this.$message({
+            type: 'success',
+            message: this.$t('message.common.enableSuccess')
+          })
+        } catch (err) {
+          this.$message({
+            type: 'warning',
+            message: this.$t('message.common.enableFail')
+          })
+        }
+      } catch (e) {
+
+      }
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
       this.dialogTitle = dialogTitle
@@ -177,3 +266,4 @@ export default {
   }
 }
 </script>
+

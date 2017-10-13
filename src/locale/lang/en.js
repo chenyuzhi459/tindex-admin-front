@@ -145,6 +145,7 @@ export default {
         },
         dataSource: {
             dataSourceTitle: "DataSources",
+            dataSource: 'DataSource',
             segments: "segments",
             maxTime: "maxTime",
             minTime: "minTime",
@@ -171,6 +172,7 @@ export default {
         },
         interval: {
             intervalTitle: "Intervals",
+            interval: 'Interval',
             refresh: "Refresh",
             name: "name",
             segments: "segments",
@@ -179,6 +181,7 @@ export default {
         },
         segment: {
             segmentTitle: "Segments",
+            segment: 'Segment',
             refresh: "Refresh",
             name: "name",
             info: "info",
@@ -207,7 +210,8 @@ export default {
             lookupNameIndex: "Please input the lookup name",
             addLookupWarning: "Do you really want to add lookup:",
             updateLookupWarning: "Do you really want to update lookup:",
-            inputLookupName: "Please input lookup name"
+            inputLookupName: "Please input lookup name",
+            groupId: "groupId"
         },
         common: {
             more: "more",
@@ -222,11 +226,17 @@ export default {
             search: 'Search',
             warning: 'Warning',
             deleteWarning: 'Do you really want to delete:',
+            disableWarning: 'Do you really want to disable:',
+            enableWarning: 'Do you really want to enable:',
+            enableSuccess: 'Enable Success!',
+            enableFail: 'Enable Fail!',
             deleteSuccess: 'Delete Success!',
             deleteFail: 'Delete Fail!',
             addSuccess: "Add Success!",
             updateSuccess: "Update Success!",
             updateFail: "Update Fail!",
+            disableSuccess: "Disable Success!",
+            disableFail: "Disable Fail!",
             addFail: "Add Fail!",
             items: 'items',
             disable: 'disable',
@@ -236,7 +246,8 @@ export default {
             type: 'type',
             operation: 'operation',
             detail: 'detail',
-            close: 'close'
+            close: 'close',
+            enable: 'enable'
         },
         systemConfig: {
             systemConfigTitle: "System Config",

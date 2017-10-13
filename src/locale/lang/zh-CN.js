@@ -148,6 +148,7 @@ export default {
     },
     dataSource: {
       dataSourceTitle: "数据源",
+      dataSource: "数据源",
       search: "搜索",
       refresh: "刷新",
       name: "名称",
@@ -180,6 +181,7 @@ export default {
     },
     interval: {
       intervalTitle: "区间",
+      interval: "区间",
       refresh: "刷新",
       name: "名称",
       segments: "数据段",
@@ -188,6 +190,7 @@ export default {
     },
     segment: {
       segmentTitle: "数据段",
+      segment: "数据段",
       refresh: "刷新",
       name: "名称",
       info: "信息",
@@ -216,7 +219,8 @@ export default {
       lookupNameIndex: "请输入分群名称",
       addLookupWarning: "你确定要添加分群：",
       updateLookupWarning: "你确定要更新分群：",
-      inputLookupName: "请输入分群名称"
+      inputLookupName: "请输入分群名称",
+      groupId: "分组Id"
     },
     common: {
       more: "更多",
@@ -231,11 +235,17 @@ export default {
       search: "搜索",
       warning: "提醒",
       deleteWarning: "你确定要删除：",
+      disableWarning: '你确定要失效:',
+      enableWarning: '你确定要回复:',
+      enableSuccess: '恢复成功!',
+      enableFail: '恢复失败!',
       deleteSuccess: "删除成功!",
       deleteFail: "删除失败!",
       addSuccess: "添加成功！",
       updateSuccess: "更新成功！",
       updateFail: "更新失败！",
+      disableSuccess: "失效成功!",
+      disableFail: "失效失败!",
       addFail: "添加失败！",
       items: "条目明细",
       disable: "失效",
@@ -246,7 +256,8 @@ export default {
       type: '类型',
       operation: '操作',
       detail: '详情',
-      close: '关闭'
+      close: '关闭',
+      enable: '恢复'
     },
     systemConfig: {
       systemConfigTitle: "系统配置",
