@@ -37,7 +37,24 @@ Vue.prototype.$t = ElementLocale.t
 Vue.prototype._i18n = i18n
 Vue.prototype.$axios = axios
 Vue.prototype.$common = common
- 
+Vue.http.interceptors.push((request, next) => {
+    let timeout;
+    // 這裡改用 _timeout
+    if (request._timeout) {
+        timeout = setTimeout(() => {
+　　　　　　　　//自定义响应体 status:408,statustext:"请求超时"，并返回给下下边的next
+            next(request.respondWith(request.body, {
+                 status: 408,
+                 statusText: '请求超时'
+            }));
+            
+        }, request._timeout);
+    }
+    next((response) => {
+　　　　return response;
+    })
+}) 
+
 new Vue({
     router,
     render: h => h(App)
