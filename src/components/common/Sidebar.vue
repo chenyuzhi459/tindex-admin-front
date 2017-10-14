@@ -11,7 +11,7 @@
           </el-submenu>
         </template>
         <template v-else>
-          <el-menu-item :index="item.index" :route="subItem.route">
+          <el-menu-item :index="item.index" :route="item.route">
             <i :class="item.icon"></i>{{ item.title }}
           </el-menu-item>
         </template>
@@ -46,17 +46,19 @@ export default {
         {
           index: 'dataSource',
           title: this.$t('message.sideBar.dataSource.title'),
-          subs: [
-            {
-              index: 'mDataSource',
-              route: { path: '/mDataSource' },
-              title: this.$t('message.sideBar.dataSource.metadata')
-            }
-          ]
+          route: { path: '/mDataSource' },
+          // subs: [
+          //   {
+          //     index: 'mDataSource',
+          //     route: { path: '/mDataSource' },
+          //     title: this.$t('message.sideBar.dataSource.metadata')
+          //   }
+          // ]
         },
         {
           index: 'lookup',
           title: this.$t('message.sideBar.lookup.title'),
+          route: { path: '/lookupCoordinator' },
           subs: [
             {
               index: 'lookupCoordinator',

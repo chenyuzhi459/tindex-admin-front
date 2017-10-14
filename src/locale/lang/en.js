@@ -168,7 +168,13 @@ export default {
             addRulesSuccess: 'Add Rules Success!',
             addRulesFail: 'Add Rules Fail!',
             addRuleWarning: 'Do you really add rule?',
-            dataSourceInfo: 'DataSource Info'
+            dataSourceInfo: 'DataSource Info',
+            granularity: 'granularity',
+            operate: 'operate',
+            granularityInfo: 'Please select a granularity',
+            operateInfo: 'Please select an operation',
+            periodInputInfo: 'Please input a valid ISO 8601 duration',
+            intervalInputInfo: 'Please input a valid ISO 8601 interval'
         },
         interval: {
             intervalTitle: "Intervals",
@@ -247,7 +253,7 @@ export default {
             operation: 'operation',
             detail: 'detail',
             close: 'close',
-            enable: 'enable'
+            enable: 'enable',
         },
         systemConfig: {
             systemConfigTitle: "System Config",

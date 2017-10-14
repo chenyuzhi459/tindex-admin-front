@@ -18,6 +18,7 @@
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
           <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
+          <el-switch v-model="showEnable" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px; " @change="switchChange">
           </el-switch>
         </el-form-item>
       </el-form>
@@ -61,7 +62,8 @@ export default {
       isDescending: true,
       formInline: {
         name: ''
-      }
+      },
+      showEnable: true
     }
   },
   created: function() {
@@ -91,7 +93,12 @@ export default {
       this.getIntervalsByDataSourceName('interval', this.formInline.name, 'interval', this.isDescending)
     },
     async getIntervalsByDataSourceName(searchDimension, searchValue, sortDimension, isDescending) {
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals?simple`
+      let url
+      if(this.showEnable) {
+        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals?simple`
+      } else {
+        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableIntervals`
+      }
       const response = await this.$http.get(url, {
         params: {
           searchDimension: searchDimension,
@@ -105,6 +112,9 @@ export default {
       this.$common.methods.pushData(data, this.intervals)
 
       this.showTableData = this.$common.methods.fillShowTableData(this.intervals, this.currentPage, this.pageSize)
+    },
+    switchChange() {
+      this.init()
     },
     getDataFromResponse(response) {
       const convertData = new Array()

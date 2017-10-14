@@ -35,8 +35,8 @@
           </template>
 
         </el-table-column>
-        <el-table-column prop="segmentSize" :label="$t('message.common.size')"></el-table-column>
-        <el-table-column :label="$t('message.segment.more')" width="200">
+        <el-table-column v-if="showEnable" prop="segmentSize" :label="$t('message.common.size')"></el-table-column>
+        <el-table-column :label="$t('message.segment.more')">
           <template scope="scope">
             <!-- <el-button size="mini" @click="getSegmentInfo(scope.row.identifier)">{{$t('message.segment.info')}}</el-button> -->
             <el-button v-if="showEnable" size="mini" @click="disableSegment(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
