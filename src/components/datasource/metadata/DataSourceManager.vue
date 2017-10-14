@@ -16,7 +16,7 @@
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
           <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
-          <el-switch v-model="showEnable" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px; ">>
+          <el-switch v-model="showEnable" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px;" @change="switchChange">>
           </el-switch>
         </el-form-item>
       </el-form>
@@ -29,7 +29,6 @@
             <a class="click-link" @click="getIntervals(scope.row.name)">{{scope.row.name}}</a>
           </template>
         </el-table-column>
-
 
         <el-table-column :label="$t('message.dataSource.segments')" align="center">
           <el-table-column prop="properties.segments.count" :label="$t('message.common.count')" width="80"></el-table-column>
@@ -48,10 +47,12 @@
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <!-- <el-button size="mini" type="info" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button> -->
-            <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
-            <!-- <el-button size="mini" @click="getDataSourceInfo(scope.row.name)">{{$t('message.common.info')}}</el-button> -->
-            <el-button size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
-            <el-button size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
+            <el-button v-if="showEnable" size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
+            <el-button v-if="showEnable" size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
+            <el-button v-if="showEnable" size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
+            <el-button v-if="showEnable" size="mini" @click="disableDataSource(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="enableDataSource(scope.row.identifier)" type="success">{{$t('message.common.enable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="deleteDataSource(scope.row.identifier)" type="danger">{{$t('message.common.delete')}}</el-button>
             <!-- <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button> -->
           </template>
         </el-table-column>
@@ -69,8 +70,28 @@
           {{dialogTitle}}
         </div>
       </template>
-      <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
-      </el-input>
+
+      <el-input v-if="dialogForInfo" type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage"></el-input>
+
+      <el-form v-if="!dialogForInfo" :inline="true" :model="form" class="demo-form-inline">
+        <el-form-item :label="$t('message.dataSource.operate')">
+          <el-select v-model="form.actionValue" :placeholder="$t('message.dataSource.operateInfo')" size="12">
+            <el-option v-for="item in form.actionOptions" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('message.dataSource.granularity')">
+          <el-select v-model="form.granularityValue" :placeholder="$t('message.dataSource.granularityInfo')" @change="changeGranularitySelect" size="12">
+            <el-option v-for="item in form.granularityOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <br></br>
+        <el-form-item>
+          <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="30"></el-input>
+        </el-form-item>
+
+      </el-form>
+
       <span slot="footer" class="dialog-footer">
         <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
         <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
@@ -103,7 +124,34 @@ export default {
       dataSourceName: '',
       preLocation: '',
       showCancle: false,
-      showEnable: true
+      showEnable: true,
+      showInput: false,
+      dialogForInfo: true,
+      form: {
+        actionOptions: [{
+          value: 'drop',
+          label: 'drop'
+        }, {
+          value: 'load',
+          label: 'load'
+        }, {
+          value: 'broadcast',
+          label: 'broadcast'
+        }],
+        actionValue: '',
+        granularityOptions: [{
+          value: 'period',
+          label: 'period'
+        }, {
+          value: 'interval',
+          label: 'interval'
+        }, {
+          value: 'forever',
+          label: 'forever'
+        }],
+        granularityValue: ''
+      }
+
     }
   },
   created: function() {
@@ -111,10 +159,10 @@ export default {
   },
   methods: {
     init() {
-      if (this.preLocation === 'segment') {
-        this.getDataSourceByName(this.dataSourceName)
-      } else {
+      if (this.showEnable) {
         this.getDataSources("true", "name", "")
+      } else {
+        this.getDataSourcesDisable("true", "name", "")
       }
     },
     clickSelect(tab) {
@@ -126,12 +174,25 @@ export default {
       this.formInline.name = ''
       this.init()
     },
+    switchChange() {
+      this.init()
+    },
+    changeGranularitySelect() {
+      if (this.form.granularityValue === 'period') {
+        this.showInput = true
+        this.form.inputPrompt = this.$t('message.dataSource.periodInputInfo')
+      } else if (this.form.granularityValue === 'interval') {
+        this.showInput = true
+        this.form.inputPrompt = this.$t('message.dataSource.intervalInputInfo')
+      } else {
+        this.showInput = false
+      }
+    },
     async getDataSources(isDescending, sortName, searchValue) {
-      const url = `${this.$common.apis.mDataSource}/sortAndSearch?simple`
+      const url = `${this.$common.apis.dataSource}?simple`
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
-          sortDimension: sortName,
           searchValue: searchValue
         }
       })
@@ -139,19 +200,38 @@ export default {
         const size = response.data[i]['properties']['segments']['size']
         response.data[i]['properties']['segments']['size'] = this.$common.methods.conver(size)
       }
-
       this.dataSources = []
       this.$common.methods.pushData(response.data, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+    },
+    async getDataSourcesDisable(isDescending, sortName, searchValue) {
+      const url = `${this.$common.apis.disableDataSource}`
+      const response = await this.$http.get(url, {
+        params: {
+          isDescending: isDescending,
+          searchValue: searchValue
+        }
+      })
+      this.dataSources = []
+      this.$common.methods.pushData(response.data, this.dataSources)
+      this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+    },
+    async disableDataSource(dataSourceName) {
+
+    },
+    async enableDataSource(dataSourceName) {
+
+    },
+    async deleteDataSource(dataSourceName) {
 
     },
     async onSearch() {
       this.getDataSources(this.isDescending, "name", this.formInline.name)
     },
-    getDataSourceInfo(dataSourceName) {
-      const url = `${this.$common.apis.mDataSource}/${dataSourceName}`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.dataSourceInfo'))
-    },
+    // getDataSourceInfo(dataSourceName) {
+    //   const url = `${this.$common.apis.mDataSource}/${dataSourceName}`
+    //   this.getInfoFromUrl(url, this.$t('message.dataSource.dataSourceInfo'))
+    // },
     getDimensions(dataSourceName) {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/dimensions`
       this.getInfoFromUrl(url, this.$t('message.dataSource.dimensionsInfo'))
@@ -178,19 +258,17 @@ export default {
       const message = this.$common.methods.JSONUtils.toString(this.dataSourceInfo)
       this.showCancle = false
       this.confirmType = 'confirmInfo'
+      this.dialogForInfo = true
       this.configDialog(title, message, true, 'small', { minRows: 15, maxRows: 25 })
 
     },
-
-
     editRule(dataSourceName) {
       this.ruleDataSource = dataSourceName
       this.showCancle = true
       this.confirmType = 'addRule'
-      console.log("confirmtype", this.confirmType)
+      this.dialogForInfo = false
       this.configDialog(this.$t('message.dataSource.rulesInfo'), '', true, 'small', { minRows: 15, maxRows: 25 })
     },
-
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
       this.dialogTitle = dialogTitle
       this.dialogMessage = dialogMessage
@@ -239,6 +317,8 @@ export default {
         })
         try {
           const url = `${this.$common.apis.rules}/${this.ruleDataSource}`
+          console.log(url)
+
           const editResponse = await this.$http.post(url, postData, {
             header: { ContentType: "application/json" }
           })
@@ -283,5 +363,5 @@ export default {
 </script>
 
 <style>
-    @import "../../../../static/css/link.css";
+@import "../../../../static/css/link.css";
 </style>

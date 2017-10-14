@@ -177,7 +177,13 @@ export default {
       addRulesSuccess: '添加规则成功！',
       addRulesFail: '添加规则失败！',
       addRuleWarning: '你确定要添加规则？',
-      dataSourceInfo: '数据源信息'
+      dataSourceInfo: '数据源信息',
+      granularity: '操作粒度',
+      operate: '操作',
+      granularityInfo: '请选择操作粒度',
+      operateInfo: '请选择操作',
+      periodInputInfo: '请输入一个有效的 ISO 8601 period',
+      intervalInputInfo: '请输入一个有效的 ISO 8601 interval'
     },
     interval: {
       intervalTitle: "区间",

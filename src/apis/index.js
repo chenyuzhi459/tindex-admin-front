@@ -20,6 +20,7 @@ export default {
     overlordUrl: `${base}/druid/indexer/v1`,
     supervisor:`${base}/druid/indexer/v1/supervisor`,
     dataSource:`${base}/druid/coordinator/v1/datasources`,
+    disableDataSource:`${base}/druid/coordinator/v1/metadata/disableDatasources`,
     intervals: `${base}/druid/coordinator/v1/intervals`,
     mDataSource: `${base}/druid/coordinator/v1/metadata/datasources`,
     clientInfo: `${base}/druid/v2/datasources`,
@@ -27,5 +28,6 @@ export default {
     lookups: `${base}/druid/coordinator/v1/lookups`,
     historicalIps: `${base}/system/ip/historical`,
     lookupsHis: `${base}/druid/listen/v1/lookups`,
-    systemConfig: `${base}/druid/systemConfig`
+    systemConfig: `${base}/druid/systemConfig`,
+  
 }
