@@ -4,7 +4,7 @@
 
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
-          <el-breadcrumb-item :to="{ path: '/ChildDataSource' }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/ChildDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
@@ -30,13 +30,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('message.dataSource.segments')" align="center">
-          <el-table-column prop="properties.segments.count" :label="$t('message.common.count')" width="80"></el-table-column>
-          <el-table-column prop="properties.segments.size" :label="$t('message.common.size')" width="95"></el-table-column>
-          <el-table-column prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
-          <el-table-column prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
-        </el-table-column>
-        <el-table-column :label="$t('message.dataSource.rules')" width="170">
+        <!-- <el-table-column :label="$t('message.dataSource.segments')" align="center"> -->
+          <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.interval.segmentCount')" width="120"></el-table-column>
+          <el-table-column v-if="showEnable" prop="properties.segments.size" :label="$t('message.common.size')" width="95"></el-table-column>
+          <el-table-column v-if="showEnable" prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
+          <el-table-column v-if="showEnable" prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
+        <!-- </el-table-column> -->
+        <el-table-column v-if="showEnable" :label="$t('message.dataSource.rules')" width="170">
           <template scope="scope">
             <el-button size="mini" @click="getRuleInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
             <el-button size="mini" @click="editRule(scope.row.name)">{{$t('message.dataSource.add')}}</el-button>
@@ -47,7 +47,7 @@
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <!-- <el-button size="mini" type="info" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button> -->
-            <el-button v-if="showEnable" size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
+            <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="disableDataSource(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
@@ -117,7 +117,7 @@ export default {
       },
       pageSize: 15,
       currentPage: 1,
-      isDescending: "descending",
+      isDescending: false,
       isSearching: false,
       confirmType: '',
       ruleDataSource: '',
@@ -155,14 +155,17 @@ export default {
     }
   },
   created: function() {
+    if(this.$route.query.showEnable !== undefined) {
+      this.showEnable = this.$route.query.showEnable
+    }
     this.init()
   },
   methods: {
     init() {
       if (this.showEnable) {
-        this.getDataSources("true", "name", "")
+        this.getDataSources(this.isDescending, "name", this.formInline.name)
       } else {
-        this.getDataSourcesDisable("true", "name", "")
+        this.getDataSourcesDisable(this.isDescending, "name", this.formInline.name)
       }
     },
     clickSelect(tab) {
@@ -171,7 +174,6 @@ export default {
       }
     },
     refresh() {
-      this.formInline.name = ''
       this.init()
     },
     switchChange() {
@@ -196,6 +198,7 @@ export default {
           searchValue: searchValue
         }
       })
+      console.log(url)
       for (let i = 0; i < response.data.length; i++) {
         const size = response.data[i]['properties']['segments']['size']
         response.data[i]['properties']['segments']['size'] = this.$common.methods.conver(size)
@@ -226,7 +229,11 @@ export default {
 
     },
     async onSearch() {
-      this.getDataSources(this.isDescending, "name", this.formInline.name)
+      if(this.showEnable) {
+        this.getDataSources(this.isDescending, "name", this.formInline.name)
+      } else {
+        this.getDataSourcesDisable(this.isDescending, "name", this.formInline.name)
+      }
     },
     // getDataSourceInfo(dataSourceName) {
     //   const url = `${this.$common.apis.mDataSource}/${dataSourceName}`
@@ -277,10 +284,10 @@ export default {
       this.dialogInputAutosize = dialogInputAutosize
     },
     getSegments(dataSourceName) {
-      this.$router.push({ path: '/ChildSegment', query: { preLocation: 'dataSource', dataSourceName: dataSourceName } })
+      this.$router.push({ path: '/ChildSegment', query: { preLocation: 'dataSource', dataSourceName: dataSourceName, showEnable: this.showEnable } })
     },
     getIntervals(dataSourceName) {
-      this.$router.push({ path: '/ChildInterval', query: { preLocation: 'dataSource', dataSourceName: dataSourceName } })
+      this.$router.push({ path: '/ChildInterval', query: { showEnable: this.showEnable, preLocation: 'dataSource', dataSourceName: dataSourceName } })
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
@@ -292,8 +299,11 @@ export default {
     },
     handleSort(column) {
       this.isDescending = column.order === 'descending' ? true : false
-      this.formInline.name = ''
-      this.getDataSources(this.isDescending, column.prop)
+      if(this.showEnable) {
+        this.getDataSources(this.isDescending, column.prop,this.formInline.name)
+      } else {
+        this.getDataSourcesDisable(this.isDescending, column.prop,this.formInline.name)
+      }
     },
 
     clickConfirm() {
@@ -345,19 +355,7 @@ export default {
       message[0] = response.data
       this.$common.methods.pushData(message, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
-    },
-  },
-  mounted() {
-    let self = this
-    this.$common.eventBus.$on("activeNameDataSource", (preLocation, dataSourceName) => {
-      this.dataSourceName = dataSourceName
-      this.preLocation = preLocation
-      self.init()
-    })
-    this.$common.eventBus.$on("getAllDataSources", (preLocation) => {
-      this.preLocation = preLocation
-      self.init()
-    })
+    }
   }
 }
 </script>

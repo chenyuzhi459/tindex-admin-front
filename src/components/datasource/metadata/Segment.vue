@@ -3,9 +3,9 @@
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
-          <el-breadcrumb-item :to="{ path: '/ChildDataSource' }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
-          <el-breadcrumb-item v-if="showIntervalName" :to="{ path: '/ChildInterval', query: { dataSourceName: dataSourceName}}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
-          <el-breadcrumb-item :to="{ path: '/ChildSegment' }">{{$t('message.segment.segmentTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/ChildDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item v-if="showIntervalName" :to="{ path: '/ChildInterval', query: { showEnable: this.showEnable, dataSourceName: dataSourceName}}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/ChildSegment', query: { showEnable: this.showEnable}  }">{{$t('message.segment.segmentTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
@@ -28,8 +28,8 @@
     </div>
 
     <div class="table" style=" margin-left:20px;">
-      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable">
-        <el-table-column :label="$t('message.segment.name')" width="900">
+      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+        <el-table-column :label="$t('message.common.name')" width="900" sortable="custom">
           <template scope="scope">
             <a class="click-link" @click="getSegmentInfo(scope.row.identifier)">{{scope.row.identifier}}</a>
           </template>
@@ -53,9 +53,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                    font-size: 16px;
-                                    font-weight: 700;
-                                    color: #1f2d3d;">
+                                        font-size: 16px;
+                                        font-weight: 700;
+                                        color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -92,34 +92,49 @@ export default {
       formInline: {
         name: ''
       },
-      showEnable: true
+      showEnable: true,
+      isDescending: true
     }
   },
   created: function() {
     this.dataSourceName = this.$route.query.dataSourceName
     this.intervalName = this.$route.query.intervalName
     this.preLocation = this.$route.query.preLocation
+    if(this.$route.query.showEnable !== undefined) {
+      this.showEnable = this.$route.query.showEnable
+    }
     this.init()
   },
   methods: {
     init() {
-      const preLocation = this.preLocation
-      if (preLocation === "dataSource") {
+      if (this.preLocation === "dataSource") {
         this.showIntervalName = false
-        this.getSegments()
-      } else if (preLocation === "interval") {
+      } else if (this.preLocation === "interval") {
         this.showIntervalName = true
-        this.getSegmentsByInterval()
+      }
+      this.getSegmentsForshow(this.preLocation, this.isDescending, this.formInline.name)
+    },
+    getSegmentsForshow(preLocation,isDescending,searchValue) {
+      if(preLocation === "dataSource") {
+        this.getSegmentsByDataSource(isDescending,searchValue)
+      } else {
+        this.getSegmentsByInterval(isDescending,searchValue)
       }
     },
-    async getSegments() {
+
+    async getSegmentsByDataSource(isDescending, searchValue) {
       let url
       if (this.showEnable) {
         url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments?full`
       } else {
-        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments?full`
+        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments`
       }
-      const response = await this.$http.get(url)
+      const response = await this.$http.get(url, {
+        params: {
+          isDescending: isDescending,
+          searchValue: searchValue
+        }
+      })
       for (let i = 0; i < response.data.length; i++) {
         response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
       }
@@ -128,26 +143,34 @@ export default {
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
 
     },
+    handleSort(column) {
+      this.isDescending = column.order === 'descending' ? true : false
+      this.getSegmentsForshow(this.preLocation, this.isDescending, this.formInline.name)
+    },
     switchChange() {
       console.log(this.showEnable)
       this.init()
     },
-    async getSegmentsByInterval() {
+    async getSegmentsByInterval(isDescending, searchValue) {
       let url
       if (this.showEnable) {
         url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments?full`
       } else {
-        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments?full`
+        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments`
       }
       let intervals = new Array()
       intervals.push(this.intervalName)
-      console.log(intervals)
       const response = await this.$http.post(url, intervals)
       for (let i = 0; i < response.data.length; i++) {
         response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
       }
       this.segments = []
-      this.$common.methods.pushData(response.data, this.segments)
+      this.$common.methods.pushData(response.data, {
+        params: {
+          isDescending: isDescending,
+          searchValue: searchValue
+        }
+      }, this.segments)
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
 
     },
@@ -156,7 +179,7 @@ export default {
       this.init()
     },
     onSearch() {
-
+      this.getSegmentsForshow(this.preLocation, this.isDescending, this.formInline.name)
     },
     async getSegmentInfo(segmentName) {
       const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}?full`

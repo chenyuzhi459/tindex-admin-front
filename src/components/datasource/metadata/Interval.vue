@@ -3,8 +3,8 @@
     <div class="table" style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
-          <el-breadcrumb-item :to="{ path: '/ChildDataSource'}">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
-          <el-breadcrumb-item :to="{ path: '/ChildInterval'}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/ChildDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/ChildInterval', query: { showEnable: this.showEnable} }">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
@@ -73,6 +73,9 @@ export default {
     init() {
       this.preLocation = this.$route.query.preLocation
       this.dataSourceName = this.$route.query.dataSourceName
+      if (this.$route.query.showEnable !== undefined) {
+        this.showEnable = this.$route.query.showEnable
+      }
       this.getIntervals()
     },
     refresh() {
@@ -94,7 +97,7 @@ export default {
     },
     async getIntervalsByDataSourceName(searchDimension, searchValue, sortDimension, isDescending) {
       let url
-      if(this.showEnable) {
+      if (this.showEnable) {
         url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals?simple`
       } else {
         url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableIntervals`
@@ -128,7 +131,7 @@ export default {
       return convertData
     },
     getSegments(intervalName) {
-      this.$router.push({ path: '/ChildSegment', query: { preLocation: 'interval', dataSourceName: this.dataSourceName, intervalName: intervalName } })
+      this.$router.push({ path: '/ChildSegment', query: { showEnable: this.showEnable, preLocation: 'interval', dataSourceName: this.dataSourceName, intervalName: intervalName } })
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
