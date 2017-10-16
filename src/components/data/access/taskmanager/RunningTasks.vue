@@ -18,8 +18,7 @@
         </el-form>
 
         <div class="table" style=" margin-left:20px;">
-            <el-table :data="showTableData" border stripe style="width: 100%" :row-key="getRowKey" 
-            :expand-row-keys="expandRowKeys" @sort-change="sortChange" @expand="expand">
+            <el-table :data="showTableData" border stripe style="width: 100%" :row-key="getRowKey" :expand-row-keys="expandRowKeys" @sort-change="sortChange" @expand="expand">
                 <el-table-column type="expand">
                     <template scope="props">
                         <el-form label-position="left" inline class="demo-table-expand">
@@ -96,7 +95,8 @@ export default {
             sourceData: [],
             formInline: {
                 searchValue1: ''
-            }
+            },
+            expandRequestTimeout: 5000
         }
     },
     created: function() {
@@ -133,35 +133,35 @@ export default {
         getRowKey(row) {
             return row.id
         },
-        findInExpandRowKeys(target){
-            return  _.findIndex(this.expandRowKeys, s => {
+        findInExpandRowKeys(target) {
+            return _.findIndex(this.expandRowKeys, s => {
                 return s === target
             })
         },
         showExpand(row) {
             const index = this.findInExpandRowKeys(row.id)
-            index < 0 ? this.expand(row,true) : this.expand(row,false)
+            index < 0 ? this.expand(row, true) : this.expand(row, false)
 
         },
         async expand(row, expanded) {
             if (expanded) {
-                const index = _.findIndex(this.expandRowKeys, s=>{return s === row.id}) 
-                if(index < 0){
+                const index = _.findIndex(this.expandRowKeys, s => { return s === row.id })
+                if (index < 0) {
                     this.expandRowKeys.push(row.id)
                 }
                 try {
                     row.status = (await this.getTaskStatus(row.id)).status.status
                 } catch (e) {
-                    console.log('err')
+                    e.status === 408 ? console.log('get status timeout') :console.log('err')
                 }
                 row.offset = await this.getOffset(row).catch(err => {
-                    console.log('err')
-                }) 
-            }else{
-                 const index = _.findIndex(this.expandRowKeys, s=>{return s === row.id}) 
-                 if(index >=0){
-                     this.expandRowKeys.splice(index,1)
-                 }
+                   err.status === 408 ? console.log('get offset timeout') :console.log('err')
+                })
+            } else {
+                const index = _.findIndex(this.expandRowKeys, s => { return s === row.id })
+                if (index >= 0) {
+                    this.expandRowKeys.splice(index, 1)
+                }
             }
         },
         async getOffset(row) {
@@ -169,7 +169,8 @@ export default {
             const { data } = await this.$http.get(url, {
                 params: {
                     location: row.location
-                }
+                },
+                _timeout: this.expandRequestTimeout
             })
             return data
         },
@@ -181,7 +182,7 @@ export default {
         },
         async getTaskStatus(taskId) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}/status`
-            const { data } = await this.$http.get(url)
+            const { data } = await this.$http.get(url, { _timeout: this.expandRequestTimeout })
             return data
 
         },
