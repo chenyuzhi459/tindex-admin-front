@@ -315,8 +315,14 @@ export default {
     async addRule() {
       const remindMessage = `${this.$t('message.dataSource.addRuleWarning')}`
       try {
-        const postData = this.getInputRule()[0]
+        let postData = new Object()
+        postData = this.getInputRule() 
         console.log(postData,"postData")
+        // resoult = this.getInputRule()
+        // console.log(resoult,"resoult")
+        // const postData = this.$api.methods.JSONUtils.toJsonObject(resoult)
+        console.log(postData,"postData") 
+        // console.log(postData,"postData")
         // const postData = await this.$common.methods.JSONUtils.toJsonObject(this.dialogMessage)
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
           confirmButtonText: this.$t('message.common.confirm'),
@@ -360,6 +366,7 @@ export default {
         rule["type"] = this.form.actionValue + "Forever"
       }
       rules.push(rule)
+      // rules.push(JSON.stringify(rule))
       return rules
     },
     async getDataSourceByName(dataSourceName) {
