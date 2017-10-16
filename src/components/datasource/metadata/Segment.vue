@@ -158,19 +158,21 @@ export default {
       } else {
         url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments`
       }
+      console.log(url)
       let intervals = new Array()
       intervals.push(this.intervalName)
-      const response = await this.$http.post(url, intervals)
-      for (let i = 0; i < response.data.length; i++) {
-        response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
-      }
-      this.segments = []
-      this.$common.methods.pushData(response.data, {
+      const response = await this.$http.post(url, intervals, {
         params: {
           isDescending: isDescending,
           searchValue: searchValue
         }
-      }, this.segments)
+      })
+      for (let i = 0; i < response.data.length; i++) {
+        response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
+      }
+      console.log(response.data)
+      this.segments = []
+      this.$common.methods.pushData(response.data,this.segments)
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
 
     },

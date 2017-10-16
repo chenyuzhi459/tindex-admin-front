@@ -31,10 +31,10 @@
         </el-table-column>
 
         <!-- <el-table-column :label="$t('message.dataSource.segments')" align="center"> -->
-          <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.interval.segmentCount')" width="120"></el-table-column>
-          <el-table-column v-if="showEnable" prop="properties.segments.size" :label="$t('message.common.size')" width="95"></el-table-column>
-          <el-table-column v-if="showEnable" prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
-          <el-table-column v-if="showEnable" prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
+        <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.interval.segmentCount')" width="120"></el-table-column>
+        <el-table-column v-if="showEnable" prop="properties.segments.size" :label="$t('message.common.size')" width="95"></el-table-column>
+        <el-table-column v-if="showEnable" prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
+        <el-table-column v-if="showEnable" prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
         <!-- </el-table-column> -->
         <el-table-column v-if="showEnable" :label="$t('message.dataSource.rules')" width="170">
           <template scope="scope">
@@ -87,7 +87,7 @@
         </el-form-item>
         <br></br>
         <el-form-item>
-          <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="30"></el-input>
+          <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="45"></el-input>
         </el-form-item>
 
       </el-form>
@@ -130,32 +130,33 @@ export default {
       form: {
         actionOptions: [{
           value: 'drop',
-          label: 'drop'
+          label: 'Drop'
         }, {
           value: 'load',
-          label: 'load'
+          label: 'Load'
         }, {
           value: 'broadcast',
-          label: 'broadcast'
+          label: 'Broadcast'
         }],
         actionValue: '',
         granularityOptions: [{
           value: 'period',
-          label: 'period'
+          label: 'Period'
         }, {
           value: 'interval',
-          label: 'interval'
+          label: 'Interval'
         }, {
           value: 'forever',
-          label: 'forever'
+          label: 'Forever'
         }],
-        granularityValue: ''
+        granularityValue: '',
+        inputMessage: ''
       }
 
     }
   },
   created: function() {
-    if(this.$route.query.showEnable !== undefined) {
+    if (this.$route.query.showEnable !== undefined) {
       this.showEnable = this.$route.query.showEnable
     }
     this.init()
@@ -198,7 +199,6 @@ export default {
           searchValue: searchValue
         }
       })
-      console.log(url)
       for (let i = 0; i < response.data.length; i++) {
         const size = response.data[i]['properties']['segments']['size']
         response.data[i]['properties']['segments']['size'] = this.$common.methods.conver(size)
@@ -229,7 +229,7 @@ export default {
 
     },
     async onSearch() {
-      if(this.showEnable) {
+      if (this.showEnable) {
         this.getDataSources(this.isDescending, "name", this.formInline.name)
       } else {
         this.getDataSourcesDisable(this.isDescending, "name", this.formInline.name)
@@ -272,8 +272,8 @@ export default {
     editRule(dataSourceName) {
       this.ruleDataSource = dataSourceName
       this.showCancle = true
-      this.confirmType = 'addRule'
       this.dialogForInfo = false
+      this.confirmType = 'addRule'
       this.configDialog(this.$t('message.dataSource.rulesInfo'), '', true, 'small', { minRows: 15, maxRows: 25 })
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
@@ -299,10 +299,10 @@ export default {
     },
     handleSort(column) {
       this.isDescending = column.order === 'descending' ? true : false
-      if(this.showEnable) {
-        this.getDataSources(this.isDescending, column.prop,this.formInline.name)
+      if (this.showEnable) {
+        this.getDataSources(this.isDescending, column.prop, this.formInline.name)
       } else {
-        this.getDataSourcesDisable(this.isDescending, column.prop,this.formInline.name)
+        this.getDataSourcesDisable(this.isDescending, column.prop, this.formInline.name)
       }
     },
 
@@ -315,10 +315,9 @@ export default {
     async addRule() {
       const remindMessage = `${this.$t('message.dataSource.addRuleWarning')}`
       try {
-        // if(this.dialogMessage ==='') {
-        //   alert("cant be null")
-        // } 
-        const postData = await this.$common.methods.JSONUtils.toJsonObject(this.dialogMessage)
+        const postData = this.getInputRule()[0]
+        console.log(postData,"postData")
+        // const postData = await this.$common.methods.JSONUtils.toJsonObject(this.dialogMessage)
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
           confirmButtonText: this.$t('message.common.confirm'),
           cancelButtonText: this.$t('message.common.cancle'),
@@ -346,6 +345,22 @@ export default {
       } catch (e) {
 
       }
+    },
+    getInputRule() {
+      const rules = new Array()
+      const rule = new Map()
+
+      if (this.form.granularityValue === "interval") {
+        rule["type"] = this.form.actionValue + "ByInterval"
+        rule["interval"] = this.form.inputMessage
+      } else if (this.form.granularityValue === "period") {
+        rule["type"] = this.form.actionValue + "ByPeriod"
+        rule["period"] = this.form.inputMessage
+      } else {
+        rule["type"] = this.form.actionValue + "Forever"
+      }
+      rules.push(rule)
+      return rules
     },
     async getDataSourceByName(dataSourceName) {
       const url = `${this.$common.apis.mDataSource}/${dataSourceName}?full`
