@@ -88,11 +88,13 @@
         <br></br>
         <el-form-item>
           <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="45"></el-input>
+          <div style="color: red">{{errorMessage}}</div>
         </el-form-item>
 
       </el-form>
 
       <span slot="footer" class="dialog-footer">
+        <!-- <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.dataSource.addRule')}}</el-button> -->
         <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
         <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
       </span>
@@ -128,6 +130,7 @@ export default {
       showInput: false,
       dialogForInfo: true,
       form: {
+        inputPrompt: '',
         actionOptions: [{
           value: 'drop',
           label: 'Drop'
@@ -151,8 +154,8 @@ export default {
         }],
         granularityValue: '',
         inputMessage: ''
-      }
-
+      },
+      errorMessage: ''
     }
   },
   created: function() {
@@ -308,22 +311,32 @@ export default {
 
     clickConfirm() {
       if (this.confirmType === "addRule") {
-        this.addRule()
+        if (this.checkRuleInfo()) {
+          this.addRule()
+          this.dialogVisible = false
+
+        }
+      } else {
+        this.dialogVisible = false
       }
-      this.dialogVisible = false
+    },
+    checkRuleInfo() {
+      if (this.form.actionValue === '') {
+        this.errorMessage = this.$t('message.error.chooseAction')
+        return
+      }
+      if (this.form.granularityValue === '') {
+        this.errorMessage = this.$t('message.error.chooseGranularity')
+        return
+      }
+      if (this.showInput) {
+
+      }
     },
     async addRule() {
-      const remindMessage = `${this.$t('message.dataSource.addRuleWarning')}`
+      const remindMessage = this.$t('message.dataSource.addRuleWarning')
       try {
-        let postData = new Object()
-        postData = this.getInputRule() 
-        console.log(postData,"postData")
-        // resoult = this.getInputRule()
-        // console.log(resoult,"resoult")
-        // const postData = this.$api.methods.JSONUtils.toJsonObject(resoult)
-        console.log(postData,"postData") 
-        // console.log(postData,"postData")
-        // const postData = await this.$common.methods.JSONUtils.toJsonObject(this.dialogMessage)
+        const postData = this.getInputRule()
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
           confirmButtonText: this.$t('message.common.confirm'),
           cancelButtonText: this.$t('message.common.cancle'),
@@ -332,8 +345,6 @@ export default {
         })
         try {
           const url = `${this.$common.apis.rules}/${this.ruleDataSource}`
-          console.log(url)
-
           const editResponse = await this.$http.post(url, postData, {
             header: { ContentType: "application/json" }
           })
@@ -354,8 +365,7 @@ export default {
     },
     getInputRule() {
       const rules = new Array()
-      const rule = new Map()
-
+      const rule = {}
       if (this.form.granularityValue === "interval") {
         rule["type"] = this.form.actionValue + "ByInterval"
         rule["interval"] = this.form.inputMessage
@@ -366,7 +376,6 @@ export default {
         rule["type"] = this.form.actionValue + "Forever"
       }
       rules.push(rule)
-      // rules.push(JSON.stringify(rule))
       return rules
     },
     async getDataSourceByName(dataSourceName) {

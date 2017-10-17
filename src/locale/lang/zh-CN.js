@@ -265,6 +265,10 @@ export default {
       close: '关闭',
       enable: '恢复'
     },
+    error: {
+      chooseAction: '操作不能为空! 请选择一种操作',
+      chooseGranularity: '操作粒度不能为空! 请选择一种操作粒度'
+    },
     systemConfig: {
       systemConfigTitle: "系统配置",
       updateConfig: "你确认要更新配置吗？"

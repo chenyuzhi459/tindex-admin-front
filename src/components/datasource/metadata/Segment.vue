@@ -33,7 +33,6 @@
           <template scope="scope">
             <a class="click-link" @click="getSegmentInfo(scope.row.identifier)">{{scope.row.identifier}}</a>
           </template>
-
         </el-table-column>
         <el-table-column v-if="showEnable" prop="segmentSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.segment.more')">
@@ -62,7 +61,7 @@
         <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
         </el-input>
         <span slot="footer" class="dialog-footer">
-          <el-button v-if=showCancle @click="dialogVisible = false">{{$t('message.segment.cancle')}}</el-button>
+          <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.segment.cancle')}}</el-button>
           <el-button type="primary" @click="dialogVisible = false">{{$t('message.segment.confirm')}}</el-button>
         </span>
       </el-dialog>
@@ -102,7 +101,7 @@ export default {
     this.intervalName = this.$route.query.intervalName
     this.preLocation = this.$route.query.preLocation
     if(this.$route.query.showEnable !== undefined) {
-      this.showEnable = this.$route.query.showEnable
+      this.showEnable = eval(this.$route.query.showEnable)
       this.createdShowEnable = this.showEnable
     }
     this.init()
@@ -150,7 +149,6 @@ export default {
       this.getSegmentsForshow(this.preLocation, this.isDescending, this.formInline.name)
     },
     switchChange() {
-      console.log(this.showEnable)
       this.init()
     },
     async getSegmentsByInterval(isDescending, searchValue) {
@@ -160,7 +158,6 @@ export default {
       } else {
         url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments`
       }
-      console.log(url)
       let intervals = new Array()
       intervals.push(this.intervalName)
       const response = await this.$http.post(url, intervals, {
@@ -172,7 +169,6 @@ export default {
       for (let i = 0; i < response.data.length; i++) {
         response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
       }
-      console.log(response.data)
       this.segments = []
       this.$common.methods.pushData(response.data,this.segments)
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
@@ -294,3 +290,6 @@ export default {
 }
 </script>
 
+<style>
+@import "../../../../static/css/link.css";
+</style>

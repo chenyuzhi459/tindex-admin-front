@@ -71,17 +71,11 @@ export default {
     }
   },
   created: function() {
-    console.log(this.showEnable)
     if (this.$route.query.showEnable !== undefined) {
-      console.log(this.$route.query.showEnable,"definde")
-      this.showEnable = this.$route.query.showEnable
+      this.showEnable = eval(this.$route.query.showEnable)
       this.createdShowEnable = this.showEnable
     }
-    console.log(this.showEnable)
-    console.log(this.createdShowEnable)
     this.init()
-        console.log(this.showEnable,"end")
-    console.log(this.createdShowEnable)
   },
   methods: {
     init() {
@@ -118,13 +112,10 @@ export default {
     async getIntervalsByDataSourceName(searchDimension, searchValue, sortDimension, isDescending) {
       let url
       let data
-      console.log(this.createdShowEnable,"create")
-      console.log(this.showEnable,"show")
-
       if (!this.createdShowEnable && this.showEnable) {
         data = ''
       } else {
-        if (this.showEnable) {
+        if (this.showEnable === true) {
           url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals?simple`
         } else {
           url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableIntervals`
