@@ -93,7 +93,8 @@ export default {
         name: ''
       },
       showEnable: true,
-      isDescending: true
+      isDescending: true,
+      createdShowEnable: false
     }
   },
   created: function() {
@@ -102,6 +103,7 @@ export default {
     this.preLocation = this.$route.query.preLocation
     if(this.$route.query.showEnable !== undefined) {
       this.showEnable = this.$route.query.showEnable
+      this.createdShowEnable = this.showEnable
     }
     this.init()
   },

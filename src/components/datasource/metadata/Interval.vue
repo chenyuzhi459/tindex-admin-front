@@ -29,11 +29,14 @@
             <a class="click-link" @click="getSegments(scope.row.name)">{{scope.row.name}}</a>
           </template>
         </el-table-column>
-        <el-table-column prop="segmentCount" :label="$t('message.interval.segmentCount')"></el-table-column>
-        <el-table-column prop="intervalSize" :label="$t('message.common.size')"></el-table-column>
+        <el-table-column v-if="showEnable" prop="segmentCount" :label="$t('message.interval.segmentCount')"></el-table-column>
+        <el-table-column v-if="showEnable" prop="intervalSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.interval.more')">
           <template scope="scope">
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.interval.segments')}}</el-button>
+            <el-button v-if="showEnable" size="mini" @click="disableInterval(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="enableInterval(scope.row.identifier)" type="success">{{$t('message.common.enable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="deleteInterval(scope.row.identifier)" type="danger">{{$t('message.common.delete')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -63,24 +66,41 @@ export default {
       formInline: {
         name: ''
       },
-      showEnable: true
+      showEnable: false,
+      createdShowEnable: false
     }
   },
   created: function() {
+    console.log(this.showEnable)
+    if (this.$route.query.showEnable !== undefined) {
+      console.log(this.$route.query.showEnable,"definde")
+      this.showEnable = this.$route.query.showEnable
+      this.createdShowEnable = this.showEnable
+    }
+    console.log(this.showEnable)
+    console.log(this.createdShowEnable)
     this.init()
+        console.log(this.showEnable,"end")
+    console.log(this.createdShowEnable)
   },
   methods: {
     init() {
       this.preLocation = this.$route.query.preLocation
       this.dataSourceName = this.$route.query.dataSourceName
-      if (this.$route.query.showEnable !== undefined) {
-        this.showEnable = this.$route.query.showEnable
-      }
       this.getIntervals()
     },
     refresh() {
       this.formInline.name = ''
       this.init()
+    },
+    async disableInterval(intervalName) {
+
+    },
+    async enableInterval(intervalName) {
+
+    },
+    async deleteInterval(intervalName) {
+
     },
     getIntervals() {
       this.getIntervalsByDataSourceName('interval', '', 'interval', this.isDescending)
@@ -97,20 +117,29 @@ export default {
     },
     async getIntervalsByDataSourceName(searchDimension, searchValue, sortDimension, isDescending) {
       let url
-      if (this.showEnable) {
-        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals?simple`
+      let data
+      console.log(this.createdShowEnable,"create")
+      console.log(this.showEnable,"show")
+
+      if (!this.createdShowEnable && this.showEnable) {
+        data = ''
       } else {
-        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableIntervals`
-      }
-      const response = await this.$http.get(url, {
-        params: {
-          searchDimension: searchDimension,
-          searchValue: searchValue,
-          sortDimension: sortDimension,
-          isDescending: isDescending
+        if (this.showEnable) {
+          url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals?simple`
+        } else {
+          url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableIntervals`
         }
-      })
-      const data = this.getDataFromResponse(response)
+        const response = await this.$http.get(url, {
+          params: {
+            searchDimension: searchDimension,
+            searchValue: searchValue,
+            sortDimension: sortDimension,
+            isDescending: isDescending
+          }
+        })
+        data = this.getDataFromResponse(response)
+      }
+
       this.intervals = []
       this.$common.methods.pushData(data, this.intervals)
 
@@ -121,12 +150,20 @@ export default {
     },
     getDataFromResponse(response) {
       const convertData = new Array()
-      for (let key in response.data) {
-        let itemMap = new Map()
-        itemMap["name"] = key
-        itemMap["segmentCount"] = response.data[key]["count"]
-        itemMap["intervalSize"] = this.$common.methods.conver(response.data[key]["size"])
-        convertData.push(itemMap)
+      if (this.showEnable === true) {
+        for (let key in response.data) {
+          let itemMap = new Map()
+          itemMap["name"] = key
+          itemMap["segmentCount"] = response.data[key]["count"]
+          itemMap["intervalSize"] = this.$common.methods.conver(response.data[key]["size"])
+          convertData.push(itemMap)
+        }
+      } else {
+        for (let i = 0; i < response.data.length; i++) {
+          let itemMap = new Map()
+          itemMap["name"] = response.data[i]
+          convertData.push(itemMap)
+        }
       }
       return convertData
     },
