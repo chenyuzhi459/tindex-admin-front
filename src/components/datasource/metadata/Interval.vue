@@ -3,7 +3,7 @@
     <div class="table" style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
-          <el-breadcrumb-item :to="{ path: '/ChildDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/mDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
           <el-breadcrumb-item :to="{ path: '/ChildInterval', query: { showEnable: this.showEnable} }">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
@@ -34,9 +34,9 @@
         <el-table-column :label="$t('message.interval.more')">
           <template scope="scope">
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.interval.segments')}}</el-button>
-            <el-button v-if="showEnable" size="mini" @click="disableInterval(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
-            <el-button v-if="!showEnable" size="mini" @click="enableInterval(scope.row.identifier)" type="success">{{$t('message.common.enable')}}</el-button>
-            <el-button v-if="!showEnable" size="mini" @click="deleteInterval(scope.row.identifier)" type="danger">{{$t('message.common.delete')}}</el-button>
+            <el-button v-if="showEnable" size="mini" @click="disableInterval(scope.row.name)" type="warning">{{$t('message.common.disable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="enableInterval(scope.row.name)" type="success">{{$t('message.common.enable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="deleteInterval(scope.row.name)" type="danger">{{$t('message.common.delete')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -87,13 +87,62 @@ export default {
       this.init()
     },
     async disableInterval(intervalName) {
-
+      const intervalNameProcessed = intervalName.replace('/', '_')
+      const remindMessage = `${this.$t('message.common.disableWarning')}\n${intervalName}`
+      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals/${intervalNameProcessed}/disable`
+      const successMessage = this.$t('message.common.disableSuccess')
+      const failMessage = this.$t('message.common.disableFail')
+      let data = new Array()
+      data[0] = intervalName
+      console.log(data)
+      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete', data)
     },
     async enableInterval(intervalName) {
-
+      const intervalNameProcessed = intervalName.replace('/', '_')
+      const remindMessage = `${this.$t('message.common.enableWarning')}\n${intervalName}`
+      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals/${intervalNameProcessed}/enable`
+      const successMessage = this.$t('message.common.enableSuccess')
+      const failMessage = this.$t('message.common.enableFail')
+      let data = new Array()
+      data[0] = intervalName
+      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'post', data)
     },
     async deleteInterval(intervalName) {
-
+      const intervalNameProcessed = intervalName.replace('/', '_')
+      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${intervalName}`
+      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals/${intervalNameProcessed}/delete`
+      const successMessage = this.$t('message.common.deleteSuccess')
+      const failMessage = this.$t('message.common.deleteFail')
+      let data = new Array()
+      data[0] = intervalName
+      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete', data)
+    },
+    async confirmAndGetResult(url, remindMessage, successMessage, failMessage, methodType) {
+      const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+        confirmButtonText: this.$t('message.common.confirm'),
+        cancelButtonText: this.$t('message.common.cancle'),
+        closeOnClickModal: false,
+        type: 'warning'
+      })
+      try {
+        let handleResponse
+        if (methodType === 'delete') {
+          console.log(url)
+          handleResponse = await this.$http.delete(url)
+        } else {
+          handleResponse = await this.$http.post(url)
+        }
+        window.setTimeout(this.init, 500)
+        this.$message({
+          type: 'success',
+          message: successMessage
+        })
+      } catch (err) {
+        this.$message({
+          type: 'warning',
+          message: failMessage
+        })
+      }
     },
     getIntervals() {
       this.getIntervalsByDataSourceName('interval', this.formInline.name, 'interval', this.isDescending)

@@ -183,7 +183,8 @@ export default {
       granularityInfo: '请选择操作粒度',
       operateInfo: '请选择操作',
       periodInputInfo: '请输入一个有效的 ISO 8601 period',
-      intervalInputInfo: '请输入一个有效的 ISO 8601 interval'
+      intervalInputInfo: '请输入一个有效的 ISO 8601 interval',
+      addRule: '添加规则'
     },
     interval: {
       intervalTitle: "区间",
@@ -242,7 +243,7 @@ export default {
       warning: "提醒",
       deleteWarning: "你确定要删除：",
       disableWarning: '你确定要失效:',
-      enableWarning: '你确定要回复:',
+      enableWarning: '你确定要恢复:',
       enableSuccess: '恢复成功!',
       enableFail: '恢复失败!',
       deleteSuccess: "删除成功!",

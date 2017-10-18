@@ -96,14 +96,8 @@ export default new Router({
         //   path: '/drag',
         //   component: resolve => require(['../components/page/DragList.vue'], resolve)    // 拖拽列表组件
         // },
-
         {
-          path: '/dataSourceManager',
-          component: resolve => require(['../components/datasource/DataSourceManager.vue'], resolve)    // 拖拽列表组件
-        },
-
-        {
-          path: '/ChildDataSource',
+          path: '/mDataSource',
           component: resolve => require(['../components/datasource/metadata/DataSourceManager.vue'], resolve)    // 拖拽列表组件
         },
         {
@@ -113,31 +107,6 @@ export default new Router({
         {
           path: '/ChildSegment',
           component: resolve => require(['../components/datasource/metadata/Segment.vue'], resolve)    // 拖拽列表组件
-        },
-
-        
-        // {
-        //   path: '/ClusterDataSource',
-        //   component: resolve => require(['../components/datasource/cluster/DataSource.vue'], resolve)    // 拖拽列表组件
-        // },
-        {
-          path: '/ClusterInterval',
-          component: resolve => require(['../components/datasource/cluster/Interval.vue'], resolve)    // 拖拽列表组件
-        },
-        {
-          path: '/ClusterSegment',
-          component: resolve => require(['../components/datasource/cluster/Segment.vue'], resolve)    // 拖拽列表组件
-        },
-
-
-
-        {
-          path: '/dataSource',
-          component: resolve => require(['../components/datasource/cluster/DataSourceManager.vue'], resolve)    // 拖拽列表组件
-        },
-        {
-          path: '/mDataSource',
-          component: resolve => require(['../components/datasource/metadata/DataSourceManager.vue'], resolve)    // 拖拽列表组件
         },
         {
           path: '/lookupCoordinator',

@@ -1,7 +1,7 @@
 <template>
     <div class="header">
         <div class="logo">
-            <span>
+            <span class="title" @click="clickTitle">
                 {{$t("message.header.title")}}
             </span>
         </div>
@@ -65,6 +65,9 @@ export default {
             if (this._i18n.locale === command) return
             this.$common.methods.setCookie('lanuage', command)
             history.go(0)
+        },
+        clickTitle() {
+          this.$router.push('/supervisorManager')
         }
     }
 }
@@ -130,5 +133,10 @@ export default {
 
 .el-dropdown-menu__item {
     text-align: center;
+}
+
+.title:hover {
+  cursor: pointer;
+  /* text-decoration: underline; */
 }
 </style>

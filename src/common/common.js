@@ -88,7 +88,6 @@ const conver = (limit) => {
   return sizestr;  
 }  
 
-
 export default {
     pushData,
     JSONUtils,
@@ -99,5 +98,5 @@ export default {
     getCookie,
     delCookie,
     fillObject,
-    conver
+    conver,
 }

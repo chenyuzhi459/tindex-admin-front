@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar">
-    <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" unique-opened router>
+    <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" unique-opened router @open="openSub">
       <template v-for="item in items">
         <template v-if="item.subs">
           <el-submenu :index="item.index">
@@ -58,7 +58,7 @@ export default {
         {
           index: 'lookup',
           title: this.$t('message.sideBar.lookup.title'),
-          route: { path: '/lookupCoordinator' },
+          route: { path: '/mDataSource' },
           subs: [
             {
               index: 'lookupCoordinator',
@@ -150,6 +150,16 @@ export default {
   computed: {
     onRoutes() {
       return this.$route.path.replace('/', '');
+    }
+  },
+  methods: {
+    openSub(index) {
+      for (let i = 0; i < this.items.length; i++) {
+        if (index === this.items[i]['index']) {
+          this.$router.push(this.items[i]['subs'][0]['index'])
+          break
+        }
+      }
     }
   }
 }

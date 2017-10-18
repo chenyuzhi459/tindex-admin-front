@@ -3,7 +3,7 @@
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
-          <el-breadcrumb-item :to="{ path: '/ChildDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/mDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
           <el-breadcrumb-item v-if="showIntervalName" :to="{ path: '/ChildInterval', query: { showEnable: this.showEnable, dataSourceName: dataSourceName}}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
           <el-breadcrumb-item :to="{ path: '/ChildSegment', query: { showEnable: this.showEnable}  }">{{$t('message.segment.segmentTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
@@ -52,9 +52,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                            font-size: 16px;
-                                            font-weight: 700;
-                                            color: #1f2d3d;">
+                                                      font-size: 16px;
+                                                      font-weight: 700;
+                                                      color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -169,16 +169,16 @@ export default {
           searchValue: searchValue
         }
       })
-        for (let i = 0; i < response.data.length; i++) {
-          if(this.showEnable) {
+      for (let i = 0; i < response.data.length; i++) {
+        if (this.showEnable) {
           response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
-          } else {
-            const item = {}
-            item["identifier"] = response.data[i]
-            response.data[i] = item
-          }
+        } else {
+          const item = {}
+          item["identifier"] = response.data[i]
+          response.data[i] = item
         }
-          
+      }
+
       console.log(url)
       console.log(response.data, isDescending)
       this.segments = []
@@ -201,87 +201,54 @@ export default {
       this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "small", { minRows: 15, maxRows: 40 })
 
     },
+    async enableSegment(segmentName) {
+      const remindMessage = `${this.$t('message.common.enableWarning')}\n${segmentName}`
+      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/enable`
+      const successMessage = this.$t('message.common.enableSuccess')
+      const failMessage = this.$t('message.common.enableFail')
+      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'post')
+    },
     async disableSegment(segmentName) {
       const remindMessage = `${this.$t('message.common.disableWarning')}\n${segmentName}`
-      try {
-        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
-          confirmButtonText: this.$t('message.common.confirm'),
-          cancelButtonText: this.$t('message.common.cancle'),
-          closeOnClickModal: false,
-          type: 'warning'
-        })
-        try {
-          const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/disable`
-          const deleteResponse = await this.$http.delete(url)
-          window.setTimeout(this.init, 500)
-          this.$message({
-            type: 'success',
-            message: this.$t('message.common.disableSuccess')
-          })
-        } catch (err) {
-          this.$message({
-            type: 'warning',
-            message: this.$t('message.common.disableFail')
-          })
-        }
-      } catch (e) {
-
-      }
+      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/disable`
+      const successMessage = this.$t('message.common.disableSuccess')
+      const failMessage = this.$t('message.common.disableFail')
+      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')
     },
     async deleteSegment(segmentName) {
       const remindMessage = `${this.$t('message.common.deleteWarning')}\n${segmentName}`
+      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/delete`
+      const successMessage = this.$t('message.common.deleteSuccess')
+      const failMessage = this.$t('message.common.deleteFail')
+      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')
+    },
+    async confirmAndGetResult(url, remindMessage, successMessage, failMessage, methodType) {
+      const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+        confirmButtonText: this.$t('message.common.confirm'),
+        cancelButtonText: this.$t('message.common.cancle'),
+        closeOnClickModal: false,
+        type: 'warning'
+      })
       try {
-        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
-          confirmButtonText: this.$t('message.common.confirm'),
-          cancelButtonText: this.$t('message.common.cancle'),
-          closeOnClickModal: false,
-          type: 'warning'
-        })
-        try {
-          const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/delete`
-          const deleteResponse = await this.$http.delete(url)
-          window.setTimeout(this.init, 500)
-          this.$message({
-            type: 'success',
-            message: this.$t('message.common.deleteSuccess')
-          })
-        } catch (err) {
-          this.$message({
-            type: 'warning',
-            message: this.$t('message.common.deleteFail')
-          })
+        let handleResponse
+        if (methodType === 'delete') {
+          handleResponse = await this.$http.delete(url)
+        } else {
+          handleResponse = await this.$http.post(url)
         }
-      } catch (e) {
-
+        window.setTimeout(this.init, 500)
+        this.$message({
+          type: 'success',
+          message: successMessage
+        })
+      } catch (err) {
+        this.$message({
+          type: 'warning',
+          message: failMessage
+        })
       }
     },
-    async enableSegment(segmentName) {
-      const remindMessage = `${this.$t('message.common.enableWarning')}\n${segmentName}`
-      try {
-        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
-          confirmButtonText: this.$t('message.common.confirm'),
-          cancelButtonText: this.$t('message.common.cancle'),
-          closeOnClickModal: false,
-          type: 'warning'
-        })
-        try {
-          const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/enable`
-          const deleteResponse = await this.$http.post(url)
-          window.setTimeout(this.init, 500)
-          this.$message({
-            type: 'success',
-            message: this.$t('message.common.enableSuccess')
-          })
-        } catch (err) {
-          this.$message({
-            type: 'warning',
-            message: this.$t('message.common.enableFail')
-          })
-        }
-      } catch (e) {
 
-      }
-    },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
       this.dialogTitle = dialogTitle
       this.dialogMessage = dialogMessage

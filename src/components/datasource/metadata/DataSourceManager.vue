@@ -3,7 +3,7 @@
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
-          <el-breadcrumb-item :to="{ path: '/ChildDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/mDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
@@ -49,9 +49,9 @@
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
-            <el-button v-if="showEnable" size="mini" @click="disableDataSource(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
-            <el-button v-if="!showEnable" size="mini" @click="enableDataSource(scope.row.identifier)" type="success">{{$t('message.common.enable')}}</el-button>
-            <el-button v-if="!showEnable" size="mini" @click="deleteDataSource(scope.row.identifier)" type="danger">{{$t('message.common.delete')}}</el-button>
+            <el-button v-if="showEnable" size="mini" @click="disableDataSource(scope.row.name)" type="warning">{{$t('message.common.disable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="enableDataSource(scope.row.name)" type="success">{{$t('message.common.enable')}}</el-button>
+            <el-button v-if="!showEnable" size="mini" @click="deleteDataSource(scope.row.name)" type="danger">{{$t('message.common.delete')}}</el-button>
             <!-- <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button> -->
           </template>
         </el-table-column>
@@ -84,16 +84,22 @@
             <el-option v-for="item in form.granularityOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
-        <br></br>
+        <div>
+          <el-form-item :label="form.granularityValue">
+            <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="40"></el-input>
+          </el-form-item>
+          <el-form-item v-if="form.actionValue === 'load'" label="_default_tier">
+            <el-input-number v-model="form.number" :min="1" :max="10"></el-input-number>
+            <!-- <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="40"></el-input> -->
+          </el-form-item>
+        </div>
         <el-form-item>
-          <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="45"></el-input>
           <div style="color: red">{{errorMessage}}</div>
         </el-form-item>
-
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <!-- <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.dataSource.addRule')}}</el-button> -->
+        <el-button v-if="confirmType==='addRule'" type="warning" @click="addARule">{{$t('message.dataSource.addRule')}}</el-button>
         <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
         <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
       </span>
@@ -153,7 +159,8 @@ export default {
           label: 'Forever'
         }],
         granularityValue: '',
-        inputMessage: ''
+        inputMessage: '',
+        number: 1
       },
       errorMessage: ''
     }
@@ -224,13 +231,51 @@ export default {
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
     async disableDataSource(dataSourceName) {
-
+      const remindMessage = `${this.$t('message.common.disableWarning')}\n${dataSourceName}`
+      const url = `${this.$common.apis.mDataSource}/${dataSourceName}/disable`
+      const successMessage = this.$t('message.common.disableSuccess')
+      const failMessage = this.$t('message.common.disableFail')
+      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')
     },
     async enableDataSource(dataSourceName) {
-
+      const remindMessage = `${this.$t('message.common.enableWarning')}\n${dataSourceName}`
+      const url = `${this.$common.apis.mDataSource}/${dataSourceName}/enable`
+      const successMessage = this.$t('message.common.enableSuccess')
+      const failMessage = this.$t('message.common.enableFail')
+      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'post')
     },
     async deleteDataSource(dataSourceName) {
-
+      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${dataSourceName}`
+      const url = `${this.$common.apis.mDataSource}/${dataSourceName}/delete`
+      const successMessage = this.$t('message.common.deleteSuccess')
+      const failMessage = this.$t('message.common.deleteFail')
+      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')
+    },
+    async confirmAndGetResult(url, remindMessage, successMessage, failMessage, methodType) {
+      const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+        confirmButtonText: this.$t('message.common.confirm'),
+        cancelButtonText: this.$t('message.common.cancle'),
+        closeOnClickModal: false,
+        type: 'warning'
+      })
+      try {
+        let handleResponse
+        if (methodType === 'delete') {
+          handleResponse = await this.$http.delete(url)
+        } else {
+          handleResponse = await this.$http.post(url)
+        }
+        window.setTimeout(this.init, 500)
+        this.$message({
+          type: 'success',
+          message: successMessage
+        })
+      } catch (err) {
+        this.$message({
+          type: 'warning',
+          message: failMessage
+        })
+      }
     },
     async onSearch() {
       if (this.showEnable) {
@@ -368,6 +413,9 @@ export default {
     getInputRule() {
       const rules = new Array()
       const rule = {}
+      if(this.form.actionValue === "load") {
+        rule["tieredReplicants"]["_default_tier"] = this.form.number
+      }
       if (this.form.granularityValue === "interval") {
         rule["type"] = this.form.actionValue + "ByInterval"
         rule["interval"] = this.form.inputMessage
