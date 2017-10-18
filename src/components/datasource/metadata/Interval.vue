@@ -84,7 +84,6 @@ export default {
       this.getIntervals()
     },
     refresh() {
-      this.formInline.name = ''
       this.init()
     },
     async disableInterval(intervalName) {
@@ -97,14 +96,14 @@ export default {
 
     },
     getIntervals() {
-      this.getIntervalsByDataSourceName('interval', '', 'interval', this.isDescending)
+      this.getIntervalsByDataSourceName('interval', this.formInline.name, 'interval', this.isDescending)
     },
     handleSort(column) {
       this.isDescending = column.order === 'descending' ? true : false
       if (column.prop === null) {
         column.prop = 'interval'
       }
-      this.getIntervalsByDataSourceName('interval', '', column.prop, this.isDescending)
+      this.getIntervalsByDataSourceName('interval', this.formInline.name, column.prop, this.isDescending)
     },
     onSearch() {
       this.getIntervalsByDataSourceName('interval', this.formInline.name, 'interval', this.isDescending)

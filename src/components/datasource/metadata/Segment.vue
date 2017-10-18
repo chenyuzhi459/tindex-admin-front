@@ -52,9 +52,9 @@
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
           <div style=" line-height: 1;
-                                        font-size: 16px;
-                                        font-weight: 700;
-                                        color: #1f2d3d;">
+                                            font-size: 16px;
+                                            font-weight: 700;
+                                            color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>
@@ -100,7 +100,7 @@ export default {
     this.dataSourceName = this.$route.query.dataSourceName
     this.intervalName = this.$route.query.intervalName
     this.preLocation = this.$route.query.preLocation
-    if(this.$route.query.showEnable !== undefined) {
+    if (this.$route.query.showEnable !== undefined) {
       this.showEnable = eval(this.$route.query.showEnable)
       this.createdShowEnable = this.showEnable
     }
@@ -115,11 +115,11 @@ export default {
       }
       this.getSegmentsForshow(this.preLocation, this.isDescending, this.formInline.name)
     },
-    getSegmentsForshow(preLocation,isDescending,searchValue) {
-      if(preLocation === "dataSource") {
-        this.getSegmentsByDataSource(isDescending,searchValue)
+    getSegmentsForshow(preLocation, isDescending, searchValue) {
+      if (preLocation === "dataSource") {
+        this.getSegmentsByDataSource(isDescending, searchValue)
       } else {
-        this.getSegmentsByInterval(isDescending,searchValue)
+        this.getSegmentsByInterval(isDescending, searchValue)
       }
     },
 
@@ -130,14 +130,17 @@ export default {
       } else {
         url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments`
       }
+      console.log(url)
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
           searchValue: searchValue
         }
       })
-      for (let i = 0; i < response.data.length; i++) {
-        response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
+      if (this.showEnable) {
+        for (let i = 0; i < response.data.length; i++) {
+          response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
+        }
       }
       this.segments = []
       this.$common.methods.pushData(response.data, this.segments)
@@ -166,16 +169,24 @@ export default {
           searchValue: searchValue
         }
       })
-      for (let i = 0; i < response.data.length; i++) {
-        response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
-      }
+        for (let i = 0; i < response.data.length; i++) {
+          if(this.showEnable) {
+          response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
+          } else {
+            const item = {}
+            item["identifier"] = response.data[i]
+            response.data[i] = item
+          }
+        }
+          
+      console.log(url)
+      console.log(response.data, isDescending)
       this.segments = []
-      this.$common.methods.pushData(response.data,this.segments)
+      this.$common.methods.pushData(response.data, this.segments)
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
 
     },
     refresh() {
-      this.formInline.name = ''
       this.init()
     },
     onSearch() {

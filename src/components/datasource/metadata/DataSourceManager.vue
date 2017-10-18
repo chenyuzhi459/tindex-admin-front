@@ -1,7 +1,6 @@
 <template>
   <div class="main">
     <div style=" margin-left:20px;">
-
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
           <el-breadcrumb-item :to="{ path: '/ChildDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
@@ -104,6 +103,7 @@
 </template>
 
 <script>
+import moment from 'moment-interval'
 export default {
   data() {
     return {
@@ -159,6 +159,7 @@ export default {
     }
   },
   created: function() {
+    console.log(moment.interval('1000000/100').toString(), '====');
     if (this.$route.query.showEnable !== undefined) {
       this.showEnable = this.$route.query.showEnable
     }
@@ -332,6 +333,7 @@ export default {
       if (this.showInput) {
 
       }
+      return true
     },
     async addRule() {
       const remindMessage = this.$t('message.dataSource.addRuleWarning')
