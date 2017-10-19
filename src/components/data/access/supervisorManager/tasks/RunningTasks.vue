@@ -16,44 +16,44 @@
                 <el-button type="primary" size="small" @click="init">{{$t('message.tasks.refresh')}}</el-button>
             </el-form-item>
         </el-form>
-
-        <div class="table" style=" margin-left:20px;">
-            <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange" @expand="expand">
-                <el-table-column type="expand">
-                    <template scope="props">
-                        <el-form label-position="left" inline class="demo-table-expand">
-                            <el-form-item :label="$t('message.tasks.status')">
-                                <span>{{ props.row.status }}</span>
-                            </el-form-item>
-                            <el-form-item :label="$t('message.tasks.offsets')">
-                                <span>{{ props.row.offset }}</span>
-                            </el-form-item>
-                            <el-form-item :label="$t('message.tasks.location')">
-                                <span>{{ props.row.location }}</span>
-                            </el-form-item>
-                            <el-form-item :label="$t('message.tasks.queueInsertTime')">
-                                <span>{{ props.row.queueInsertionTime }}</span>
-                            </el-form-item>
-                        </el-form>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="id" label="id" min-width="150"></el-table-column>
-                <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207"></el-table-column>
-                <el-table-column :label="$t('message.tasks.operation')" width="270">
-                    <template scope="scope">
-                        <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
-                        <el-button size="mini" style="width:35px" type="danger" @click="killTask(scope.row.id)">{{$t('message.tasks.delete')}}</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div class="pagination">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
-                </el-pagination>
+        <template v-if="hasData">
+            <div class="table" style=" margin-left:20px;">
+                <el-table :data="showTableData" border stripe style="width: 100%" :row-key="getRowKey" :expand-row-keys="expandRowKeys" @sort-change="sortChange" @expand="expand">
+                    <el-table-column type="expand">
+                        <template scope="props">
+                            <el-form label-position="left" inline class="demo-table-expand">
+                                <el-form-item :label="$t('message.tasks.status')">
+                                    <span>{{ props.row.status }}</span>
+                                </el-form-item>
+                                <el-form-item :label="$t('message.tasks.offsets')">
+                                    <span>{{ props.row.offset }}</span>
+                                </el-form-item>
+                            </el-form>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="id" min-width="150">
+                        <template scope="scope">
+                            <a class="click-a" @click="showExpand(scope.row)">{{scope.row.id}}</a>
+                        </template>
+                    </el-table-column>
+                    <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207"></el-table-column>
+                    <el-table-column prop="queueInsertionTime" :label="$t('message.tasks.queueInsertTime')" width="210"></el-table-column>
+                    <el-table-column prop="location" :label="$t('message.tasks.location')" width="180"></el-table-column>
+                    <el-table-column :label="$t('message.tasks.operation')" width="270">
+                        <template scope="scope">
+                            <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
+                            <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
+                            <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
+                            <el-button size="mini" style="width:35px" type="danger" @click="killTask(scope.row.id)">{{$t('message.tasks.delete')}}</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
+                    </el-pagination>
+                </div>
             </div>
-            <br>
-        </div>
+        </template>
 
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
@@ -83,6 +83,8 @@ export default {
         return {
             runningTasks: [],
             showTableData: [],
+            hasData: false,
+            expandRowKeys: [],
             dialogMessage: '',
             dialogTitle: '',
             dialogSize: 'full',
@@ -97,7 +99,8 @@ export default {
             sourceData: [],
             formInline: {
                 searchValue1: ''
-            }
+            },
+            expandRequestTimeout: 5000
         }
     },
     created: function() {
@@ -109,11 +112,17 @@ export default {
             this.isDescending = true
             this.isSearching = false
             this.currentPage = 1
+            this.formInline.searchValue1 = ''
             this.getRunningTasks()
         },
         async getRunningTasks() {
             const url = `${this.$common.apis.overlordUrl}/${this.supervisorId}/runningTasks`
             let { data } = await this.$http.get(url)
+            if (data.length === 0) {
+                this.hasData = false
+                return
+            }
+            this.hasData = true
             data.map(s => {
                 s.offset = ''
                 s.status = ''
@@ -129,17 +138,38 @@ export default {
             this.showTableData = []
             this.$common.methods.pushData(resultData, this.showTableData)
         },
+        getRowKey(row) {
+            return row.id
+        },
+        findInExpandRowKeys(target) {
+            return _.findIndex(this.expandRowKeys, s => {
+                return s === target
+            })
+        },
+        showExpand(row) {
+            const index = this.findInExpandRowKeys(row.id)
+            index < 0 ? this.expand(row, true) : this.expand(row, false)
+
+        },
         async expand(row, expanded) {
-            if (expanded) {
+           if (expanded) {
+                const index = _.findIndex(this.expandRowKeys, s => { return s === row.id })
+                if (index < 0) {
+                    this.expandRowKeys.push(row.id)
+                }
                 try {
                     row.status = (await this.getTaskStatus(row.id)).status.status
                 } catch (e) {
-                    console.log('err')
+                    e.status === 408 ? console.log('get status timeout') : console.log('err')
                 }
                 row.offset = await this.getOffset(row).catch(err => {
-                    console.log('err')
+                    err.status === 408 ? console.log('get offset timeout') : console.log('err')
                 })
-
+            } else {
+                const index = _.findIndex(this.expandRowKeys, s => { return s === row.id })
+                if (index >= 0) {
+                    this.expandRowKeys.splice(index, 1)
+                }
             }
         },
         async getOffset(row) {
@@ -147,7 +177,8 @@ export default {
             const { data } = await this.$http.get(url, {
                 params: {
                     location: row.location
-                }
+                },
+                _timeout: this.expandRequestTimeout
             })
             return data
         },
@@ -159,9 +190,7 @@ export default {
         },
         async getTaskStatus(taskId) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}/status`
-            const { data } = await this.$http.get(url)
-            //const message = this.$common.methods.JSONUtils.toString(data, null, 2)
-            //this.configDialog(this.$t('message.tasks.taskStatusTitle'), message, true, "small", {})
+            const { data } = await this.$http.get(url, { _timeout: this.expandRequestTimeout })
             return data
 
         },
@@ -244,7 +273,7 @@ export default {
             if (_.isEqual(this.formInline.searchValue1, '')) {
                 return
             }
-            if(!this.isSearching){
+            if (!this.isSearching) {
                 this.sourceData = this.runningTasks
             }
             this.isSearching = true
@@ -267,6 +296,15 @@ export default {
 </script>
 
 <style>
+.click-a {
+    color: #20a0ff;
+    cursor: pointer;
+}
+
+.click-a:hover {
+    text-decoration: none
+}
+
 .demo-table-expand {
     font-size: 0;
 }

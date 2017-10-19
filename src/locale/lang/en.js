@@ -52,7 +52,9 @@ export default {
             maxMemory: 'maxMemory'
         },
         serversInfo: {
-            servers: 'servers',
+            host: 'host',
+            title: 'Servers Info',
+            server: 'Server',
             tier: 'tier',
             priority: 'priority',
             currSize: 'currSize',
@@ -74,6 +76,7 @@ export default {
             createFailedFront: 'request failed with status',
             createFailedLast: 'please check overlord logs',
             searchTips: 'please input id',
+            searchTopicTips: 'please input topic name',
             search: 'Search',
             refresh: 'Refresh',
             createdTime: 'createdTime',

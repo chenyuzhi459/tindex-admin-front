@@ -78,6 +78,11 @@ export default {
           title: this.$t('message.sideBar.info.title'),
           subs: [
             {
+              index: 'systemConfig',
+              route: { path: '/systemConfig' },
+              title: this.$t('message.sideBar.info.systemConfig')
+            },
+            {
               index: 'status',
               route: { path: '/status' },
               title: this.$t('message.sideBar.info.status')
@@ -86,11 +91,6 @@ export default {
               index: 'serversInfo',
               route: { path: '/serversInfo' },
               title: this.$t('message.sideBar.info.serversInfo')
-            },
-            {
-              index: '/systemConfig',
-              route: { path: '/systemConfig' },
-              title: this.$t('message.sideBar.info.systemConfig')
             },
             {
               index: 'basetable',
@@ -156,7 +156,7 @@ export default {
     openSub(index) {
       for (let i = 0; i < this.items.length; i++) {
         if (index === this.items[i]['index']) {
-          this.$router.push(this.items[i]['subs'][0]['index'])
+          this.$router.push(this.items[i]['subs'][0]['route'])
           break
         }
       }

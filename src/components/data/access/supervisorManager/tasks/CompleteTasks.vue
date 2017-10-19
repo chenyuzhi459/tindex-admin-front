@@ -23,39 +23,39 @@
             </el-form-item>
         </el-form>
 
-        <div class="table" style=" margin-left:20px;">
-            <el-table :data="completeTasks" border stripe style="width: 100%" @sort-change="sortChange">
-                <el-table-column prop="id" label="id" min-width="472"></el-table-column>
-                <el-table-column prop="status" :label="$t('message.tasks.status')" width="108"></el-table-column>
-                <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207">
-                </el-table-column>
-                <el-table-column prop="duration" :label="$t('message.tasks.duration')" width="110"></el-table-column>
-                <el-table-column prop="topic" :label="$t('message.tasks.topic')" width="150"></el-table-column>
-                <el-table-column prop="offsets" :label="$t('message.tasks.offsets')" width="150"></el-table-column>
+        <template v-if="hasData">
+            <div class="table" style=" margin-left:20px;">
+                <el-table :data="completeTasks" border stripe style="width: 100%" @sort-change="sortChange">
+                    <el-table-column prop="id" label="id" min-width="472"></el-table-column>
+                    <el-table-column prop="status" :label="$t('message.tasks.status')" width="108"></el-table-column>
+                    <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207">
+                    </el-table-column>
+                    <el-table-column prop="duration" :label="$t('message.tasks.duration')" width="110"></el-table-column>
+                    <el-table-column prop="topic" :label="$t('message.tasks.topic')" width="150"></el-table-column>
+                    <el-table-column prop="offsets" :label="$t('message.tasks.offsets')" width="150"></el-table-column>
 
-                <el-table-column :label="$t('message.tasks.operation')" width="275">
-                    <template scope="scope">
-                        <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
-                        <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div class="pagination">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
-                </el-pagination>
+                    <el-table-column :label="$t('message.tasks.operation')" width="275">
+                        <template scope="scope">
+                            <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
+                            <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
+                            <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
+                            <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
+                    </el-pagination>
+                </div>
             </div>
-
-            <br>
-        </div>
+        </template>
 
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
                 <div style=" line-height: 1;
-                                                            font-size: 16px;
-                                                            font-weight: 700;
-                                                            color: #1f2d3d;">
+                                                                font-size: 16px;
+                                                                font-weight: 700;
+                                                                color: #1f2d3d;">
                     {{dialogTitle}}
                 </div>
             </template>
@@ -78,6 +78,7 @@ export default {
     data() {
         return {
             completeTasks: [],
+            hasData: false,
             dialogMessage: '',
             dialogTitle: '',
             dialogSize: 'full',
@@ -105,6 +106,8 @@ export default {
             this.isSearching = false
             this.sortDimension = 'createdTime'
             this.isDescending = true
+            this.formInline.searchValue1 = ''
+            this.formInline.searchValue2 = 'ALL'
             this.getCompleteTasks()
         },
         async getTaskInfo(taskId) {
@@ -137,7 +140,11 @@ export default {
             const countUrl = `${this.$common.apis.overlordUrl}/completeTasks/${this.supervisorId}/count`
             const countResponse = await this.$http.get(countUrl)
             this.totalNum = countResponse.data.total
-
+            if (this.totalNum === 0) {
+                this.hasData = false
+                return
+            }
+            this.hasData = true
             const url = `${this.$common.apis.overlordUrl}/completeTasks/${this.supervisorId}`
             const { data } = await this.$http.get(url, {
                 params: {

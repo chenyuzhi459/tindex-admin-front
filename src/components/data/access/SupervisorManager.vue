@@ -1,6 +1,8 @@
 <template>
+
     <div>
-        <div style="text-align:right;  margin-left:20px;">
+        
+        <div style="float:right;  margin-left:20px;">
             <el-button type="primary" size="small" @click="createDialogVisible = true">{{$t('message.supervisors.createSupervisor')}}</el-button>
             <br>
             <br>

@@ -29,6 +29,7 @@ export default {
       createFailedFront: '任务创建失败,状态码',
       createFailedLast: '请查看overlord日志',
       searchTips: '请输入id',
+      searchTopicTips: '请输入topic名称',
       search: '搜索',
       refresh: '刷新',
       createdTime: '创建时间',
@@ -138,7 +139,9 @@ export default {
       maxMemory: '最大内存'
     },
     serversInfo: {
-      servers: '节点',
+      host: 'host',
+      title: '节点信息',
+      server: '节点',
       tier: 'tier',
       priority: '优先级',
       currSize: '当前大小',
