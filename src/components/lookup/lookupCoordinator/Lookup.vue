@@ -32,10 +32,10 @@
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableDataLookup" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
-        <el-table-column prop="lookup" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
-        <el-table-column prop="type" :label="$t('message.lookup.type')"></el-table-column>
-        <el-table-column prop="dataFetcher.groupId" :label="$t('message.lookup.groupId')"></el-table-column>
-        <el-table-column prop="version" :label="$t('message.lookup.version')"></el-table-column>
+        <el-table-column prop="name" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
+        <el-table-column prop="spec.type" :label="$t('message.lookup.type')"></el-table-column>
+        <el-table-column prop="spec.dataFetcher.groupId" :label="$t('message.lookup.groupId')"></el-table-column>
+        <el-table-column prop="spec.version" :label="$t('message.lookup.version')"></el-table-column>
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <el-button size="mini" @click="getInfo(scope.row.lookup)">{{$t('message.common.info')}}</el-button>
@@ -97,7 +97,7 @@ export default {
       pageSizeLookup: 10,
       currentPageTier: 1,
       currentPageLookup: 1,
-      isDescending: "Descending",
+      isDescending: false,
       isSearching: false,
       tiers: [],
       lookups: [],
@@ -114,7 +114,7 @@ export default {
   methods: {
     init() {
       this.getTiers()
-      this.getLookups("__default", false, '')
+      this.getLookups("__default", this.isDescending, this.formInline.name)
     },
     async getTiers() {
       const url = `${this.$common.apis.lookups}`
@@ -122,7 +122,7 @@ export default {
       this.tiers = response.data
     },
     async getLookups(tierName, isDescending, searchValue) {
-      const url = `${this.$common.apis.lookups}/${tierName}`
+      const url = `${this.$common.apis.lookups}/${tierName}/details`
       this.tierName = tierName
       const response = await this.$http.get(url, {
         params: {
@@ -130,19 +130,9 @@ export default {
           searchValue: searchValue
         }
       })
-      for (let i = 0; i < response.data.length; i++) {
-        let itemMap = new Map()
-        response.data[i] = await this.getLookupByNameAddName(response.data[i])
-      }
       this.lookups = []
       this.$common.methods.pushData(response.data, this.lookups)
       this.showTableDataLookup = this.$common.methods.fillShowTableData(this.lookups, this.currentPageLookup, this.pageSizeLookup)
-    },
-    async getLookupByNameAddName(lookupName) {
-      const url = `${this.$common.apis.lookups}/${this.tierName}/${lookupName}`
-      const response = await this.$http.get(url)
-      response.data["lookup"] = lookupName
-      return response.data
     },
     async getLookupByName(lookupName) {
       const url = `${this.$common.apis.lookups}/${this.tierName}/${lookupName}`

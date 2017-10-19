@@ -30,6 +30,8 @@
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column prop="lookup" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
+        <el-table-column prop="dataLoader.groupId" :label="$t('message.lookup.groupId')"></el-table-column>
+        <el-table-column prop="version" :label="$t('message.lookup.version')"></el-table-column>
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <el-button size="mini" @click="getInfo(scope.row.lookup)">{{$t('message.common.info')}}</el-button>
@@ -113,6 +115,8 @@ export default {
       for (let i = 0; i < response.data.length; i++) {
         for (var key in response.data[i]) {
           response.data[i]["lookup"] = key
+          response.data[i]["dataLoader"] = response.data[i][key]["dataLoader"]
+          response.data[i]["version"] = response.data[i][key]["version"]
         }
       }
       this.$common.methods.pushData(response.data, this.lookups)
