@@ -155,11 +155,13 @@ export default {
                 if (index < 0) {
                     this.expandRowKeys.push(row.id)
                 }
+
                 try {
                     row.status = (await this.getTaskStatus(row.id)).status.status
                 } catch (e) {
                     e.status === 408 ? console.log('get status timeout') : console.log('err')
                 }
+                
                 row.offset = await this.getOffset(row).catch(err => {
                     err.status === 408 ? console.log('get offset timeout') : console.log('err')
                 })

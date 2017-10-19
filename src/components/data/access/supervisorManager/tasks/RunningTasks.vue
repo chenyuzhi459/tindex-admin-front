@@ -26,7 +26,7 @@
                                     <span>{{ props.row.status }}</span>
                                 </el-form-item>
                                 <el-form-item :label="$t('message.tasks.offsets')">
-                                    <span>{{ props.row.offset }}</span>
+                                    <span> {{ props.row.offset }} </span>
                                 </el-form-item>
                             </el-form>
                         </template>
@@ -100,7 +100,7 @@ export default {
             formInline: {
                 searchValue1: ''
             },
-            expandRequestTimeout: 5000
+            expandRequestTimeout: 5000,
         }
     },
     created: function() {
@@ -152,16 +152,18 @@ export default {
 
         },
         async expand(row, expanded) {
-           if (expanded) {
+            if (expanded) {
                 const index = _.findIndex(this.expandRowKeys, s => { return s === row.id })
                 if (index < 0) {
                     this.expandRowKeys.push(row.id)
                 }
+
                 try {
                     row.status = (await this.getTaskStatus(row.id)).status.status
                 } catch (e) {
                     e.status === 408 ? console.log('get status timeout') : console.log('err')
                 }
+                
                 row.offset = await this.getOffset(row).catch(err => {
                     err.status === 408 ? console.log('get offset timeout') : console.log('err')
                 })

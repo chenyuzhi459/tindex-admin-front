@@ -92,58 +92,8 @@ export default {
               route: { path: '/serversInfo' },
               title: this.$t('message.sideBar.info.serversInfo')
             },
-            {
-              index: 'basetable',
-              route: { path: '/basetable' },
-              title: '基础表格'
-            },
-            {
-              index: 'vuetable',
-              route: { path: '/vuetable' },
-              title: 'Vue表格组件'
-            },
-            {
-              index: 'baseform',
-              route: { path: '/baseform' },
-              title: '基本表单'
-            },
-            {
-              index: 'upload',
-              route: { path: '/upload' },
-              title: '文件上传'
-            }
           ]
         },
-        // {
-        //   icon: 'el-icon-menu',
-        //   index: '2',
-        //   title: '表格',
-        //   subs: [
-        //     {
-        //       index: 'basetable',
-        //       title: '基础表格'
-        //     },
-        //     {
-        //       index: 'vuetable',
-        //       title: 'Vue表格组件'
-        //     }
-        //   ]
-        // },
-        // {
-        //   icon: 'el-icon-date',
-        //   index: '3',
-        //   title: '表单',
-        //   subs: [
-        //     {
-        //       index: 'baseform',
-        //       title: '基本表单'
-        //     },
-        //     {
-        //       index: 'upload',
-        //       title: '文件上传'
-        //     }
-        //   ]
-        // }
       ]
     }
   },
