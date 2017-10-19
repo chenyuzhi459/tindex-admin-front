@@ -1,33 +1,20 @@
 <template>
   <div class="main">
-
+    <span style=" margin-left:20px; color: #242f42;font-size:25px;">{{$t('message.serversInfo.title')}}
+      
+    </span>
+    <br></br>
     <div class="table" style=" margin-left:20px;">
-      <el-table :data="servers" border stripe style="width: 100%" @expand="expand">
-        <el-table-column type="expand">
-          <template scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item :label="$t('message.common.type')">
-                <span>{{ props.row.type }}</span>
-              </el-form-item>
-              <el-form-item :label="$t('message.serversInfo.tier')">
-                <span>{{ props.row.tier }}</span>
-              </el-form-item>
-              <el-form-item :label="$t('message.serversInfo.priority')">
-                <span>{{ props.row.priority }}</span>
-              </el-form-item>
-              <el-form-item :label="$t('message.serversInfo.currSize')">
-                <span>{{ props.row.currSize }}</span>
-              </el-form-item>
-              <el-form-item :label="$t('message.serversInfo.maxSize')">
-                <span>{{ props.row.maxSize }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <el-table-column prop="server" :label="$t('message.serversInfo.servers')"></el-table-column>
-        <el-table-column :label="$t('message.common.operation')"  width="100">
+      <el-table :data="servers" border stripe style="width: 100%">
+        <el-table-column prop="host" :label="$t('message.serversInfo.host')"></el-table-column>
+        <el-table-column prop="type" :label="$t('message.common.type')"></el-table-column>
+        <el-table-column prop="currSize" :label="$t('message.serversInfo.currSize')"></el-table-column>
+        <el-table-column prop="maxSize" :label="$t('message.serversInfo.maxSize')"></el-table-column>
+        <el-table-column prop="priority" :label="$t('message.serversInfo.priority')"></el-table-column>
+        <el-table-column prop="tier" :label="$t('message.serversInfo.tier')"></el-table-column>
+        <el-table-column :label="$t('message.common.operation')" width="100">
           <template scope="scope">
-            <el-button size="mini" @click="getSegments(scope.row.server)">{{$t('message.serversInfo.segments')}}</el-button>
+            <el-button size="mini" @click="getSegments(scope.row.host)">{{$t('message.serversInfo.segments')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -50,59 +37,28 @@ export default {
   },
   methods: {
     async getServersInfo() {
-      const { data } = await this.$http.get(this.$common.apis.serversInfo)
+      const { data } = await this.$http.get(this.$common.apis.serversInfo, {
+        params: {
+          simple: ''
+        }
+      })
 
       this.servers = data.map(s => {
-        let data = {
-          host: '',
-          tier: '',
-          type: '',
-          priority: '',
-          currSize: '',
-          maxSize: '',
-          server: s
-        }
-        return data
+        s.currSize = this.$common.methods.conver(s.currSize)
+        s.maxSize = this.$common.methods.conver(s.maxSize)
+        return s
       })
-      //console.log("data:", this.servers);
     },
-    async expand(row, expanded) {
-      if (expanded) {
-        const url = `${this.$common.apis.serversInfo}/${row.server}`
-        const { data } = await this.$http.get(url, {
-          params: {
-            simple: true
-          }
-        })
-        this.$common.methods.fillObject(data, row)
-      }
-    },
-    getSegments(serverName){
-       this.$router.push({
-                name: 'serversSegment',
-                params: {
-                    serverName: serverName
-                }
-            })
+    getSegments(serverName) {
+      this.$router.push({
+        name: 'serversSegment',
+        params: {
+          serverName: serverName
+        }
+      })
     }
   }
 
 }
 </script>
 
-<style>
-.demo-table-expand {
-  font-size: 0;
-}
-
-.demo-table-expand label {
-  width: 70px;
-  color: #99a9bf;
-}
-
-.demo-table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 30%;
-}
-</style>

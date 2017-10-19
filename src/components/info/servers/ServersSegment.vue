@@ -8,7 +8,7 @@
 
         <div style=" margin-left:20px;">
             <span style="color: #242f42;font-size:20px;">
-                <b>{{$t('message.serversInfo.servers')}}:&nbsp;{{serverName}}</b>
+                <b>{{$t('message.serversInfo.server')}}:&nbsp;{{serverName}}</b>
             </span>
             <br></br>
 

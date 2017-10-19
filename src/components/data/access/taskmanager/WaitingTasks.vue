@@ -73,9 +73,7 @@ export default {
             totalNum: 0,
             sortDimension: 'createdTime',
             isDescending: true,
-            formInline: {
-                searchValue1: ''
-            }
+            formInline: {}
         }
     },
     created: function() {

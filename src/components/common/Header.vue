@@ -46,28 +46,32 @@ export default {
     },
     methods: {
         init() {
+            if (this.$common.methods.getCookie('isLogin') !== 'true') {
+                this.$router.push('/login');
+            }
             const lanuage = this.$common.methods.getCookie('lanuage')
-            if(lanuage !== 'zh' && lanuage !== 'en'){
+            if (lanuage !== 'zh' && lanuage !== 'en') {
                 this._i18n.locale = 'zh'
-                this.$common.methods.setCookie('lanuage','zh')
+                this.$common.methods.setCookie('lanuage', 'zh')
                 return
             }
             this._i18n.locale = lanuage
         },
         handleCommand(command) {
             if (command === 'loginout') {
+                this.$common.methods.delCookie('isLogin')
                 localStorage.removeItem('ms_username')
                 this.$router.push('/login');
             }
         },
         changeLanuage(command) {
-            if(command !== 'zh' && command !== 'en') return
+            if (command !== 'zh' && command !== 'en') return
             if (this._i18n.locale === command) return
             this.$common.methods.setCookie('lanuage', command)
             history.go(0)
         },
         clickTitle() {
-          this.$router.push('/supervisorManager')
+            this.$router.push('/supervisorManager')
         }
     }
 }
@@ -136,7 +140,7 @@ export default {
 }
 
 .title:hover {
-  cursor: pointer;
-  /* text-decoration: underline; */
+    cursor: pointer;
+    /* text-decoration: underline; */
 }
 </style>

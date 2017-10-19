@@ -30,7 +30,7 @@
                 <el-table-column prop="usedMemory" :label="$t('message.status.usedMemory')"></el-table-column>
                 <el-table-column prop="freeMemory" :label="$t('message.status.freeMemory')"></el-table-column>
                 <el-table-column prop="totalMemory" :label="$t('message.status.totalMemory')"></el-table-column>
-                <el-table-column prop="totalMemory" :label="$t('message.status.maxMemory')"></el-table-column>
+                <el-table-column prop="maxMemory" :label="$t('message.status.maxMemory')"></el-table-column>
             </el-table>
         </div>
 
@@ -55,11 +55,14 @@ export default {
         this.getStatus()
     },
     methods: {
-        getStatus() {
-            this.$http.get(this.$common.apis.status).then((response) => {
-                this.statusData = response.data
-                this.memeoryList.push(this.statusData.memory)
-            })
+        async getStatus() {
+            const { data } = await this.$http.get(this.$common.apis.status)
+            this.statusData = data
+            this.statusData.memory.usedMemory = this.$common.methods.conver(this.statusData.memory.usedMemory)
+            this.statusData.memory.freeMemory = this.$common.methods.conver(this.statusData.memory.freeMemory)
+            this.statusData.memory.totalMemory = this.$common.methods.conver(this.statusData.memory.totalMemory)
+            this.statusData.memory.maxMemory = this.$common.methods.conver(this.statusData.memory.maxMemory)
+            this.memeoryList.push(this.statusData.memory)
         }
     }
 }

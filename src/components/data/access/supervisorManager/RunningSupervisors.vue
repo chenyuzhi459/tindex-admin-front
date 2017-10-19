@@ -1,13 +1,12 @@
 <template>
     <div class="main">
-
         <div style=" margin-left:20px;">
             <span style="color: #242f42;font-size:20px;">
                 <b>{{$t('message.supervisors.runningSuperviorTitle')}}</b>
             </span>
             <br></br>
         </div>
-        
+
         <el-form :inline="true" :model="formInline" class="demo-form-inline" style=" margin-left:20px;">
             <el-form-item label="id">
                 <el-input size="small" v-model="formInline.searchValue1" :placeholder="$t('message.supervisors.searchTips')"></el-input>
@@ -18,29 +17,29 @@
             </el-form-item>
         </el-form>
 
-        <div class="table" style=" margin-left:20px;">
-            <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
-                <el-table-column  label="id" >
-                     <template scope="scope">
-                          <!-- <el-button type="text" style=" font-size: 14px;color: #1f2d3d;"  @click="getTasks(scope.row.id)">{{scope.row.id}}</el-button> -->
-                          <a style="color:#20a0ff;"  @click="getTasks(scope.row.id)">{{scope.row.id}}</a>
-                    </template>
-                </el-table-column>
-                <el-table-column :label="$t('message.supervisors.operation')" width="230">
-                    <template scope="scope">
-                        <el-button size="mini" @click="getSpec(scope.row.id)">{{$t('message.supervisors.spec')}}</el-button>
-                        <el-button size="mini" @click="getStatus(scope.row.id)">{{$t('message.supervisors.status')}}</el-button>
-                        <el-button size="mini" @click="doReset(scope.row.id,0)">{{$t('message.supervisors.reset')}}</el-button>
-                        <el-button size="mini" style="width:35px" type="danger" @click="killSupervisor(scope.row.id)">{{$t('message.supervisors.delete')}}</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div class="pagination">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
-                </el-pagination>
+        <template v-if="hasData">
+            <div class="table" style=" margin-left:20px;">
+                <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
+                    <el-table-column label="id">
+                        <template scope="scope">                        
+                            <a class="click-link" @click="getTasks(scope.row.id)">{{scope.row.id}}</a>
+                        </template>
+                    </el-table-column>
+                    <el-table-column :label="$t('message.supervisors.operation')" width="230">
+                        <template scope="scope">
+                            <el-button size="mini" @click="getSpec(scope.row.id)">{{$t('message.supervisors.spec')}}</el-button>
+                            <el-button size="mini" @click="getStatus(scope.row.id)">{{$t('message.supervisors.status')}}</el-button>
+                            <el-button size="mini" @click="doReset(scope.row.id,0)">{{$t('message.supervisors.reset')}}</el-button>
+                            <el-button size="mini" style="width:35px" type="danger" @click="killSupervisor(scope.row.id)">{{$t('message.supervisors.delete')}}</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
+                    </el-pagination>
+                </div>
             </div>
-            <br>
-        </div>
+        </template>
 
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
@@ -67,6 +66,7 @@ export default {
         return {
             runningSupervisors: [],
             showTableData: [],
+            hasData: false,
             dialogMessage: '',
             dialogTitle: '',
             dialogSize: 'full',
@@ -77,6 +77,8 @@ export default {
             totalNum: 0,
             sortDimension: 'createdTime',
             isDescending: true,
+            isSearching: false,
+            sourceData: [],
             formInline: {
                 searchValue1: ''
             }
@@ -88,10 +90,17 @@ export default {
     methods: {
         init() {
             this.currentPage = 1
+            this.formInline.searchValue1 = ''
+            this.isSearching = false
             this.getRunningSupervisors()
         },
         async getRunningSupervisors() {
             let { data } = await this.$http.get(this.$common.apis.supervisor)
+            if (data.length === 0) {
+                this.hasData = false
+                return
+            }
+            this.hasData = true
             data = data.map(s => {
                 return { id: s }
             })
@@ -142,7 +151,7 @@ export default {
             }
 
         },
-        getTasks(id){
+        getTasks(id) {
             this.$router.replace({
                 name: 'supervisorTasks',
                 params: {
@@ -180,7 +189,7 @@ export default {
                     })
 
                 } catch (err) {
-                     this.$message({
+                    this.$message({
                         type: 'error',
                         message: this.$t('message.supervisors.killFailed')
                     })
@@ -228,14 +237,14 @@ export default {
             if (_.isEqual(this.formInline.searchValue1, '')) {
                 return
             }
+            if (!this.isSearching) {
+                this.sourceData = this.runningSupervisors
+            }
+            this.isSearching = true
             this.currentPage = 1
-            const searchedData = this.$common.methods.searchArray(this.runningSupervisors, 'id', this.formInline.searchValue1)
-            this.runningSupervisors = []
-            this.$common.methods.pushData(searchedData, this.runningSupervisors)
+            this.runningSupervisors = this.$common.methods.searchArray(this.sourceData, 'id', this.formInline.searchValue1)
             this.totalNum = this.runningSupervisors.length
-            const resultData = this.$common.methods.fillShowTableData(this.runningSupervisors, this.currentPage, this.pageSize)
-            this.showTableData = []
-            this.$common.methods.pushData(resultData, this.showTableData)
+            this.showTableData = this.$common.methods.fillShowTableData(this.runningSupervisors, this.currentPage, this.pageSize)
         }
     },
     mounted() {
@@ -249,3 +258,6 @@ export default {
     }
 }
 </script>
+<style>
+@import "../../../../../static/css/link.css";
+</style>

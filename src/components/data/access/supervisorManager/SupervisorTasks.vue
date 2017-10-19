@@ -1,15 +1,16 @@
 <<template>
 <div>
-    <div style="text-align:right; margin-right:20px;">
+    <div style="float:right; margin-right:20px;">
          <el-button size="small" icon="arrow-left"  type="primary" @click="getBack">
              {{$t('message.common.return')}}
         </el-button> 
     </div>
 
     <running-tasks :supervisor-id="$route.params.supervisorId"></running-tasks>
+    <complete-tasks :supervisor-id="$route.params.supervisorId"></complete-tasks>  
     <pending-tasks :supervisor-id="$route.params.supervisorId"></pending-tasks>
      <waiting-tasks :supervisor-id="$route.params.supervisorId"></waiting-tasks>
-     <complete-tasks :supervisor-id="$route.params.supervisorId"></complete-tasks>  
+     
 
 </div>
 </template>

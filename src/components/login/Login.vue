@@ -77,6 +77,9 @@ export default {
                     header: { ContentType: "application/json" }
                 })
                 localStorage.setItem('ms_username', formObject.username);
+                if(response.status === 200){
+                    this.$common.methods.setCookie('isLogin', 'true')
+                }
                 this.$router.push('/index');
             } catch (err) {
                 this.hasError = true

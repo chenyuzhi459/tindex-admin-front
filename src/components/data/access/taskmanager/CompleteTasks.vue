@@ -10,6 +10,9 @@
             <el-form-item label="id">
                 <el-input size="small" v-model="formInline.searchValue1" :placeholder="$t('message.tasks.searchTips')"></el-input>
             </el-form-item>
+            <el-form-item label="topic">
+                <el-input size="small" v-model="formInline.searchValue3" :placeholder="$t('message.tasks.searchTopicTips')"></el-input>
+            </el-form-item>
             <el-form-item label="status">
                 <el-select size="small" v-model="formInline.searchValue2" :placeholder="$t('message.tasks.selectStatus')">
                     <el-option :label="$t('message.tasks.statusItem1')" value="ALL"></el-option>
@@ -22,38 +25,36 @@
                 <el-button type="primary" size="small" @click="init">{{$t('message.tasks.refresh')}}</el-button>
             </el-form-item>
         </el-form>
+        <template v-if="hasData">
+            <div class="table" style=" margin-left:20px;">
+                <el-table :data="completeTasks" border stripe style="width: 100%" @sort-change="sortChange">
+                    <el-table-column prop="id" label="id" min-width="472"></el-table-column>
+                    <el-table-column prop="status" :label="$t('message.tasks.status')" width="108"></el-table-column>
+                    <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207">
+                    </el-table-column>
+                    <el-table-column prop="duration" :label="$t('message.tasks.duration')" width="110"></el-table-column>
+                    <el-table-column prop="topic" :label="$t('message.tasks.topic')" width="150"></el-table-column>
+                    <el-table-column prop="offsets" :label="$t('message.tasks.offsets')" width="150"></el-table-column>
 
-        <div class="table" style=" margin-left:20px;">
-            <el-table :data="completeTasks" border stripe style="width: 100%" @sort-change="sortChange">
-                <el-table-column prop="id" label="id" min-width="472"></el-table-column>
-                <el-table-column prop="status" :label="$t('message.tasks.status')" width="108"></el-table-column>
-                <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207">
-                </el-table-column>
-                <el-table-column prop="duration" :label="$t('message.tasks.duration')" width="110"></el-table-column>
-                <el-table-column prop="topic" :label="$t('message.tasks.topic')" width="150"></el-table-column>
-                <el-table-column prop="offsets" :label="$t('message.tasks.offsets')" width="150"></el-table-column>
-
-                <el-table-column :label="$t('message.tasks.operation')" width="275">
-                    <template scope="scope">
-                        <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
-                        <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
-                        <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div class="pagination">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
-                </el-pagination>
+                    <el-table-column :label="$t('message.tasks.operation')" width="275">
+                        <template scope="scope">
+                            <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
+                            <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
+                            <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
+                            <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[5,10, 25, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
+                    </el-pagination>
+                </div>
             </div>
-        </div>
+        </template>
 
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
-                <div style=" line-height: 1;
-                                            font-size: 16px;
-                                            font-weight: 700;
-                                            color: #1f2d3d;">
+                <div style=" line-height: 1;font-size: 16px;font-weight: 700;color: #1f2d3d;">
                     {{dialogTitle}}
                 </div>
             </template>
@@ -73,6 +74,7 @@ export default {
     data() {
         return {
             completeTasks: [],
+            hasData: false,
             dialogMessage: '',
             dialogTitle: '',
             dialogSize: 'full',
@@ -85,7 +87,8 @@ export default {
             totalNum: 0,
             formInline: {
                 searchValue1: '',
-                searchValue2: 'ALL'
+                searchValue2: 'ALL',
+                searchValue3: ''
             },
             isSearching: false
         }
@@ -100,6 +103,9 @@ export default {
             this.isSearching = false
             this.sortDimension = 'createdTime'
             this.isDescending = true
+            this.formInline.searchValue1 = ''
+            this.formInline.searchValue2 = 'ALL'
+            this.formInline.searchValue3 = ''
             this.getCompleteTasks()
         },
         async getTaskInfo(taskId) {
@@ -132,7 +138,11 @@ export default {
             const countUrl = `${this.$common.apis.completeTasks}/custom/count`
             const countResponse = await this.$http.get(countUrl)
             this.totalNum = countResponse.data.total
-
+            if (this.totalNum === 0) {
+                this.hasData = false
+                return
+            }
+            this.hasData = true
             const url = `${this.$common.apis.completeTasks}/custom/list`
             const { data } = await this.$http.get(url,
                 {
@@ -161,6 +171,10 @@ export default {
                     paramsData.searchDimension2 = 'status_payload'
                     paramsData.searchValue2 = this.formInline.searchValue2
                 }
+                if (!_.isEqual(this.formInline.searchValue3, '')) {
+                    paramsData.searchDimension3 = 'payload'
+                    paramsData.searchValue3 = this.formInline.searchValue3
+                }
             }
 
             const url = `${this.$common.apis.completeTasks}/custom/list`
@@ -180,6 +194,10 @@ export default {
             if (!_.isEqual(this.formInline.searchValue2, 'ALL')) {
                 paramsData.searchDimension2 = 'status_payload'
                 paramsData.searchValue2 = this.formInline.searchValue2
+            }
+            if (!_.isEqual(this.formInline.searchValue3, '')) {
+                paramsData.searchDimension3 = 'payload'
+                paramsData.searchValue3 = this.formInline.searchValue3
             }
             const countUrl = `${this.$common.apis.completeTasks}/custom/count`
             const countResponse = await this.$http.get(countUrl, { params: paramsData })
