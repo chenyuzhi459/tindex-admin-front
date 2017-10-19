@@ -23,27 +23,30 @@
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
-        <el-table-column :label="$t('message.common.name')" sortable="custom" width="310">
+        <el-table-column :label="$t('message.common.name')" sortable="custom" :width="310">
           <template scope="scope">
             <a class="click-link" @click="getIntervals(scope.row.name)">{{scope.row.name}}</a>
           </template>
         </el-table-column>
 
         <!-- <el-table-column :label="$t('message.dataSource.segments')" align="center"> -->
-        <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.interval.segmentCount')" width="120"></el-table-column>
+        <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.interval.segmentCount')" width="140"></el-table-column>
         <el-table-column v-if="showEnable" prop="properties.segments.size" :label="$t('message.common.size')" width="95"></el-table-column>
         <el-table-column v-if="showEnable" prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
         <el-table-column v-if="showEnable" prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
         <!-- </el-table-column> -->
-        <el-table-column v-if="showEnable" :label="$t('message.dataSource.rules')" width="170">
+        <el-table-column v-if="showEnable" :label="$t('message.dataSource.rules')" width="100">
           <template scope="scope">
-            <el-button size="mini" @click="getRuleInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
-            <el-button size="mini" @click="editRule(scope.row.name)">{{$t('message.dataSource.add')}}</el-button>
-            <el-button size="mini" @click="getRuleHistory(scope.row.name)">{{$t('message.dataSource.history')}}</el-button>
+            <el-button size="mini" @click="editRule(scope.row.name)" icon="edit" type="info">
+              <!-- {{$t('message.dataSource.add')}} -->
+            </el-button>
+            <el-button size="mini" @click="getRuleHistory(scope.row.name)" icon="time" type="info">
+              <!-- {{$t('message.dataSource.history')}} -->
+            </el-button>
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('message.common.more')">
+        <el-table-column :label="$t('message.common.more')" fixed="right" width="434">
           <template scope="scope">
             <!-- <el-button size="mini" type="info" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button> -->
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
@@ -52,7 +55,7 @@
             <el-button v-if="showEnable" size="mini" @click="disableDataSource(scope.row.name)" type="warning">{{$t('message.common.disable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="enableDataSource(scope.row.name)" type="success">{{$t('message.common.enable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="deleteDataSource(scope.row.name)" type="danger">{{$t('message.common.delete')}}</el-button>
-            <!-- <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button> -->
+            <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -72,24 +75,24 @@
 
       <el-input v-if="dialogForInfo" type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage"></el-input>
       <el-form v-if="!dialogForInfo" v-for="ruleItem in addRuleForm" :key="ruleItem.id" :inline="true" :model="ruleItem" class="demo-form-inline">
-        <div style=" line-height: 1; font-size: 16px; font-weight: 700;color: #1f2d3d;">
+        <div style=" line-height: 1; font-size: 20px; font-weight: 700;color: #1f2d3d;">
           rule
-          <el-button type="primary" icon="delete" @click="removeRule(ruleItem.id)"></el-button>
+          <el-button type="primary" icon="delete" @click="removeRule(ruleItem.id)" style="float: right"></el-button>
         </div>
         <el-form-item :label="$t('message.dataSource.operate')">
-          <el-select v-model="ruleItem.actionValue" :placeholder="$t('message.dataSource.operateInfo')" size="12">
+          <el-select v-model="ruleItem.actionValue" :placeholder="$t('message.dataSource.operateInfo')" size="20">
             <el-option v-for="item in ruleItem.actionOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('message.dataSource.granularity')">
-          <el-select v-model="ruleItem.granularityValue" :placeholder="$t('message.dataSource.granularityInfo')" @change="changeGranularitySelect" size="12">
+          <el-select v-model="ruleItem.granularityValue" :placeholder="$t('message.dataSource.granularityInfo')" @change="changeGranularitySelect(ruleItem.id)" size="20">
             <el-option v-for="item in ruleItem.granularityOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <div>
-          <el-form-item :label="ruleItem.granularityValue">
-            <el-input v-if="ruleItem.showInput" v-model="ruleItem.inputMessage" :placeholder="ruleItem.inputPrompt" size="45"></el-input>
+          <el-form-item v-if="ruleItem.showInput" :label="ruleItem.granularityValue">
+            <el-input v-model="ruleItem.inputMessage" :placeholder="ruleItem.inputPrompt" size="45"></el-input>
           </el-form-item>
           <el-form-item v-if="ruleItem.actionValue === 'load'" label="_default_tier">
             <el-input-number v-model="ruleItem.number" :min="1" :max="10"></el-input-number>
@@ -101,7 +104,9 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button v-if="isAddRule()" type="warning" @click="addARule">{{$t('message.dataSource.addRule')}}</el-button>
+        <el-button v-if="isAddRule()" type="warning" icon="plus" @click="addARule">
+          <!-- {{$t('message.dataSource.addRule')}} -->
+        </el-button>
         <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
         <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
       </span>
@@ -209,17 +214,21 @@ export default {
     switchChange() {
       this.init()
     },
-    changeGranularitySelect() {
+    changeGranularitySelect(id) {
       for (let i = 0; i < this.addRuleForm.length; i++) {
         const item = this.addRuleForm[i]
-        if (item.granularityValue === 'period') {
-          item.showInput = true
-          item.inputPrompt = this.$t('message.dataSource.periodInputInfo')
-        } else if (item.granularityValue === 'interval') {
-          item.showInput = true
-          item.inputPrompt = this.$t('message.dataSource.intervalInputInfo')
-        } else {
-          item.showInput = false
+        if (item['id'] === id) {
+          if (item.granularityValue === 'period') {
+            item.showInput = true
+            item.inputPrompt = this.$t('message.dataSource.periodInputInfo')
+          } else if (item.granularityValue === 'interval') {
+            item.showInput = true
+            item.inputPrompt = this.$t('message.dataSource.intervalInputInfo')
+          } else {
+            item.showInput = false
+          }
+          item.inputMessage = ''
+          break
         }
       }
 
@@ -318,10 +327,10 @@ export default {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/metrics`
       this.getInfoFromUrl(url, this.$t('message.dataSource.metricsInfo'))
     },
-    // getCandidates(dataSourceName) {
-    //   const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
-    //   this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
-    // },
+    getCandidates(dataSourceName) {
+      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
+      this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
+    },
     getRuleHistory(dataSourceName) {
       const url = `${this.$common.apis.rules}/${dataSourceName}/history`
       this.getInfoFromUrl(url, this.$t('message.dataSource.rulesHistory'))
@@ -340,45 +349,75 @@ export default {
       const url = `${this.$common.apis.rules}/${dataSourceName}`
       const response = await this.$http.get(url)
       for (let i = 0; i < response.data.length; i++) {
-        const newRuleItem = {
-          id: this.ruleItemNextId++,
-          actionValue: '',
-          granularityValue: '',
-          inputMessage: '',
-          number: 1,
-          showInput: false,
-          inputPrompt: '',
-          errorMessage: '',
-          actionOptions: [{
-            value: 'drop',
-            label: 'Drop'
-          }, {
-            value: 'load',
-            label: 'Load'
-          }
-            // , {
-            //   value: 'broadcast',
-            //   label: 'Broadcast'
-            // }
-          ],
-          granularityOptions: [{
-            value: 'period',
-            label: 'Period'
-          }, {
-            value: 'interval',
-            label: 'Interval'
-          }, {
-            value: 'forever',
-            label: 'Forever'
-          }],
-        }
+        const newRuleItem = this.getRuleItemFromInfo(response.data[i])
+        this.addRuleForm.push(newRuleItem)
       }
+      console.log(this.addRuleForm)
+    },
+    getRuleItemFromInfo(data) {
+      let actionValue, showInput, granularityValue, number = 1, inputMessage
+      let type = ''
+      type = data['type']
+      if (type.indexOf('drop') > -1) {
+        actionValue = 'drop'
+      }
+      else if (type.indexOf('load') > -1) {
+        actionValue = 'load'
+        number = data['tieredReplicants']['_default_tier']
+      } else {
+        actionValue = 'broadcast'
+      }
+      if (type.indexOf('Period') > -1) {
+        granularityValue = 'period'
+        showInput = true
+        inputMessage = data['period']
+      } else if (type.indexOf('Interval') > -1) {
+        granularityValue = 'interval'
+        showInput = true
+        inputMessage = data['interval']
+      } else {
+        granularityValue = 'forever'
+        showInput = false
+      }
+      const newRuleItem = {
+        id: this.ruleItemNextId++,
+        actionValue: actionValue,
+        granularityValue: granularityValue,
+        inputMessage: inputMessage,
+        number: number,
+        showInput: showInput,
+        inputPrompt: '',
+        errorMessage: '',
+        actionOptions: [{
+          value: 'drop',
+          label: 'Drop'
+        }, {
+          value: 'load',
+          label: 'Load'
+        }
+          // , {
+          //   value: 'broadcast',
+          //   label: 'Broadcast'
+          // }
+        ],
+        granularityOptions: [{
+          value: 'period',
+          label: 'Period'
+        }, {
+          value: 'interval',
+          label: 'Interval'
+        }, {
+          value: 'forever',
+          label: 'Forever'
+        }],
+      }
+      return newRuleItem
     },
     editRule(dataSourceName) {
       this.addRuleForm = []
       this.ruleItemNextId = 1
 
-      this.getRuleInfo()
+      this.getRuleInfo(dataSourceName)
 
       this.ruleDataSource = dataSourceName
       this.showCancle = true
@@ -437,8 +476,9 @@ export default {
           item.errorMessage = this.$t('message.error.chooseGranularity')
           return false
         }
-        if (item.showInput) {
-
+        if (item.showInput && item.inputMessage.length === 0) {
+          item.errorMessage = item.granularityValue + this.$t('message.error.canNotBeNull')
+          return false
         }
       }
       return true

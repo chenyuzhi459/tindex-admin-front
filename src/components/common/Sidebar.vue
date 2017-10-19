@@ -156,7 +156,7 @@ export default {
     openSub(index) {
       for (let i = 0; i < this.items.length; i++) {
         if (index === this.items[i]['index']) {
-          this.$router.push(this.items[i]['subs'][0]['index'])
+          this.$router.push(this.items[i]['subs'][0]['route'])
           break
         }
       }

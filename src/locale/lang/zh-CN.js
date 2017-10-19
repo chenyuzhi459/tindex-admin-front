@@ -230,7 +230,7 @@ export default {
       groupId: "分组Id"
     },
     common: {
-      more: "更多",
+      more: "操作",
       info: "详情",
       delete: "删除",
       size: "大小",
@@ -268,7 +268,8 @@ export default {
     },
     error: {
       chooseAction: '操作不能为空! 请选择一种操作',
-      chooseGranularity: '操作粒度不能为空! 请选择一种操作粒度'
+      chooseGranularity: '操作粒度不能为空! 请选择一种操作粒度',
+      canNotBeNull: ' 不能为空!'
     },
     systemConfig: {
       systemConfigTitle: "系统配置",

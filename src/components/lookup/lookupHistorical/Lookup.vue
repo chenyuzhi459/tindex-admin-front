@@ -4,7 +4,7 @@
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <template>
-          <el-tabs v-model="activeName" @tab-click="clickIp">
+          <el-tabs v-model="historicalIp" @tab-click="clickIp">
             <el-tab-pane v-for="ip in historicalIps" :key="ip" :label="ip" :name="ip"></el-tab-pane>
           </el-tabs>
         </template>
@@ -13,7 +13,7 @@
 
     <div style=" margin-left:20px;">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item :label="$t('message.common.name')">
+        <el-form-item :label="$t('message.lookup.userGroupLookup')">
           <el-input v-model="formInline.name" :placeholder="$t('message.lookup.inputLookupName')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
@@ -52,7 +52,6 @@
             {{dialogTitle}}
           </div>
 </template>
-
         <el-input :placeholder="$t('message.lookup.lookupNameIndex')" v-model="lookupNameInput">
           <template slot="prepend">
    {{$t('message.lookup.lookupName')}}
@@ -75,7 +74,7 @@ export default {
   data() {
     return {
       historicalIps: [],
-      historicalIp: '192.168.0.225:8083',
+      historicalIp: '',
       lookups: [],
       pageSize: 15,
       currentPage: 1,
@@ -90,7 +89,6 @@ export default {
       dialogSize: 'large',
       dialogInputAutosize: {},
       dialogVisible: false,
-      activeName: '192.168.0.225:8083',
       showCancle: false
     }
   },
@@ -98,10 +96,14 @@ export default {
     this.init()
   },
   methods: {
-    init() {
-      this.getHistoricalIps()
-      this.getLookups(false, '')
+    async init() {
+      await this.getHistoricalIps()
+      this.getLookups(this.isDescending, this.formInline.name)
     },
+    // async getLookupsByIp() {
+    //   await this.getHistoricalIps()
+    //   this.getLookups(this.isDescending, this.formInline.name)
+    // },
     async getLookups(isDescending, searchValue) {
       const url = `${this.$common.apis.lookupsHis}/sortAndSearch`
       const response = await this.$http.get(url, {
@@ -154,7 +156,7 @@ export default {
               ip: this.historicalIp
             }
           })
-          window.setTimeout(this.init, 500)
+          window.setTimeout(this.getLookups(this.isDescending, this.formInline.name), 500)
           this.$message({
             type: 'success',
             message: this.$t('message.common.deleteSuccess')
@@ -174,12 +176,10 @@ export default {
     },
     async getHistoricalIps() {
       const url = `${this.$common.apis.historicalIps}`
-      const response = await this.$http.get(url, {
-        params: {
-          ip: this.historicalIp
-        }
-      })
+      const response = await this.$http.get(url)
       this.historicalIps = response.data
+      this.historicalIp = this.historicalIps[0]
+      console.log(this.historicalIps[0],"init ip")
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize, confirmType, lookupNameInput) {
       this.dialogTitle = dialogTitle
@@ -229,33 +229,29 @@ export default {
     },
     async postLookup(warningMessage, successMessage, failMessage) {
       const remindMessage = `${warningMessage}\n${this.lookupNameInput}`
+      const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+        confirmButtonText: this.$t('message.common.confirm'),
+        cancelButtonText: this.$t('message.common.cancle'),
+        closeOnClickModal: false,
+        type: 'warning'
+      })
       try {
-        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
-          confirmButtonText: this.$t('message.common.confirm'),
-          cancelButtonText: this.$t('message.common.cancle'),
-          closeOnClickModal: false,
-          type: 'warning'
+        const url = `${this.$common.apis.lookupsHis}/${this.lookupNameInput}`
+        const addResponse = await this.$http.post(url, this.dialogMessage, {
+          params: {
+            ip: this.historicalIp
+          }
         })
-        try {
-          const url = `${this.$common.apis.lookupsHis}/${this.lookupNameInput}`
-          const addResponse = await this.$http.post(url, this.dialogMessage, {
-            params: {
-              ip: this.historicalIp
-            }
-          })
-          window.setTimeout(this.init, 500)
-          this.$message({
-            type: 'success',
-            message: successMessage
-          })
-        } catch (err) {
-          this.$message({
-            type: 'warning',
-            message: failMessage
-          })
-        }
-      } catch (e) {
-
+        window.setTimeout(this.init, 500)
+        this.$message({
+          type: 'success',
+          message: successMessage
+        })
+      } catch (err) {
+        this.$message({
+          type: 'warning',
+          message: failMessage
+        })
       }
     },
   }

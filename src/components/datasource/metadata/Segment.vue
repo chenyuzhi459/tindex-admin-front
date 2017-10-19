@@ -31,11 +31,12 @@
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column :label="$t('message.common.name')" width="900" sortable="custom">
           <template scope="scope">
-            <a class="click-link" @click="getSegmentInfo(scope.row.identifier)">{{scope.row.identifier}}</a>
+            <a v-if="showEnable" class="click-link" @click="getSegmentInfo(scope.row.identifier)">{{scope.row.identifier}}</a>
+            <a v-if="!showEnable">{{scope.row.identifier}}</a>
           </template>
         </el-table-column>
         <el-table-column v-if="showEnable" prop="segmentSize" :label="$t('message.common.size')"></el-table-column>
-        <el-table-column :label="$t('message.segment.more')">
+        <el-table-column :label="$t('message.common.more')" fixed="right" width="350">
           <template scope="scope">
             <!-- <el-button size="mini" @click="getSegmentInfo(scope.row.identifier)">{{$t('message.segment.info')}}</el-button> -->
             <el-button v-if="showEnable" size="mini" @click="disableSegment(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
@@ -51,10 +52,7 @@
       </div>
       <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
         <template slot="title">
-          <div style=" line-height: 1;
-                                                      font-size: 16px;
-                                                      font-weight: 700;
-                                                      color: #1f2d3d;">
+          <div style=" line-height: 1; font-size: 16px; font-weight: 700; color: #1f2d3d;">
             {{dialogTitle}}
           </div>
         </template>

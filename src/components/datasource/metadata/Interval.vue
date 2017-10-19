@@ -31,7 +31,7 @@
         </el-table-column>
         <el-table-column v-if="showEnable" prop="segmentCount" :label="$t('message.interval.segmentCount')"></el-table-column>
         <el-table-column v-if="showEnable" prop="intervalSize" :label="$t('message.common.size')"></el-table-column>
-        <el-table-column :label="$t('message.interval.more')">
+        <el-table-column :label="$t('message.common.more')" fixed="right" width="350">
           <template scope="scope">
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.interval.segments')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="disableInterval(scope.row.name)" type="warning">{{$t('message.common.disable')}}</el-button>
