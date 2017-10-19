@@ -71,35 +71,37 @@
       </template>
 
       <el-input v-if="dialogForInfo" type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage"></el-input>
-
-      <el-form v-if="!dialogForInfo" :inline="true" :model="form" class="demo-form-inline">
+      <el-form v-if="!dialogForInfo" v-for="ruleItem in addRuleForm" :key="ruleItem.id" :inline="true" :model="ruleItem" class="demo-form-inline">
+        <div style=" line-height: 1; font-size: 16px; font-weight: 700;color: #1f2d3d;">
+          rule
+          <el-button type="primary" icon="delete" @click="removeRule(ruleItem.id)"></el-button>
+        </div>
         <el-form-item :label="$t('message.dataSource.operate')">
-          <el-select v-model="form.actionValue" :placeholder="$t('message.dataSource.operateInfo')" size="12">
-            <el-option v-for="item in form.actionOptions" :key="item.value" :label="item.label" :value="item.value">
+          <el-select v-model="ruleItem.actionValue" :placeholder="$t('message.dataSource.operateInfo')" size="12">
+            <el-option v-for="item in ruleItem.actionOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('message.dataSource.granularity')">
-          <el-select v-model="form.granularityValue" :placeholder="$t('message.dataSource.granularityInfo')" @change="changeGranularitySelect" size="12">
-            <el-option v-for="item in form.granularityOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          <el-select v-model="ruleItem.granularityValue" :placeholder="$t('message.dataSource.granularityInfo')" @change="changeGranularitySelect" size="12">
+            <el-option v-for="item in ruleItem.granularityOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <div>
-          <el-form-item :label="form.granularityValue">
-            <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="40"></el-input>
+          <el-form-item :label="ruleItem.granularityValue">
+            <el-input v-if="ruleItem.showInput" v-model="ruleItem.inputMessage" :placeholder="ruleItem.inputPrompt" size="45"></el-input>
           </el-form-item>
-          <el-form-item v-if="form.actionValue === 'load'" label="_default_tier">
-            <el-input-number v-model="form.number" :min="1" :max="10"></el-input-number>
+          <el-form-item v-if="ruleItem.actionValue === 'load'" label="_default_tier">
+            <el-input-number v-model="ruleItem.number" :min="1" :max="10"></el-input-number>
             <!-- <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="40"></el-input> -->
           </el-form-item>
         </div>
         <el-form-item>
-          <div style="color: red">{{errorMessage}}</div>
+          <div style="color: red">{{ruleItem.errorMessage}}</div>
         </el-form-item>
       </el-form>
-
       <span slot="footer" class="dialog-footer">
-        <el-button v-if="confirmType==='addRule'" type="warning" @click="addARule">{{$t('message.dataSource.addRule')}}</el-button>
+        <el-button v-if="isAddRule()" type="warning" @click="addARule">{{$t('message.dataSource.addRule')}}</el-button>
         <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
         <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
       </span>
@@ -133,40 +135,13 @@ export default {
       preLocation: '',
       showCancle: false,
       showEnable: true,
-      showInput: false,
       dialogForInfo: true,
-      form: {
-        inputPrompt: '',
-        actionOptions: [{
-          value: 'drop',
-          label: 'Drop'
-        }, {
-          value: 'load',
-          label: 'Load'
-        }, {
-          value: 'broadcast',
-          label: 'Broadcast'
-        }],
-        actionValue: '',
-        granularityOptions: [{
-          value: 'period',
-          label: 'Period'
-        }, {
-          value: 'interval',
-          label: 'Interval'
-        }, {
-          value: 'forever',
-          label: 'Forever'
-        }],
-        granularityValue: '',
-        inputMessage: '',
-        number: 1
-      },
-      errorMessage: ''
+      addRuleForm: [],
+      ruleItemNextId: 1,
     }
   },
   created: function() {
-    console.log(moment.interval('1000000/100').toString(), '====');
+    // console.log(moment.interval('1000000/100').toString(), '====');
     if (this.$route.query.showEnable !== undefined) {
       this.showEnable = this.$route.query.showEnable
     }
@@ -180,10 +155,53 @@ export default {
         this.getDataSourcesDisable(this.isDescending, "name", this.formInline.name)
       }
     },
+    removeRule(id) {
+      for (let i = 0; i < this.addRuleForm.length; i++) {
+        if (this.addRuleForm[i]['id'] === id) {
+          this.addRuleForm.splice(i, 1);
+          break
+        }
+      }
+    },
     clickSelect(tab) {
       if (tab.name === "dataSourceSelect") {
         this.getDataSources()
       }
+    },
+    addARule() {
+      const newRuleItem = {
+        id: this.ruleItemNextId++,
+        inputPrompt: '',
+        actionOptions: [{
+          value: 'drop',
+          label: 'Drop'
+        }, {
+          value: 'load',
+          label: 'Load'
+        }
+          // , {
+          //   value: 'broadcast',
+          //   label: 'Broadcast'
+          // }
+        ],
+        actionValue: '',
+        granularityOptions: [{
+          value: 'period',
+          label: 'Period'
+        }, {
+          value: 'interval',
+          label: 'Interval'
+        }, {
+          value: 'forever',
+          label: 'Forever'
+        }],
+        granularityValue: '',
+        inputMessage: '',
+        number: 1,
+        showInput: false,
+        errorMessage: ''
+      }
+      this.addRuleForm.push(newRuleItem)
     },
     refresh() {
       this.init()
@@ -192,15 +210,19 @@ export default {
       this.init()
     },
     changeGranularitySelect() {
-      if (this.form.granularityValue === 'period') {
-        this.showInput = true
-        this.form.inputPrompt = this.$t('message.dataSource.periodInputInfo')
-      } else if (this.form.granularityValue === 'interval') {
-        this.showInput = true
-        this.form.inputPrompt = this.$t('message.dataSource.intervalInputInfo')
-      } else {
-        this.showInput = false
+      for (let i = 0; i < this.addRuleForm.length; i++) {
+        const item = this.addRuleForm[i]
+        if (item.granularityValue === 'period') {
+          item.showInput = true
+          item.inputPrompt = this.$t('message.dataSource.periodInputInfo')
+        } else if (item.granularityValue === 'interval') {
+          item.showInput = true
+          item.inputPrompt = this.$t('message.dataSource.intervalInputInfo')
+        } else {
+          item.showInput = false
+        }
       }
+
     },
     async getDataSources(isDescending, sortName, searchValue) {
       const url = `${this.$common.apis.dataSource}?simple`
@@ -300,10 +322,6 @@ export default {
     //   const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
     //   this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
     // },
-    getRuleInfo(dataSourceName) {
-      const url = `${this.$common.apis.rules}/${dataSourceName}`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.rulesInfo'))
-    },
     getRuleHistory(dataSourceName) {
       const url = `${this.$common.apis.rules}/${dataSourceName}/history`
       this.getInfoFromUrl(url, this.$t('message.dataSource.rulesHistory'))
@@ -318,7 +336,50 @@ export default {
       this.configDialog(title, message, true, 'small', { minRows: 15, maxRows: 25 })
 
     },
+    async getRuleInfo(dataSourceName) {
+      const url = `${this.$common.apis.rules}/${dataSourceName}`
+      const response = await this.$http.get(url)
+      for (let i = 0; i < response.data.length; i++) {
+        const newRuleItem = {
+          id: this.ruleItemNextId++,
+          actionValue: '',
+          granularityValue: '',
+          inputMessage: '',
+          number: 1,
+          showInput: false,
+          inputPrompt: '',
+          errorMessage: '',
+          actionOptions: [{
+            value: 'drop',
+            label: 'Drop'
+          }, {
+            value: 'load',
+            label: 'Load'
+          }
+            // , {
+            //   value: 'broadcast',
+            //   label: 'Broadcast'
+            // }
+          ],
+          granularityOptions: [{
+            value: 'period',
+            label: 'Period'
+          }, {
+            value: 'interval',
+            label: 'Interval'
+          }, {
+            value: 'forever',
+            label: 'Forever'
+          }],
+        }
+      }
+    },
     editRule(dataSourceName) {
+      this.addRuleForm = []
+      this.ruleItemNextId = 1
+
+      this.getRuleInfo()
+
       this.ruleDataSource = dataSourceName
       this.showCancle = true
       this.dialogForInfo = false
@@ -360,72 +421,75 @@ export default {
         if (this.checkRuleInfo()) {
           this.addRule()
           this.dialogVisible = false
-
         }
       } else {
         this.dialogVisible = false
       }
     },
     checkRuleInfo() {
-      if (this.form.actionValue === '') {
-        this.errorMessage = this.$t('message.error.chooseAction')
-        return
-      }
-      if (this.form.granularityValue === '') {
-        this.errorMessage = this.$t('message.error.chooseGranularity')
-        return
-      }
-      if (this.showInput) {
+      for (let i = 0; i < this.addRuleForm.length; i++) {
+        const item = this.addRuleForm[i]
+        if (item.actionValue === '') {
+          item.errorMessage = this.$t('message.error.chooseAction')
+          return false
+        }
+        if (item.granularityValue === '') {
+          item.errorMessage = this.$t('message.error.chooseGranularity')
+          return false
+        }
+        if (item.showInput) {
 
+        }
       }
       return true
     },
     async addRule() {
       const remindMessage = this.$t('message.dataSource.addRuleWarning')
+      const postData = this.getInputRule()
+      const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
+        confirmButtonText: this.$t('message.common.confirm'),
+        cancelButtonText: this.$t('message.common.cancle'),
+        closeOnClickModal: false,
+        type: 'warning'
+      })
       try {
-        const postData = this.getInputRule()
-        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
-          confirmButtonText: this.$t('message.common.confirm'),
-          cancelButtonText: this.$t('message.common.cancle'),
-          closeOnClickModal: false,
-          type: 'warning'
+        const url = `${this.$common.apis.rules}/${this.ruleDataSource}`
+        const editResponse = await this.$http.post(url, postData, {
+          header: { ContentType: "application/json" }
         })
-        try {
-          const url = `${this.$common.apis.rules}/${this.ruleDataSource}`
-          const editResponse = await this.$http.post(url, postData, {
-            header: { ContentType: "application/json" }
-          })
-          window.setTimeout(this.init, 500)
-          this.$message({
-            type: 'success',
-            message: this.$t('message.dataSource.addRulesSuccess')
-          })
-        } catch (err) {
-          this.$message({
-            type: 'warning',
-            message: this.$t('message.dataSource.addRulesFail')
-          })
-        }
-      } catch (e) {
-
+        window.setTimeout(this.init, 500)
+        this.$message({
+          type: 'success',
+          message: this.$t('message.dataSource.addRulesSuccess')
+        })
+      } catch (err) {
+        this.$message({
+          type: 'warning',
+          message: this.$t('message.dataSource.addRulesFail')
+        })
       }
     },
     getInputRule() {
       const rules = new Array()
-      const rule = {}
-      if(this.form.actionValue === "load") {
-        rule["tieredReplicants"]["_default_tier"] = this.form.number
+      for (let i = 0; i < this.addRuleForm.length; i++) {
+        const item = this.addRuleForm[i]
+        const rule = {}
+        if (item.actionValue === "load") {
+          const defaultTier = {}
+          defaultTier["_default_tier"] = item.number
+          rule["tieredReplicants"] = defaultTier
+        }
+        if (item.granularityValue === "interval") {
+          rule["type"] = item.actionValue + "ByInterval"
+          rule["interval"] = item.inputMessage
+        } else if (item.granularityValue === "period") {
+          rule["type"] = item.actionValue + "ByPeriod"
+          rule["period"] = item.inputMessage
+        } else {
+          rule["type"] = item.actionValue + "Forever"
+        }
+        rules.push(rule)
       }
-      if (this.form.granularityValue === "interval") {
-        rule["type"] = this.form.actionValue + "ByInterval"
-        rule["interval"] = this.form.inputMessage
-      } else if (this.form.granularityValue === "period") {
-        rule["type"] = this.form.actionValue + "ByPeriod"
-        rule["period"] = this.form.inputMessage
-      } else {
-        rule["type"] = this.form.actionValue + "Forever"
-      }
-      rules.push(rule)
       return rules
     },
     async getDataSourceByName(dataSourceName) {
@@ -436,6 +500,12 @@ export default {
       message[0] = response.data
       this.$common.methods.pushData(message, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
+    },
+    isAddRule() {
+      if (this.confirmType === 'addRule') {
+        return true
+      }
+      return false
     }
   }
 }
