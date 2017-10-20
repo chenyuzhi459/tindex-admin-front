@@ -24,7 +24,6 @@
 export default {
   data() {
     return {
-      // defaultSelect: 'supervisorManager',
       items: [
         {
           index: 'dataAccess',

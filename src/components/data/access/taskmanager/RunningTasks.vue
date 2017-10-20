@@ -151,6 +151,7 @@ export default {
         },
         async expand(row, expanded) {
             if (expanded) {
+                //this.getMetrics(row)
                 const index = _.findIndex(this.expandRowKeys, s => { return s === row.id })
                 if (index < 0) {
                     this.expandRowKeys.push(row.id)
@@ -161,7 +162,7 @@ export default {
                 } catch (e) {
                     e.status === 408 ? console.log('get status timeout') : console.log('err')
                 }
-                
+
                 row.offset = await this.getOffset(row).catch(err => {
                     err.status === 408 ? console.log('get offset timeout') : console.log('err')
                 })
@@ -171,6 +172,18 @@ export default {
                     this.expandRowKeys.splice(index, 1)
                 }
             }
+        },
+        async getMetrics(row) {
+            const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/metrics`
+            const { data } = await this.$http.get(url,
+                {
+                    params: {
+                        location: row.location
+                    },
+                    _timeout: this.expandRequestTimeout
+                }
+            )
+            console.log("data:", data);
         },
         async getOffset(row) {
             const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/offsets/current`
