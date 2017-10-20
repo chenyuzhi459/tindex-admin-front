@@ -56,8 +56,13 @@ export default {
       statusItem3: '失败',
       duration: '运行时长',
       topic: 'topic',
-      offsets: 'offsets',
-      taskOffsetTitle: 'Offset'
+      offsets:'offsets',
+      currOffset: 'currOffset',
+      taskOffsetTitle: 'Offset',
+      metrics: '指标',
+      period: '阶段',
+      datasource: '数据源',
+      startOffset:'startOffset'
     },
     supervisors: {
       supervisorManager: 'Supervisor管理',

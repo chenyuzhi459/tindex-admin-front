@@ -62,8 +62,6 @@
             </el-input>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">{{$t('message.common.close')}}</el-button>
-                <!-- <el-button @click="dialogVisible = false">{{$t('message.tasks.dialogCancel')}}</el-button>
-                <el-button type="primary" @click="dialogVisible = false">{{$t('message.tasks.dialogConfirm')}}</el-button> -->
             </span>
         </el-dialog>
     </div>

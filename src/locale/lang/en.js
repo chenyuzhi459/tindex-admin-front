@@ -103,8 +103,13 @@ export default {
             statusItem3: 'FAILED',
             duration: 'duration',
             topic: 'topic',
-            offsets: 'offsets',
-            taskOffsetTitle: 'Offset'
+            offsets:'offsets',
+            currOffset: 'currOffset',
+            taskOffsetTitle: 'Offset',
+            metrics: 'metrics',
+            period: 'period',
+            datasource: 'datasource',
+            startOffset:'startOffset'
         },
         supervisors: {
             supervisorManager: 'Supervisor Manager',
