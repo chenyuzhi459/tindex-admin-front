@@ -22,7 +22,7 @@
     </div>
     <div class="table" style=" margin-left:20px;">
 
-      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+      <el-table :data="showTableData"  border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column :label="$t('message.common.name')" sortable="custom" :width="310">
           <template scope="scope">
             <a class="click-link" @click="getIntervals(scope.row.name)">{{scope.row.name}}</a>

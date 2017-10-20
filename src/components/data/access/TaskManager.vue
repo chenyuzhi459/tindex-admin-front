@@ -10,8 +10,7 @@
 
 
     <el-dialog  :visible.sync="createTaskDialogVisible" size="small" :title="$t('message.tasks.taskSpec')" :close-on-click-modal="false">
-        <span style="color: red" v-if="jsonSyntaxError">{{$t('message.tasks.jsonSyntaxError')}}</span>
-        <br></br>             
+        <span style="color: red" v-if="jsonSyntaxError">{{$t('message.tasks.jsonSyntaxError')}}</span>            
         <el-input type="textarea" :rows="25" v-model="taskJson">
         </el-input>
         <span slot="footer" class="dialog-footer">
