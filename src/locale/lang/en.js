@@ -172,13 +172,15 @@ export default {
             addRulesFail: 'Add Rules Fail!',
             addRuleWarning: 'Do you really add rule?',
             dataSourceInfo: 'DataSource Info',
+            serversInfo: 'Server Info',
             granularity: 'granularity',
             operate: 'operate',
             granularityInfo: 'Please select a granularity',
             operateInfo: 'Please select an operation',
             periodInputInfo: 'Please input a valid ISO 8601 duration',
             intervalInputInfo: 'Please input a valid ISO 8601 interval',
-            addRule: 'Add A Rule'
+            addRule: 'Add A Rule',
+            servers: 'servers'
         },
         interval: {
             intervalTitle: "Intervals",
@@ -258,10 +260,12 @@ export default {
             detail: 'detail',
             close: 'close',
             enable: 'enable',
+            state: 'state'
         },
         error: {
           chooseAction: 'Action can not be null! Please choose an action',
-          chooseGranularity: 'Granularity can not be null! Please choose a granularity'
+          chooseGranularity: 'Granularity can not be null! Please choose a granularity',
+          canNotBeNull: ' can not be null!'
         },
         systemConfig: {
             systemConfigTitle: "System Config",

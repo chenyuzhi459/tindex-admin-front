@@ -19,15 +19,14 @@ export default {
     baseTaskUrl: `${base}/druid/indexer/v1/task`,
     overlordUrl: `${base}/druid/indexer/v1`,
     supervisor:`${base}/druid/indexer/v1/supervisor`,
-    dataSource:`${base}/druid/coordinator/v1/datasources`,
     disableDataSource:`${base}/druid/coordinator/v1/metadata/disableDatasources`,
     intervals: `${base}/druid/coordinator/v1/intervals`,
-    mDataSource: `${base}/druid/coordinator/v1/metadata/datasources`,
+    dataSource: `${base}/druid/coordinator/v1/metadata/datasources`,
     clientInfo: `${base}/druid/v2/datasources`,
     rules: `${base}/druid/coordinator/v1/rules`,
     lookups: `${base}/druid/coordinator/v1/lookups`,
     historicalIps: `${base}/system/ip/historical`,
     lookupsHis: `${base}/druid/listen/v1/lookups`,
     systemConfig: `${base}/druid/systemConfig`,
-  
+    loadstatus: `${base}/druid/coordinator/v1/loadstatus`
 }

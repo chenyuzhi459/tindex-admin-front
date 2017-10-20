@@ -20,6 +20,9 @@
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
         </el-form-item>
         <el-form-item>
+          <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
+        </el-form-item>
+        <el-form-item>
           <el-button type="primary" size="small" @click="addLookup">{{$t('message.lookup.addLookup')}}</el-button>
         </el-form-item>
 
@@ -100,6 +103,11 @@ export default {
       await this.getHistoricalIps()
       this.getLookups(this.isDescending, this.formInline.name)
     },
+    refresh() {
+      this.formInline.name = ''
+      this.getLookups(this.isDescending, this.formInline.name)
+    },
+
     // async getLookupsByIp() {
     //   await this.getHistoricalIps()
     //   this.getLookups(this.isDescending, this.formInline.name)
@@ -179,7 +187,7 @@ export default {
       const response = await this.$http.get(url)
       this.historicalIps = response.data
       this.historicalIp = this.historicalIps[0]
-      console.log(this.historicalIps[0],"init ip")
+      console.log(this.historicalIps[0], "init ip")
     },
     configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize, confirmType, lookupNameInput) {
       this.dialogTitle = dialogTitle

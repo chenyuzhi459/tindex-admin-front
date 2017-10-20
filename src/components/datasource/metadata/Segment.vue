@@ -3,9 +3,9 @@
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
-          <el-breadcrumb-item :to="{ path: '/mDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
-          <el-breadcrumb-item v-if="showIntervalName" :to="{ path: '/ChildInterval', query: { showEnable: this.showEnable, dataSourceName: dataSourceName}}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
-          <el-breadcrumb-item :to="{ path: '/ChildSegment', query: { showEnable: this.showEnable}  }">{{$t('message.segment.segmentTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/dataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item v-if="showIntervalName" :to="{ path: '/interval', query: { showEnable: this.showEnable, dataSourceName: dataSourceName}}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/segment', query: { showEnable: this.showEnable}  }">{{$t('message.segment.segmentTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
@@ -124,9 +124,9 @@ export default {
     async getSegmentsByDataSource(isDescending, searchValue) {
       let url
       if (this.showEnable) {
-        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments?full`
+        url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments?full`
       } else {
-        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments`
+        url = `${this.$common.apis.dataSource}/${this.dataSourceName}/disableSegments`
       }
       console.log(url)
       const response = await this.$http.get(url, {
@@ -155,9 +155,9 @@ export default {
     async getSegmentsByInterval(isDescending, searchValue) {
       let url
       if (this.showEnable) {
-        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments?full`
+        url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments?full`
       } else {
-        url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableSegments`
+        url = `${this.$common.apis.dataSource}/${this.dataSourceName}/disableSegments`
       }
       let intervals = new Array()
       intervals.push(this.intervalName)
@@ -185,13 +185,14 @@ export default {
 
     },
     refresh() {
+      this.formInline.name = ''
       this.init()
     },
     onSearch() {
       this.getSegmentsForshow(this.preLocation, this.isDescending, this.formInline.name)
     },
     async getSegmentInfo(segmentName) {
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}?full`
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}?full`
       const response = await this.$http.get(url)
       this.segmentInfo = response.data
       const message = this.$common.methods.JSONUtils.toString(this.segmentInfo)
@@ -201,21 +202,21 @@ export default {
     },
     async enableSegment(segmentName) {
       const remindMessage = `${this.$t('message.common.enableWarning')}\n${segmentName}`
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/enable`
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}/enable`
       const successMessage = this.$t('message.common.enableSuccess')
       const failMessage = this.$t('message.common.enableFail')
       this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'post')
     },
     async disableSegment(segmentName) {
       const remindMessage = `${this.$t('message.common.disableWarning')}\n${segmentName}`
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/disable`
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}/disable`
       const successMessage = this.$t('message.common.disableSuccess')
       const failMessage = this.$t('message.common.disableFail')
       this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')
     },
     async deleteSegment(segmentName) {
       const remindMessage = `${this.$t('message.common.deleteWarning')}\n${segmentName}`
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/segments/${segmentName}/delete`
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}/delete`
       const successMessage = this.$t('message.common.deleteSuccess')
       const failMessage = this.$t('message.common.deleteFail')
       this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')

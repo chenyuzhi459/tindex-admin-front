@@ -47,15 +47,15 @@ export default new Router({
         },
 
         {
-          path: '/mDataSource',
+          path: '/dataSource',
           component: resolve => require(['../components/datasource/metadata/DataSourceManager.vue'], resolve)    // 拖拽列表组件
         },
         {
-          path: '/ChildInterval',
+          path: '/interval',
           component: resolve => require(['../components/datasource/metadata/Interval.vue'], resolve)    // 拖拽列表组件
         },
         {
-          path: '/ChildSegment',
+          path: '/segment',
           component: resolve => require(['../components/datasource/metadata/Segment.vue'], resolve)    // 拖拽列表组件
         },
         {
