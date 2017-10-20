@@ -11,7 +11,7 @@
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <tr>
           <el-form-item :label="$t('message.lookup.lookups')">
-            <el-select v-model="form.region" placeholder="请选择" @change="clickSelect">
+            <el-select v-model="tierName" placeholder="请选择" @change="clickSelect">
               <el-option v-for="item in tiers" :key="item" :label="item" :value="item"></el-option>
             </el-select>
           </el-form-item>
@@ -21,6 +21,9 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="addLookup">{{$t('message.lookup.addLookup')}}</el-button>
@@ -87,9 +90,6 @@ export default {
       formInline: {
         name: '',
       },
-      form: {
-        region: '__default'
-      },
       pageSizeTier: 5,
       pageSizeLookup: 10,
       currentPageTier: 1,
@@ -98,7 +98,7 @@ export default {
       isSearching: false,
       tiers: [],
       lookups: [],
-      tierName: '__default',
+      tierName: '',
       isDescending: false,
       confirmType: '',
       lookupNameInput: '',
@@ -109,14 +109,19 @@ export default {
     this.init()
   },
   methods: {
-    init() {
-      this.getTiers()
-      this.getLookups("__default", this.isDescending, this.formInline.name)
+    async init() {
+      await this.getTiers()
+      this.getLookups(this.tierName, this.isDescending, this.formInline.name)
     },
     async getTiers() {
       const url = `${this.$common.apis.lookups}`
       const response = await this.$http.get(url)
-      this.tiers = response.data
+      this.tiers = await response.data
+      this.tierName = this.tiers[0]
+    },
+    refresh() {
+      this.formInline.name = ''
+      this.getLookups(this.tierName, this.isDescending, this.formInline.name)
     },
     async getLookups(tierName, isDescending, searchValue) {
       const url = `${this.$common.apis.lookups}/${tierName}/details`
@@ -161,11 +166,11 @@ export default {
     },
     handleSort(column) {
       this.isDescending = column.order === "descending" ? true : false
-      this.getLookups(this.tierName, this.isDescending, '')
+      this.getLookups(this.tierName, this.isDescending, this.formInline.name)
     },
     getItems(tier) {
       this.tierName = tier
-      this.getLookups(tier, this.isDescending, '')
+      this.getLookups(tier, this.isDescending, this.formInline.name)
     },
     onSearch() {
       this.getLookups(this.tierName, this.isDescending, this.formInline.name)
@@ -212,7 +217,7 @@ export default {
       this.dialogVisible = false
     },
     async deleteLookup(lookupName) {
-      console.log(1)
+
       const remindMessage = `${this.$t('message.common.deleteWarning')}\n${lookupName}`
       try {
         const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
@@ -238,12 +243,11 @@ export default {
       } catch (e) {
 
       }
-      console.log(1)
     },
 
     clickSelect() {
-      this.tierName = this.form.region
-      this.getLookups(this.tierName, this.isDescending, '')
+      this.tierName = this.tierName
+      this.getLookups(this.tierName, this.isDescending, this.formInline.name)
 
 
     },

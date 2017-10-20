@@ -3,7 +3,7 @@
     <div style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
-          <el-breadcrumb-item :to="{ path: '/mDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/dataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
@@ -25,10 +25,10 @@
       <el-table :data="showTableData"  border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
         <el-table-column :label="$t('message.common.name')" sortable="custom" :width="310">
           <template scope="scope">
+            <el-progress type="circle" :percentage="scope.row.loadstatus" :width="10" :show-text="false" :stroke-width="2" :status="scope.row.statusType"></el-progress>
             <a class="click-link" @click="getIntervals(scope.row.name)">{{scope.row.name}}</a>
           </template>
         </el-table-column>
-
         <!-- <el-table-column :label="$t('message.dataSource.segments')" align="center"> -->
         <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.interval.segmentCount')" width="140"></el-table-column>
         <el-table-column v-if="showEnable" prop="properties.segments.size" :label="$t('message.common.size')" width="105"></el-table-column>
@@ -51,6 +51,7 @@
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
+            <el-button v-if="showEnable" size="mini" @click="getServers(scope.row.name)">{{$t('message.dataSource.servers')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="disableDataSource(scope.row.name)" type="warning">{{$t('message.common.disable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="enableDataSource(scope.row.name)" type="success">{{$t('message.common.enable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="deleteDataSource(scope.row.name)" type="danger">{{$t('message.common.delete')}}</el-button>
@@ -78,7 +79,7 @@
           <el-button type="primary" icon="delete" @click="removeRule(ruleItem.id)" style="float: right"></el-button>
         </div>
         <el-form-item :label="$t('message.dataSource.operate')">
-          <el-select v-model="ruleItem.actionValue" :placeholder="$t('message.dataSource.operateInfo')" size="20">
+          <el-select v-model="ruleItem.actionValue" :placeholder="$t('message.dataSource.operateInfo')" size="20" @change="changeActionSelect(ruleItem.id)">
             <el-option v-for="item in ruleItem.actionOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -208,6 +209,7 @@ export default {
       this.addRuleForm.push(newRuleItem)
     },
     refresh() {
+      this.formInline.name = ''
       this.init()
     },
     switchChange() {
@@ -227,13 +229,24 @@ export default {
             item.showInput = false
           }
           item.inputMessage = ''
+          item.type = this.getRuleTypeBySelect(item.actionValue, item.granularityValue)
           break
         }
       }
-
+    },
+    changeActionSelect(id) {
+      for (let i = 0; i < this.addRuleForm.length; i++) {
+        const item = this.addRuleForm[i]
+        if (item['id'] === id) {
+          item.type = this.getRuleTypeBySelect(item.actionValue, item.granularityValue)
+        }
+      }
     },
     async getDataSources(isDescending, sortName, searchValue) {
-      const url = `${this.$common.apis.dataSource}?simple`
+
+      const loadstatus = await this.getDataSourcesState()
+
+      const url = `${this.$common.apis.dataSource}/sortAndSearch/?simple`
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
@@ -242,12 +255,26 @@ export default {
       })
       for (let i = 0; i < response.data.length; i++) {
         const size = response.data[i]['properties']['segments']['size']
+        const name = response.data[i]['name']
         response.data[i]['properties']['segments']['size'] = this.$common.methods.conver(size)
+        if (loadstatus[name] == 100) {
+          response.data[i].statusType = 'success'
+        } else {
+          response.data[i].statusType = 'exception'
+        }
+        response.data[i]['loadstatus'] = 100 - loadstatus[name]
       }
       this.dataSources = []
       this.$common.methods.pushData(response.data, this.dataSources)
       this.showTableData = this.$common.methods.fillShowTableData(this.dataSources, this.currentPage, this.pageSize)
     },
+    async getDataSourcesState() {
+      const url = this.$common.apis.loadstatus
+      const response = await this.$http.get(url)
+      return response.data
+    },
+
+
     async getDataSourcesDisable(isDescending, sortName, searchValue) {
       const url = `${this.$common.apis.disableDataSource}`
       const response = await this.$http.get(url, {
@@ -262,21 +289,21 @@ export default {
     },
     async disableDataSource(dataSourceName) {
       const remindMessage = `${this.$t('message.common.disableWarning')}\n${dataSourceName}`
-      const url = `${this.$common.apis.mDataSource}/${dataSourceName}/disable`
+      const url = `${this.$common.apis.dataSource}/${dataSourceName}/disable`
       const successMessage = this.$t('message.common.disableSuccess')
       const failMessage = this.$t('message.common.disableFail')
       this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')
     },
     async enableDataSource(dataSourceName) {
       const remindMessage = `${this.$t('message.common.enableWarning')}\n${dataSourceName}`
-      const url = `${this.$common.apis.mDataSource}/${dataSourceName}/enable`
+      const url = `${this.$common.apis.dataSource}/${dataSourceName}/enable`
       const successMessage = this.$t('message.common.enableSuccess')
       const failMessage = this.$t('message.common.enableFail')
       this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'post')
     },
     async deleteDataSource(dataSourceName) {
       const remindMessage = `${this.$t('message.common.deleteWarning')}\n${dataSourceName}`
-      const url = `${this.$common.apis.mDataSource}/${dataSourceName}/delete`
+      const url = `${this.$common.apis.dataSource}/${dataSourceName}/delete`
       const successMessage = this.$t('message.common.deleteSuccess')
       const failMessage = this.$t('message.common.deleteFail')
       this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')
@@ -315,7 +342,7 @@ export default {
       }
     },
     // getDataSourceInfo(dataSourceName) {
-    //   const url = `${this.$common.apis.mDataSource}/${dataSourceName}`
+    //   const url = `${this.$common.apis.dataSource}/${dataSourceName}`
     //   this.getInfoFromUrl(url, this.$t('message.dataSource.dataSourceInfo'))
     // },
     getDimensions(dataSourceName) {
@@ -325,6 +352,10 @@ export default {
     getMetrics(dataSourceName) {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/metrics`
       this.getInfoFromUrl(url, this.$t('message.dataSource.metricsInfo'))
+    },
+    getServers(dataSourceName) {
+      const url = `${this.$common.apis.serversInfo}/datasources/${dataSourceName}`
+      this.getInfoFromUrl(url, this.$t('message.dataSource.serversInfo'))
     },
     getRuleHistory(dataSourceName) {
       const url = `${this.$common.apis.rules}/${dataSourceName}/history`
@@ -347,7 +378,6 @@ export default {
         const newRuleItem = this.getRuleItemFromInfo(response.data[i])
         this.addRuleForm.push(newRuleItem)
       }
-      console.log(this.addRuleForm)
     },
     getRuleItemFromInfo(data) {
       let actionValue, showInput, granularityValue, number = 1, inputMessage
@@ -429,10 +459,10 @@ export default {
       this.dialogInputAutosize = dialogInputAutosize
     },
     getSegments(dataSourceName) {
-      this.$router.push({ path: '/ChildSegment', query: { preLocation: 'dataSource', dataSourceName: dataSourceName, showEnable: this.showEnable } })
+      this.$router.push({ path: '/segment', query: { preLocation: 'dataSource', dataSourceName: dataSourceName, showEnable: this.showEnable } })
     },
     getIntervals(dataSourceName) {
-      this.$router.push({ path: '/ChildInterval', query: { showEnable: this.showEnable, preLocation: 'dataSource', dataSourceName: dataSourceName } })
+      this.$router.push({ path: '/interval', query: { showEnable: this.showEnable, preLocation: 'dataSource', dataSourceName: dataSourceName } })
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue
@@ -528,8 +558,21 @@ export default {
       }
       return rules
     },
+    getRuleTypeBySelect(actionValue, granularityValue) {
+      let type
+      if (actionValue !== '' && granularityValue !== '' && granularityValue !== undefined) {
+        if (granularityValue === "interval") {
+          type = actionValue + "ByInterval"
+        } else if (granularityValue === "period") {
+          type = actionValue + "ByPeriod"
+        } else {
+          type = actionValue + "Forever"
+        }
+      }
+      return type
+    },
     async getDataSourceByName(dataSourceName) {
-      const url = `${this.$common.apis.mDataSource}/${dataSourceName}?full`
+      const url = `${this.$common.apis.dataSource}/${dataSourceName}?full`
       const response = await this.$http.get(url)
       this.dataSources = []
       let message = new Array()

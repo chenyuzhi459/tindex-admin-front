@@ -45,19 +45,11 @@ export default {
         {
           index: 'dataSource',
           title: this.$t('message.sideBar.dataSource.title'),
-          route: { path: '/mDataSource' },
-          // subs: [
-          //   {
-          //     index: 'mDataSource',
-          //     route: { path: '/mDataSource' },
-          //     title: this.$t('message.sideBar.dataSource.metadata')
-          //   }
-          // ]
+          route: { path: '/dataSource' },
         },
         {
           index: 'lookup',
           title: this.$t('message.sideBar.lookup.title'),
-          route: { path: '/mDataSource' },
           subs: [
             {
               index: 'lookupCoordinator',

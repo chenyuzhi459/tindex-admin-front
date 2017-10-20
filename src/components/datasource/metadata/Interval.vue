@@ -3,8 +3,8 @@
     <div class="table" style=" margin-left:20px;">
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
-          <el-breadcrumb-item :to="{ path: '/mDataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
-          <el-breadcrumb-item :to="{ path: '/ChildInterval', query: { showEnable: this.showEnable} }">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/dataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/interval', query: { showEnable: this.showEnable} }">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
@@ -84,12 +84,13 @@ export default {
       this.getIntervals()
     },
     refresh() {
+      this.formInline.name = ''
       this.init()
     },
     async disableInterval(intervalName) {
       const intervalNameProcessed = intervalName.replace('/', '_')
       const remindMessage = `${this.$t('message.common.disableWarning')}\n${intervalName}`
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals/${intervalNameProcessed}/disable`
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${intervalNameProcessed}/disable`
       const successMessage = this.$t('message.common.disableSuccess')
       const failMessage = this.$t('message.common.disableFail')
       let data = new Array()
@@ -100,7 +101,7 @@ export default {
     async enableInterval(intervalName) {
       const intervalNameProcessed = intervalName.replace('/', '_')
       const remindMessage = `${this.$t('message.common.enableWarning')}\n${intervalName}`
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals/${intervalNameProcessed}/enable`
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${intervalNameProcessed}/enable`
       const successMessage = this.$t('message.common.enableSuccess')
       const failMessage = this.$t('message.common.enableFail')
       let data = new Array()
@@ -110,7 +111,7 @@ export default {
     async deleteInterval(intervalName) {
       const intervalNameProcessed = intervalName.replace('/', '_')
       const remindMessage = `${this.$t('message.common.deleteWarning')}\n${intervalName}`
-      const url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals/${intervalNameProcessed}/delete`
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals/${intervalNameProcessed}/delete`
       const successMessage = this.$t('message.common.deleteSuccess')
       const failMessage = this.$t('message.common.deleteFail')
       let data = new Array()
@@ -164,9 +165,9 @@ export default {
         data = ''
       } else {
         if (this.showEnable === true) {
-          url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/intervals?simple`
+          url = `${this.$common.apis.dataSource}/${this.dataSourceName}/intervals?simple`
         } else {
-          url = `${this.$common.apis.mDataSource}/${this.dataSourceName}/disableIntervals`
+          url = `${this.$common.apis.dataSource}/${this.dataSourceName}/disableIntervals`
         }
         const response = await this.$http.get(url, {
           params: {
@@ -207,7 +208,7 @@ export default {
       return convertData
     },
     getSegments(intervalName) {
-      this.$router.push({ path: '/ChildSegment', query: { showEnable: this.showEnable, preLocation: 'interval', dataSourceName: this.dataSourceName, intervalName: intervalName } })
+      this.$router.push({ path: '/segment', query: { showEnable: this.showEnable, preLocation: 'interval', dataSourceName: this.dataSourceName, intervalName: intervalName } })
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue

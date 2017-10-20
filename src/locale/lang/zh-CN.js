@@ -176,6 +176,7 @@ export default {
       history: '历史',
       add: '添加',
       rulesInfo: '规则信息',
+      serversInfo: '节点信息',
       rulesHistory: '规则（历史信息）',
       addRulesSuccess: '添加规则成功！',
       addRulesFail: '添加规则失败！',
@@ -187,7 +188,8 @@ export default {
       operateInfo: '请选择操作',
       periodInputInfo: '请输入一个有效的 ISO 8601 period',
       intervalInputInfo: '请输入一个有效的 ISO 8601 interval',
-      addRule: '添加规则'
+      addRule: '添加规则',
+      servers: '节点'
     },
     interval: {
       intervalTitle: "区间",
@@ -267,7 +269,8 @@ export default {
       operation: '操作',
       detail: '详情',
       close: '关闭',
-      enable: '恢复'
+      enable: '恢复',
+      state: '状态'
     },
     error: {
       chooseAction: '操作不能为空! 请选择一种操作',
