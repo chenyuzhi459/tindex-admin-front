@@ -1,3 +1,9 @@
+<style>
+.el-progress-circle svg path:first-child {
+  stroke: #c6c6c6
+}
+</style>
+
 <template>
   <div class="main">
     <div style=" margin-left:20px;">
@@ -22,10 +28,10 @@
     </div>
     <div class="table" style=" margin-left:20px;">
 
-      <el-table :data="showTableData"  border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
-        <el-table-column :label="$t('message.common.name')" sortable="custom" :width="310">
+      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+        <el-table-column :label="$t('message.common.name')" sortable="custom" :width="330">
           <template scope="scope">
-            <el-progress type="circle" :percentage="scope.row.loadstatus" :width="10" :show-text="false" :stroke-width="2" :status="scope.row.statusType"></el-progress>
+            <el-progress v-if="showEnable" type="circle" :percentage="scope.row.loadstatus" :width="10" :show-text="false" :stroke-width="2" :status="scope.row.statusType"></el-progress>
             <a class="click-link" @click="getIntervals(scope.row.name)">{{scope.row.name}}</a>
           </template>
         </el-table-column>
@@ -46,7 +52,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('message.common.more')" fixed="right" width="424">
+        <el-table-column :label="$t('message.common.more')" >
           <template scope="scope">
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
@@ -74,9 +80,9 @@
 
       <el-input v-if="dialogForInfo" type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage"></el-input>
       <el-form v-if="!dialogForInfo" v-for="ruleItem in addRuleForm" :key="ruleItem.id" :inline="true" :model="ruleItem" class="demo-form-inline">
-        <div style=" line-height: 1; font-size: 20px; font-weight: 700;color: #1f2d3d;">
-          {{ruleItem.type}}
-          <el-button type="primary" icon="delete" @click="removeRule(ruleItem.id)" style="float: right"></el-button>
+        <div>
+          <el-tag type="primary"  size='large'>{{ruleItem.type}}</el-tag>
+          <el-button type="primary" icon="delete" @click="removeRule(ruleItem.id)" style="float: right"></el-button><br></br>
         </div>
         <el-form-item :label="$t('message.dataSource.operate')">
           <el-select v-model="ruleItem.actionValue" :placeholder="$t('message.dataSource.operateInfo')" size="20" @change="changeActionSelect(ruleItem.id)">
@@ -204,7 +210,7 @@ export default {
         number: 1,
         showInput: false,
         errorMessage: '',
-        type: ''
+        type: 'rule'
       }
       this.addRuleForm.push(newRuleItem)
     },
@@ -245,7 +251,6 @@ export default {
     async getDataSources(isDescending, sortName, searchValue) {
 
       const loadstatus = await this.getDataSourcesState()
-
       const url = `${this.$common.apis.dataSource}/sortAndSearch/?simple`
       const response = await this.$http.get(url, {
         params: {
@@ -262,7 +267,7 @@ export default {
         } else {
           response.data[i].statusType = 'exception'
         }
-        response.data[i]['loadstatus'] = 100 - loadstatus[name]
+        response.data[i]['loadstatus'] = loadstatus[name]
       }
       this.dataSources = []
       this.$common.methods.pushData(response.data, this.dataSources)
@@ -276,6 +281,8 @@ export default {
 
 
     async getDataSourcesDisable(isDescending, sortName, searchValue) {
+
+
       const url = `${this.$common.apis.disableDataSource}`
       const response = await this.$http.get(url, {
         params: {
@@ -381,8 +388,7 @@ export default {
     },
     getRuleItemFromInfo(data) {
       let actionValue, showInput, granularityValue, number = 1, inputMessage
-      let type = ''
-      type = data['type']
+      const type = data['type']
       if (type.indexOf('drop') > -1) {
         actionValue = 'drop'
       }
@@ -568,6 +574,8 @@ export default {
         } else {
           type = actionValue + "Forever"
         }
+      } else {
+        type = 'rule'
       }
       return type
     },

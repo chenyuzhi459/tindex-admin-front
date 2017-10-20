@@ -21,7 +21,7 @@
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
           <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
-          <el-switch v-model="showEnable" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px; " @change="switchChange">
+          <el-switch v-model="showEnable" :disabled="switchDisabled" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px; " @change="switchChange">
           </el-switch>
         </el-form-item>
       </el-form>
@@ -36,7 +36,7 @@
           </template>
         </el-table-column>
         <el-table-column v-if="showEnable" prop="segmentSize" :label="$t('message.common.size')"></el-table-column>
-        <el-table-column :label="$t('message.common.more')" fixed="right" width="350">
+        <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <!-- <el-button size="mini" @click="getSegmentInfo(scope.row.identifier)">{{$t('message.segment.info')}}</el-button> -->
             <el-button v-if="showEnable" size="mini" @click="disableSegment(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
@@ -91,7 +91,8 @@ export default {
       },
       showEnable: true,
       isDescending: true,
-      createdShowEnable: false
+      createdShowEnable: false,
+      switchDisabled: false
     }
   },
   created: function() {
@@ -108,6 +109,7 @@ export default {
     init() {
       if (this.preLocation === "dataSource") {
         this.showIntervalName = false
+        this.switchDisabled = true
       } else if (this.preLocation === "interval") {
         this.showIntervalName = true
       }
@@ -128,20 +130,26 @@ export default {
       } else {
         url = `${this.$common.apis.dataSource}/${this.dataSourceName}/disableSegments`
       }
-      console.log(url)
-      const response = await this.$http.get(url, {
-        params: {
-          isDescending: isDescending,
-          searchValue: searchValue
-        }
-      })
+      let data = []
+      try {
+        const response = await this.$http.get(url, {
+          params: {
+            isDescending: isDescending,
+            searchValue: searchValue
+          }
+        })
+        data = response.data
+      } catch (err) {
+          
+      }
+
       if (this.showEnable) {
-        for (let i = 0; i < response.data.length; i++) {
-          response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
+        for (let i = 0; i < data.length; i++) {
+          data[i]["segmentSize"] = this.$common.methods.conver(data[i]["size"])
         }
       }
       this.segments = []
-      this.$common.methods.pushData(response.data, this.segments)
+      this.$common.methods.pushData(data, this.segments)
       this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
 
     },
