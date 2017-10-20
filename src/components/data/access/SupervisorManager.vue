@@ -11,12 +11,11 @@
         <complete-supervisors></complete-supervisors>
 
         <el-dialog :visible.sync="createDialogVisible" size="small" :title="$t('message.supervisors.supervisorSpec')" :close-on-click-modal="false">
-            <el-button type="primary" @click="format">{{$t('message.supervisors.format')}}</el-button>
             <span style="color: red" v-if="jsonSyntaxError">{{$t('message.supervisors.jsonSyntaxError')}}</span>
-            <br></br>
             <el-input type="textarea" :rows="25" v-model="supervisorSpecJson">
             </el-input>
             <span slot="footer" class="dialog-footer">
+                <el-button style="float:left" type="primary" @click="format">{{$t('message.supervisors.format')}}</el-button>
                 <el-button @click="createDialogVisible = false">{{$t('message.supervisors.dialogCancel')}}</el-button>
                 <el-button type="primary" @click="createSupervisor()">{{$t('message.supervisors.createDialogConfirm')}}</el-button>
             </span>

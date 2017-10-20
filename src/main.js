@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import App from './App';
 import router from './router';
-import axios from 'axios';
+// import axios from 'axios';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-default/index.css';    
 import "babel-polyfill";
@@ -35,7 +35,7 @@ const i18n = new VueI18n({
 ElementLocale.i18n((key, value) => i18n.t(key, value))
 Vue.prototype.$t = ElementLocale.t
 Vue.prototype._i18n = i18n
-Vue.prototype.$axios = axios
+// Vue.prototype.$axios = axios
 Vue.prototype.$common = common
 Vue.http.interceptors.push((request, next) => {
     let timeout;

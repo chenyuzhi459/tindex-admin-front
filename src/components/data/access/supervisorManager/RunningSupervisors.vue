@@ -50,8 +50,9 @@
             <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
             </el-input>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">{{$t('message.supervisors.dialogCancel')}}</el-button>
-                <el-button type="primary" @click="dialogVisible = false">{{$t('message.supervisors.dialogConfirm')}}</el-button>
+                <el-button @click="dialogVisible = false">{{$t('message.common.close')}}</el-button>
+                <!-- <el-button @click="dialogVisible = false">{{$t('message.supervisors.dialogCancel')}}</el-button>
+                <el-button type="primary" @click="dialogVisible = false">{{$t('message.supervisors.dialogConfirm')}}</el-button> -->
             </span>
         </el-dialog>
 

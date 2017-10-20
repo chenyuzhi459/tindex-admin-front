@@ -64,8 +64,7 @@
             <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
             </el-input>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">{{$t('message.tasks.dialogCancel')}}</el-button>
-                <el-button type="primary" @click="dialogVisible = false">{{$t('message.tasks.dialogConfirm')}}</el-button>
+                <el-button @click="dialogVisible = false">{{$t('message.common.close')}}</el-button>
             </span>
         </el-dialog>
 
@@ -163,7 +162,7 @@ export default {
                 } catch (e) {
                     e.status === 408 ? console.log('get status timeout') : console.log('err')
                 }
-                
+
                 row.offset = await this.getOffset(row).catch(err => {
                     err.status === 408 ? console.log('get offset timeout') : console.log('err')
                 })

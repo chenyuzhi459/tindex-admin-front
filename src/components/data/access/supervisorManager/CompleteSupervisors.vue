@@ -15,7 +15,7 @@
                 <el-button type="primary" size="small" @click="init">{{$t('message.tasks.refresh')}}</el-button>
             </el-form-item>
         </el-form>
-        
+
         <template v-if="hasData">
             <div class="table" style=" margin-left:20px;">
                 <el-table :data="completeSupervisors" border stripe style="width: 100%" @sort-change="sortChange">
@@ -48,27 +48,25 @@
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
                 <div style=" line-height: 1;
-                            font-size: 16px;
-                            font-weight: 700;
-                            color: #1f2d3d;">
+                                font-size: 16px;
+                                font-weight: 700;
+                                color: #1f2d3d;">
                     {{dialogTitle}}
                 </div>
             </template>
             <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
             </el-input>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">{{$t('message.tasks.dialogCancel')}}</el-button>
-                <el-button type="primary" @click="dialogVisible = false">{{$t('message.tasks.dialogConfirm')}}</el-button>
+                <el-button @click="dialogVisible = false">{{$t('message.common.close')}}</el-button>
             </span>
         </el-dialog>
 
         <el-dialog :visible.sync="createDialogVisible" size="small" :title="$t('message.supervisors.supervisorSpec')" :close-on-click-modal="false">
-            <el-button type="primary" @click="format">{{$t('message.supervisors.format')}}</el-button>
             <span style="color: red" v-if="jsonSyntaxError">{{$t('message.supervisors.jsonSyntaxError')}}</span>
-            <br></br>
             <el-input type="textarea" :rows="25" v-model="supervisorSpecJson">
             </el-input>
             <span slot="footer" class="dialog-footer">
+                <el-button style="float:left" type="primary" @click="format">{{$t('message.supervisors.format')}}</el-button>
                 <el-button @click="createDialogVisible = false">{{$t('message.supervisors.dialogCancel')}}</el-button>
                 <el-button type="primary" @click="createSupervisor()">{{$t('message.supervisors.createDialogConfirm')}}</el-button>
             </span>

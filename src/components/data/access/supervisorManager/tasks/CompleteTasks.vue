@@ -52,18 +52,16 @@
 
         <el-dialog :visible.sync="dialogVisible" :size="dialogSize" @close="dialogMessage = ''">
             <template slot="title">
-                <div style=" line-height: 1;
-                                                                font-size: 16px;
-                                                                font-weight: 700;
-                                                                color: #1f2d3d;">
+                <div style=" line-height: 1; font-size: 16px;font-weight: 700; color: #1f2d3d;">
                     {{dialogTitle}}
                 </div>
             </template>
             <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
             </el-input>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">{{$t('message.tasks.dialogCancel')}}</el-button>
-                <el-button type="primary" @click="dialogVisible = false">{{$t('message.tasks.dialogConfirm')}}</el-button>
+                <el-button @click="dialogVisible = false">{{$t('message.common.close')}}</el-button>
+                <!-- <el-button @click="dialogVisible = false">{{$t('message.tasks.dialogCancel')}}</el-button>
+                <el-button type="primary" @click="dialogVisible = false">{{$t('message.tasks.dialogConfirm')}}</el-button> -->
             </span>
         </el-dialog>
     </div>
