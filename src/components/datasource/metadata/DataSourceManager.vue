@@ -31,11 +31,11 @@
 
         <!-- <el-table-column :label="$t('message.dataSource.segments')" align="center"> -->
         <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.interval.segmentCount')" width="140"></el-table-column>
-        <el-table-column v-if="showEnable" prop="properties.segments.size" :label="$t('message.common.size')" width="95"></el-table-column>
+        <el-table-column v-if="showEnable" prop="properties.segments.size" :label="$t('message.common.size')" width="105"></el-table-column>
         <el-table-column v-if="showEnable" prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
         <el-table-column v-if="showEnable" prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
         <!-- </el-table-column> -->
-        <el-table-column v-if="showEnable" :label="$t('message.dataSource.rules')" width="100">
+        <el-table-column :label="$t('message.dataSource.rules')" width="100">
           <template scope="scope">
             <el-button size="mini" @click="editRule(scope.row.name)" icon="edit" type="info">
               <!-- {{$t('message.dataSource.add')}} -->
@@ -46,16 +46,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('message.common.more')" fixed="right" width="434">
+        <el-table-column :label="$t('message.common.more')" fixed="right" width="424">
           <template scope="scope">
-            <!-- <el-button size="mini" type="info" @click="getIntervals(scope.row.name)">{{$t('message.dataSource.intervals')}}</el-button> -->
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="disableDataSource(scope.row.name)" type="warning">{{$t('message.common.disable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="enableDataSource(scope.row.name)" type="success">{{$t('message.common.enable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="deleteDataSource(scope.row.name)" type="danger">{{$t('message.common.delete')}}</el-button>
-            <el-button size="mini" @click="getCandidates(scope.row.name)">{{$t('message.dataSource.candidates')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,7 +74,7 @@
       <el-input v-if="dialogForInfo" type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage"></el-input>
       <el-form v-if="!dialogForInfo" v-for="ruleItem in addRuleForm" :key="ruleItem.id" :inline="true" :model="ruleItem" class="demo-form-inline">
         <div style=" line-height: 1; font-size: 20px; font-weight: 700;color: #1f2d3d;">
-          rule
+          {{ruleItem.type}}
           <el-button type="primary" icon="delete" @click="removeRule(ruleItem.id)" style="float: right"></el-button>
         </div>
         <el-form-item :label="$t('message.dataSource.operate')">
@@ -204,7 +202,8 @@ export default {
         inputMessage: '',
         number: 1,
         showInput: false,
-        errorMessage: ''
+        errorMessage: '',
+        type: ''
       }
       this.addRuleForm.push(newRuleItem)
     },
@@ -327,10 +326,6 @@ export default {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/metrics`
       this.getInfoFromUrl(url, this.$t('message.dataSource.metricsInfo'))
     },
-    getCandidates(dataSourceName) {
-      const url = `${this.$common.apis.clientInfo}/${dataSourceName}/candidates`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.candidatesInfo'))
-    },
     getRuleHistory(dataSourceName) {
       const url = `${this.$common.apis.rules}/${dataSourceName}/history`
       this.getInfoFromUrl(url, this.$t('message.dataSource.rulesHistory'))
@@ -381,6 +376,7 @@ export default {
       }
       const newRuleItem = {
         id: this.ruleItemNextId++,
+        type: type,
         actionValue: actionValue,
         granularityValue: granularityValue,
         inputMessage: inputMessage,
