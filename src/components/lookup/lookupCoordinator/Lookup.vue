@@ -35,13 +35,17 @@
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableDataLookup" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
-        <el-table-column prop="name" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
+
+        <el-table-column :label="$t('message.lookup.userGroupLookup')" sortable="custom">
+          <template scope="scope">
+            <a class="click-link" @click="getInfo(scope.row.name)">{{scope.row.name}}</a>
+          </template>
+        </el-table-column>
         <el-table-column prop="spec.type" :label="$t('message.lookup.type')"></el-table-column>
         <el-table-column prop="spec.dataFetcher.groupId" :label="$t('message.lookup.groupId')"></el-table-column>
         <el-table-column prop="spec.version" :label="$t('message.lookup.version')"></el-table-column>
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
-            <el-button size="mini" @click="getInfo(scope.row.name)">{{$t('message.common.info')}}</el-button>
             <el-button size="mini" @click="updataLookup(scope.row.name)">{{$t('message.common.update')}}</el-button>
             <el-button size="mini" type="danger" @click="deleteLookup(scope.row.name)">{{$t('message.common.delete')}}</el-button>
           </template>
@@ -271,3 +275,7 @@ export default {
   }
 }
 </script>
+
+<style>
+@import "../../../../static/css/link.css";
+</style>

@@ -32,12 +32,15 @@
     <div class="table" style=" margin-left:20px;">
 
       <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
-        <el-table-column prop="lookup" :label="$t('message.lookup.userGroupLookup')" sortable="custom"></el-table-column>
+        <el-table-column :label="$t('message.lookup.userGroupLookup')" sortable="custom">
+          <template scope="scope">
+            <a class="click-link" @click="getInfo(scope.row.lookup)">{{scope.row.lookup}}</a>
+          </template>
+        </el-table-column>
         <el-table-column prop="dataLoader.groupId" :label="$t('message.lookup.groupId')"></el-table-column>
         <el-table-column prop="version" :label="$t('message.lookup.version')"></el-table-column>
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
-            <el-button size="mini" @click="getInfo(scope.row.lookup)">{{$t('message.common.info')}}</el-button>
             <el-button size="mini" @click="updataLookup(scope.row.lookup)">{{$t('message.common.update')}}</el-button>
             <el-button size="mini" type="danger" @click="deleteLookup(scope.row.lookup)">{{$t('message.common.delete')}}</el-button>
           </template>
@@ -265,3 +268,7 @@ export default {
   }
 }
 </script>
+
+<style>
+@import "../../../../static/css/link.css";
+</style>

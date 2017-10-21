@@ -52,11 +52,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('message.common.more')" >
+        <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
             <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getDimensions(scope.row.name)">{{$t('message.dataSource.dimensions')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="getMetrics(scope.row.name)">{{$t('message.dataSource.metrics')}}</el-button>
+
+            <!-- <el-button v-if="showEnable" size="mini" @onclick="getServers(scope.row.name)">{{$t('message.dataSource.servers')}}</el-button> -->
+
             <el-button v-if="showEnable" size="mini" @click="getServers(scope.row.name)">{{$t('message.dataSource.servers')}}</el-button>
             <el-button v-if="showEnable" size="mini" @click="disableDataSource(scope.row.name)" type="warning">{{$t('message.common.disable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="enableDataSource(scope.row.name)" type="success">{{$t('message.common.enable')}}</el-button>
@@ -81,7 +84,7 @@
       <el-input v-if="dialogForInfo" type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage"></el-input>
       <el-form v-if="!dialogForInfo" v-for="ruleItem in addRuleForm" :key="ruleItem.id" :inline="true" :model="ruleItem" class="demo-form-inline">
         <div>
-          <el-tag type="primary"  size='large'>{{ruleItem.type}}</el-tag>
+          <el-tag type="primary" size='large'>{{ruleItem.type}}</el-tag>
           <el-button type="primary" icon="delete" @click="removeRule(ruleItem.id)" style="float: right"></el-button><br></br>
         </div>
         <el-form-item :label="$t('message.dataSource.operate')">
@@ -148,6 +151,7 @@ export default {
       dialogForInfo: true,
       addRuleForm: [],
       ruleItemNextId: 1,
+      tooltipContent: ''
     }
   },
   created: function() {
@@ -251,9 +255,10 @@ export default {
     async getDataSources(isDescending, sortName, searchValue) {
 
       const loadstatus = await this.getDataSourcesState()
-      const url = `${this.$common.apis.dataSource}/sortAndSearch/?simple`
+      const url = `${this.$common.apis.dataSource}/sortAndSearch`
       const response = await this.$http.get(url, {
         params: {
+          simple: true,
           isDescending: isDescending,
           searchValue: searchValue
         }
@@ -348,10 +353,6 @@ export default {
         this.getDataSourcesDisable(this.isDescending, "name", this.formInline.name)
       }
     },
-    // getDataSourceInfo(dataSourceName) {
-    //   const url = `${this.$common.apis.dataSource}/${dataSourceName}`
-    //   this.getInfoFromUrl(url, this.$t('message.dataSource.dataSourceInfo'))
-    // },
     getDimensions(dataSourceName) {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/dimensions`
       this.getInfoFromUrl(url, this.$t('message.dataSource.dimensionsInfo'))
@@ -360,9 +361,24 @@ export default {
       const url = `${this.$common.apis.clientInfo}/${dataSourceName}/metrics`
       this.getInfoFromUrl(url, this.$t('message.dataSource.metricsInfo'))
     },
-    getServers(dataSourceName) {
+    async getServers(dataSourceName) {
       const url = `${this.$common.apis.serversInfo}/datasources/${dataSourceName}`
-      this.getInfoFromUrl(url, this.$t('message.dataSource.serversInfo'))
+      const response = await this.$http.get(url)
+      console.log(response.data)
+      let dataAfterFormat = ''
+      for (let i = 0; i < response.data.length; i++) {
+        dataAfterFormat += response.data[i] + '\r\n'
+      }
+      // this.tooltipContent = dataAfterFormat
+
+      this.showCancle = false
+      this.confirmType = 'confirmInfo'
+      this.dialogForInfo = true
+      this.configDialog(this.$t('message.dataSource.serversInfo'), dataAfterFormat, true, 'small', { minRows: 15, maxRows: 25 })
+
+
+
+      // this.getInfoFromUrl(url, this.$t('message.dataSource.serversInfo'))
     },
     getRuleHistory(dataSourceName) {
       const url = `${this.$common.apis.rules}/${dataSourceName}/history`
@@ -370,8 +386,7 @@ export default {
     },
     async getInfoFromUrl(url, title) {
       const response = await this.$http.get(url)
-      this.dataSourceInfo = response.data
-      const message = this.$common.methods.JSONUtils.toString(this.dataSourceInfo)
+      const message = this.$common.methods.JSONUtils.toString(response.data)
       this.showCancle = false
       this.confirmType = 'confirmInfo'
       this.dialogForInfo = true

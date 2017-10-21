@@ -2,8 +2,10 @@
 let base = ''
 console.log('NODE_ENV:',process.env.NODE_ENV)
 if (process.env.NODE_ENV === 'development') {
-     base = 'http://localhost:6660'
+     base = 'http://localhost:6660/api'
     //base = 'http://192.168.0.52:6660'
+}else{
+  base = 'api'
 }
 console.log('base:',base)
 export default {
