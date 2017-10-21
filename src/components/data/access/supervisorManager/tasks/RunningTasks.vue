@@ -22,11 +22,23 @@
                     <el-table-column type="expand">
                         <template scope="props">
                             <el-form label-position="left" inline class="demo-table-expand">
-                                <el-form-item :label="$t('message.tasks.status')">
+                                <el-form-item :label="$t('message.tasks.datasource')">
+                                    <span>{{ props.row.datasource }}</span>
+                                </el-form-item>
+                                <el-form-item :label="$t('message.tasks.topic')">
+                                    <span>{{ props.row.topic }}</span>
+                                </el-form-item>
+                                <el-form-item :label="$t('message.tasks.startOffset')">
+                                    <span>{{ props.row.startOffset }}</span>
+                                </el-form-item>
+                                <el-form-item :label="$t('message.tasks.period')">
                                     <span>{{ props.row.status }}</span>
                                 </el-form-item>
-                                <el-form-item :label="$t('message.tasks.offsets')">
-                                    <span> {{ props.row.offset }} </span>
+                                <el-form-item :label="$t('message.tasks.currOffset')">
+                                    <span>{{ props.row.currOffset }}</span>
+                                </el-form-item>
+                                <el-form-item :label="$t('message.tasks.metrics')">
+                                    <span>{{ props.row.metrics }}</span>
                                 </el-form-item>
                             </el-form>
                         </template>
@@ -39,9 +51,10 @@
                     <el-table-column sortable="custom" prop="createdTime" :label="$t('message.tasks.createdTime')" width="207"></el-table-column>
                     <el-table-column prop="queueInsertionTime" :label="$t('message.tasks.queueInsertTime')" width="210"></el-table-column>
                     <el-table-column prop="location" :label="$t('message.tasks.location')" width="180"></el-table-column>
-                    <el-table-column :label="$t('message.tasks.operation')" width="270">
+                    <el-table-column :label="$t('message.tasks.operation')" width="320">
                         <template scope="scope">
                             <el-button size="mini" @click="getTaskInfo(scope.row.id)">{{$t('message.tasks.payload')}}</el-button>
+                            <el-button size="mini" @click="getTaskStatus(scope.row.id)">{{$t('message.tasks.status')}}</el-button>
                             <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
                             <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
                             <el-button size="mini" style="width:35px" type="danger" @click="killTask(scope.row.id)">{{$t('message.tasks.delete')}}</el-button>
@@ -123,8 +136,12 @@ export default {
             }
             this.hasData = true
             data.map(s => {
-                s.offset = ''
+                s.currOffset = ''
                 s.status = ''
+                s.metrics = ''
+                s.topic = ''
+                s.datasource = ''
+                s.startOffset = ''
                 if (undefined !== s.location) {
                     s.location = s.location.host + ":" + s.location.port
                     return s
@@ -157,15 +174,16 @@ export default {
                     this.expandRowKeys.push(row.id)
                 }
 
-                try {
-                    row.status = (await this.getTaskStatus(row.id)).status.status
-                } catch (e) {
-                    e.status === 408 ? console.log('get status timeout') : console.log('err')
+                if (row.datasource === '') {
+                    const specInfo = await this.getSpecInfo(row)
+                    row.datasource = specInfo.datasource
+                    row.topic = specInfo.topic
+                    row.startOffset = specInfo.startOffset
                 }
 
-                row.offset = await this.getOffset(row).catch(err => {
-                    err.status === 408 ? console.log('get offset timeout') : console.log('err')
-                })
+                row.status = await this.getPeriod(row)
+                row.currOffset = await this.getCurrOffset(row)
+                row.metrics = await this.getMetrics(row)
             } else {
                 const index = _.findIndex(this.expandRowKeys, s => { return s === row.id })
                 if (index >= 0) {
@@ -173,13 +191,68 @@ export default {
                 }
             }
         },
-        async getOffset(row) {
+        async getSpecInfo(row) {
+            const url = `${this.$common.apis.baseTaskUrl}/${row.id}`
+            const { data } = await this.$http.get(url, {
+                _timeout: this.expandRequestTimeout
+            }).catch(err => {
+                const errMsg = err.status === 408 ? 'get specInfo timeout' : 'err'
+                console.log(errMsg)
+                return errMsg
+            })
+            let info = {
+                datasource: '',
+                topic: '',
+                startOffset: ''
+            }
+            info.datasource = data.payload.dataSchema.dataSource
+            info.topic = data.payload.ioConfig.startPartitions.topic
+            info.startOffset = data.payload.ioConfig.startPartitions.partitionOffsetMap
+            return info
+        },
+        async getPeriod(row) {
+            const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/period`
+            const { data } = await this.$http.get(url,
+                {
+                    params: {
+                        location: row.location
+                    },
+                    _timeout: this.expandRequestTimeout
+                }
+            ).catch(err => {
+                const errMsg = err.status === 408 ? 'get period timeout' : 'err'
+                console.log(errMsg)
+                return errMsg
+            })
+            return data
+        },
+        async getMetrics(row) {
+            const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/metrics`
+            const { data } = await this.$http.get(url,
+                {
+                    params: {
+                        location: row.location
+                    },
+                    _timeout: this.expandRequestTimeout
+                }
+            ).catch(err => {
+                const errMsg = err.status === 408 ? 'get metrics timeout' : 'err'
+                console.log(errMsg)
+                return errMsg
+            })
+            return data
+        },
+        async getCurrOffset(row) {
             const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/offsets/current`
             const { data } = await this.$http.get(url, {
                 params: {
                     location: row.location
                 },
                 _timeout: this.expandRequestTimeout
+            }).catch(err => {
+                const errMsg = err.status === 408 ? 'get offset timeout' : 'err'
+                console.log(errMsg)
+                return errMsg
             })
             return data
         },
@@ -192,7 +265,8 @@ export default {
         async getTaskStatus(taskId) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}/status`
             const { data } = await this.$http.get(url, { _timeout: this.expandRequestTimeout })
-            return data
+            const message = this.$common.methods.JSONUtils.toString(data, null, 2)
+            this.configDialog(this.$t('message.tasks.taskStatusTitle'), message, true, "small", { minRows: 15, maxRows: 25 })
 
         },
         getTasklog(taskId, offset) {
@@ -311,13 +385,13 @@ export default {
 }
 
 .demo-table-expand label {
-    width: 107px;
+    width: 70px;
     color: #99a9bf;
 }
 
 .demo-table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: 30%;
+    width: 32%;
 }
 </style>

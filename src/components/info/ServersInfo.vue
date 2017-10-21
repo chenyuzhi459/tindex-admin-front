@@ -12,11 +12,11 @@
         <el-table-column prop="maxSize" :label="$t('message.serversInfo.maxSize')"></el-table-column>
         <el-table-column prop="priority" :label="$t('message.serversInfo.priority')"></el-table-column>
         <el-table-column prop="tier" :label="$t('message.serversInfo.tier')"></el-table-column>
-        <el-table-column :label="$t('message.common.operation')" width="100">
+         <el-table-column :label="$t('message.common.operation')" width="100">
           <template scope="scope">
             <el-button size="mini" @click="getSegments(scope.row.host)">{{$t('message.serversInfo.segments')}}</el-button>
           </template>
-        </el-table-column>
+        </el-table-column> 
       </el-table>
     </div>
 
