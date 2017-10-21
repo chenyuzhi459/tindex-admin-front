@@ -62,7 +62,8 @@ export default {
       metrics: '指标',
       period: '阶段',
       datasource: '数据源',
-      startOffset:'startOffset'
+      startOffset:'startOffset',
+      topicOffsets: 'Topic Offsets',
     },
     supervisors: {
       supervisorManager: 'Supervisor管理',
@@ -275,7 +276,8 @@ export default {
       detail: '详情',
       close: '关闭',
       enable: '恢复',
-      state: '状态'
+      state: '状态',
+      requestTimeout: '请求超时'
     },
     error: {
       chooseAction: '操作不能为空! 请选择一种操作',
