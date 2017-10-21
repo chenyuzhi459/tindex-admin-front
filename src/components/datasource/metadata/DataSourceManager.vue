@@ -100,7 +100,7 @@
             <el-input v-model="ruleItem.inputMessage" :placeholder="ruleItem.inputPrompt" size="45"></el-input>
           </el-form-item>
           <el-form-item v-if="ruleItem.actionValue === 'load'" label="_default_tier">
-            <el-input-number v-model="ruleItem.number" :min="1" :max="10"></el-input-number>
+            <el-input-number v-model="ruleItem.number" :min="1" :max="100"></el-input-number>
             <!-- <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="40"></el-input> -->
           </el-form-item>
         </div>
