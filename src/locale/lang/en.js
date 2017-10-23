@@ -267,7 +267,8 @@ export default {
             close: 'close',
             enable: 'enable',
             state: 'state',
-            requestTimeout: 'request time out'
+            requestTimeout: 'request time out',
+            none: 'none'
         },
         error: {
           chooseAction: 'Action can not be null! Please choose an action',
@@ -276,6 +277,8 @@ export default {
         },
         systemConfig: {
             systemConfigTitle: "System Config",
+            druidConfig: "Druid Config",
+            kafkaConfig: "Kafka Config",
             updateConfig: "Do you really want to update config?"
         }
     }

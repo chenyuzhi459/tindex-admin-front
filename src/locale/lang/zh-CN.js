@@ -277,7 +277,8 @@ export default {
       close: '关闭',
       enable: '恢复',
       state: '状态',
-      requestTimeout: '请求超时'
+      requestTimeout: '请求超时',
+      none: '无'
     },
     error: {
       chooseAction: '操作不能为空! 请选择一种操作',
@@ -286,6 +287,8 @@ export default {
     },
     systemConfig: {
       systemConfigTitle: "系统配置",
+      druidConfig: "Druid 配置",
+      kafkaConfig: "Kafka 配置",
       updateConfig: "你确认要更新配置吗？"
     }
   }

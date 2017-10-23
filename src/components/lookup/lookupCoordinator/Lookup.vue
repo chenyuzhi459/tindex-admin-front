@@ -65,10 +65,11 @@
         </div>
       </template>
 
-      <el-input :placeholder="$t('message.lookup.lookupNameIndex')" v-model="lookupNameInput">
-        <template slot="prepend">{{$t('message.lookup.lookupName')}}</template>
-      </el-input>
-      <br/><br/>
+      <el-form :inline="true" class="demo-form-inline"> 
+        <el-form-item :label="$t('message.lookup.lookupName')">
+          <el-input v-model="lookupNameInput" :placeholder="$t('message.lookup.lookupNameIndex')" size="small"></el-input>
+        </el-form-item>
+      </el-form>
       <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
       </el-input>
       <span slot="footer" class="dialog-footer">
