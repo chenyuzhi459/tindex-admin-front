@@ -109,7 +109,8 @@ export default {
             metrics: 'metrics',
             period: 'period',
             datasource: 'datasource',
-            startOffset:'startOffset'
+            startOffset:'startOffset',
+            topicOffsets: 'Topic Offsets',   
         },
         supervisors: {
             supervisorManager: 'Supervisor Manager',
@@ -265,7 +266,8 @@ export default {
             detail: 'detail',
             close: 'close',
             enable: 'enable',
-            state: 'state'
+            state: 'state',
+            requestTimeout: 'request time out'
         },
         error: {
           chooseAction: 'Action can not be null! Please choose an action',

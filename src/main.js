@@ -45,7 +45,7 @@ Vue.http.interceptors.push((request, next) => {
 　　　　　　　　//自定义响应体 status:408,statustext:"请求超时"，并返回给下下边的next
             next(request.respondWith(request.body, {
                  status: 408,
-                 statusText: '请求超时'
+                 statusText: ElementLocale.t('message.common.requestTimeout')
             }));
             
         }, request._timeout);

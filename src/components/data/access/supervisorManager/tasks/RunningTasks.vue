@@ -22,11 +22,13 @@
                     <el-table-column type="expand">
                         <template scope="props">
                             <el-form label-position="left" inline class="demo-table-expand">
+                                <el-button size="small" @click="updateExpandData(props.row)">{{$t('message.common.update')}}</el-button>
+                                <br>
                                 <el-form-item :label="$t('message.tasks.datasource')">
                                     <span>{{ props.row.datasource }}</span>
                                 </el-form-item>
                                 <el-form-item :label="$t('message.tasks.topic')">
-                                    <span>{{ props.row.topic }}</span>
+                                    <a class="click-a" @click="getTopicOffsets(props.row)">{{ props.row.topic }}</a>
                                 </el-form-item>
                                 <el-form-item :label="$t('message.tasks.startOffset')">
                                     <span>{{ props.row.startOffset }}</span>
@@ -40,6 +42,10 @@
                                 <el-form-item :label="$t('message.tasks.metrics')">
                                     <span>{{ props.row.metrics }}</span>
                                 </el-form-item>
+                                <!-- <el-form-item :label="$t('message.tasks.updateExpandData')">
+                                                                <el-button size="small" @click="onSearch">{{$t('message.tasks.updateExpandData')}}</el-button>
+                                                            </el-form-item> -->
+
                             </el-form>
                         </template>
                     </el-table-column>
@@ -162,6 +168,9 @@ export default {
                 return s === target
             })
         },
+        async updateExpandData(row) {
+            this.expand(row, true)
+        },
         showExpand(row) {
             const index = this.findInExpandRowKeys(row.id)
             index < 0 ? this.expand(row, true) : this.expand(row, false)
@@ -180,10 +189,26 @@ export default {
                     row.topic = specInfo.topic
                     row.startOffset = specInfo.startOffset
                 }
-
-                row.status = await this.getPeriod(row)
-                row.currOffset = await this.getCurrOffset(row)
-                row.metrics = await this.getMetrics(row)
+                const { data } = await this.$http.get(
+                    `${this.$common.apis.taskChatUrl}/chat/${row.id}/summary`,
+                    {
+                        params: {
+                            location: row.location
+                        },
+                        _timeout: this.expandRequestTimeout
+                    }
+                ).catch(err => {
+                    this.$message({
+                        message: err.statusText,
+                        type: 'error',
+                        showClose: true,
+                        duration:2000
+                    })
+                    return {data:{}}
+                })
+                row.status = data.status
+                row.currOffset = data.currOffset
+                row.metrics = data.metrics
             } else {
                 const index = _.findIndex(this.expandRowKeys, s => { return s === row.id })
                 if (index >= 0) {
@@ -210,52 +235,6 @@ export default {
             info.startOffset = data.payload.ioConfig.startPartitions.partitionOffsetMap
             return info
         },
-        async getPeriod(row) {
-            const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/period`
-            const { data } = await this.$http.get(url,
-                {
-                    params: {
-                        location: row.location
-                    },
-                    _timeout: this.expandRequestTimeout
-                }
-            ).catch(err => {
-                const errMsg = err.status === 408 ? 'get period timeout' : 'err'
-                console.log(errMsg)
-                return errMsg
-            })
-            return data
-        },
-        async getMetrics(row) {
-            const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/metrics`
-            const { data } = await this.$http.get(url,
-                {
-                    params: {
-                        location: row.location
-                    },
-                    _timeout: this.expandRequestTimeout
-                }
-            ).catch(err => {
-                const errMsg = err.status === 408 ? 'get metrics timeout' : 'err'
-                console.log(errMsg)
-                return errMsg
-            })
-            return data
-        },
-        async getCurrOffset(row) {
-            const url = `${this.$common.apis.taskChatUrl}/chat/${row.id}/offsets/current`
-            const { data } = await this.$http.get(url, {
-                params: {
-                    location: row.location
-                },
-                _timeout: this.expandRequestTimeout
-            }).catch(err => {
-                const errMsg = err.status === 408 ? 'get offset timeout' : 'err'
-                console.log(errMsg)
-                return errMsg
-            })
-            return data
-        },
         async getTaskInfo(taskId) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}`
             const { data } = await this.$http.get(url)
@@ -268,6 +247,21 @@ export default {
             const message = this.$common.methods.JSONUtils.toString(data, null, 2)
             this.configDialog(this.$t('message.tasks.taskStatusTitle'), message, true, "small", { minRows: 15, maxRows: 25 })
 
+        },
+        async getTopicOffsets(row) {
+            const url = `${this.$common.apis.kafka}/${row.topic}/offsets`
+            let postData = []
+            for (let key in row.startOffset) {
+                postData.push(parseInt(key))
+            }
+
+            const { data } = await this.$http.post(url, postData, {
+                header: {
+                    ContentType: "application/json"
+                }
+            })
+            const message = this.$common.methods.JSONUtils.toString(data, null, 2)
+            this.configDialog(this.$t('message.tasks.topicOffsets'), message, true, "small", { minRows: 15, maxRows: 25 })
         },
         getTasklog(taskId, offset) {
             const url = `${this.$common.apis.baseTaskUrl}/${taskId}/log?offset=${offset}`
@@ -385,7 +379,7 @@ export default {
 }
 
 .demo-table-expand label {
-    width: 70px;
+    width: 72px;
     color: #99a9bf;
 }
 
