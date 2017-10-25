@@ -112,11 +112,12 @@ export default {
         supervisor: 'supervisor管理',
         task: 'task管理'
       },
-      info: {
+      manager: {
         title: '系统管理',
         status: '系统状态',
         serversInfo: '节点信息',
-        systemConfig: '系统配置'
+        systemConfig: '系统配置',
+        zkManager: 'ZooKeeper管理'
       },
       dataSource: {
         title: '数据源管理',

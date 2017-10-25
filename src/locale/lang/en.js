@@ -21,11 +21,12 @@ export default {
                 supervisor: 'Supervisor Manager',
                 task: 'Task Manager',
             },
-            info: {
+            manager: {
                 title: 'System Manager',
                 status: 'System Status',
                 serversInfo: 'Servers Info',
-                systemConfig: 'System Config'
+                systemConfig: 'System Config',
+                zkManager: 'ZooKeeper Manager'
             },
             dataSource: {
                 title: 'DataSource Manage',

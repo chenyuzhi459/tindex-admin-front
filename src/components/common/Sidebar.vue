@@ -65,23 +65,28 @@ export default {
         },
 
         {
-          index: 'info',
-          title: this.$t('message.sideBar.info.title'),
+          index: 'manager',
+          title: this.$t('message.sideBar.manager.title'),
           subs: [
             {
               index: 'systemConfig',
               route: { path: '/systemConfig' },
-              title: this.$t('message.sideBar.info.systemConfig')
+              title: this.$t('message.sideBar.manager.systemConfig')
             },
             {
               index: 'status',
               route: { path: '/status' },
-              title: this.$t('message.sideBar.info.status')
+              title: this.$t('message.sideBar.manager.status')
             },
             {
               index: 'serversInfo',
               route: { path: '/serversInfo' },
-              title: this.$t('message.sideBar.info.serversInfo')
+              title: this.$t('message.sideBar.manager.serversInfo')
+            },
+            {
+              index: 'zkManager',
+              route: { path: '/zkManager' },
+              title: this.$t('message.sideBar.manager.zkManager')
             },
           ]
         },

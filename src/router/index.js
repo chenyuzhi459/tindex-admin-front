@@ -18,17 +18,22 @@ export default new Router({
         },
         {
           path: '/status',
-          component: resolve => require(['../components/info/SystemStatus.vue'], resolve)
+          component: resolve => require(['../components/system/manager/SystemStatus.vue'], resolve)
         },
         {
           name: 'serversInfo',
           path: '/serversInfo',
-          component: resolve => require(['../components/info/ServersInfo.vue'], resolve)
+          component: resolve => require(['../components/system/manager/servers/ServersInfo.vue'], resolve)
         },
         {
           name: 'serversSegment',
           path: '/serversSegment/:serverName',
-          component: resolve => require(['../components/info/servers/ServersSegment.vue'], resolve)
+          component: resolve => require(['../components/system/manager/servers/ServersSegment.vue'], resolve)
+        },
+        {
+          name: 'zkManager',
+          path: '/zkManager',
+          component: resolve => require(['../components/system/manager/ZookeeperManager.vue'], resolve)
         },
         {
           name: 'supervisorManager',

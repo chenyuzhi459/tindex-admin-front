@@ -129,6 +129,7 @@ export default {
             this.sortDimension = 'createdTime'
             this.isDescending = true
             this.isSearching = false
+            this.expandRowKeys = []
             this.currentPage = 1
             this.formInline.searchValue1 = ''
             this.getRunningTasks()
