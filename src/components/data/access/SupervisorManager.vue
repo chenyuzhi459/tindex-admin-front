@@ -62,7 +62,7 @@ export default {
                 })
                 this.createDialogVisible = false
                 const successMessage = `${this.$t('message.supervisors.creatSuccess')}:${response.data.id}`
-                this.$common.eventBus.$emit('updateRunningSupervisors')
+                this.$common.eventBus.$emit('updateAllSupervisors')
                 this.$message({
                     showClose: true,
                     message: successMessage,

@@ -125,6 +125,7 @@ export default {
             this.formInline.searchValue1 = ''
             this.isDescending = true
             this.isSearching = false
+            this.expandRowKeys = []
             this.currentPage = 1
             this.getRunningTasks()
         },

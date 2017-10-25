@@ -1,14 +1,18 @@
 
 let base = ''
-console.log('NODE_ENV:',process.env.NODE_ENV)
+console.log('NODE_ENV:', process.env.NODE_ENV)
 if (process.env.NODE_ENV === 'development') {
+<<<<<<< HEAD
      base = 'http://localhost:6660/api'
     // base = 'http://192.168.0.42:6660/api'
+=======
+    base = 'http://localhost:6660/api'
+>>>>>>> 5ce2a596ab21732524d53fb6775d534b729b5161
     //base = 'http://192.168.0.52:6660'
-}else{
-  base = 'api'
+} else {
+    base = 'api'
 }
-console.log('base:',base)
+console.log('base:', base)
 export default {
     status: `${base}/status`,
     serversInfo: `${base}/druid/coordinator/v1/servers`,
@@ -21,8 +25,8 @@ export default {
     taskChatUrl: `${base}/druid/worker/v1/task`,
     baseTaskUrl: `${base}/druid/indexer/v1/task`,
     overlordUrl: `${base}/druid/indexer/v1`,
-    supervisor:`${base}/druid/indexer/v1/supervisor`,
-    disableDataSource:`${base}/druid/coordinator/v1/metadata/disableDatasources`,
+    supervisor: `${base}/druid/indexer/v1/supervisor`,
+    disableDataSource: `${base}/druid/coordinator/v1/metadata/disableDatasources`,
     intervals: `${base}/druid/coordinator/v1/intervals`,
     dataSource: `${base}/druid/coordinator/v1/metadata/datasources`,
     clientInfo: `${base}/druid/v2/datasources`,
@@ -32,5 +36,6 @@ export default {
     lookupsHis: `${base}/druid/listen/v1/lookups`,
     systemConfig: `${base}/druid/systemConfig`,
     loadstatus: `${base}/druid/coordinator/v1/loadstatus`,
-    kafka: `${base}/kafka`
+    kafka: `${base}/kafka`,
+    zk: `${base}/zk`
 }
