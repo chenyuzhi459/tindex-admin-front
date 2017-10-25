@@ -6,7 +6,7 @@
   color: #20a0ff;
   font-size: 15px;
   line-height: 22px;
-  font-weight: 600;
+  font-weight: 550;
 }
 .ruleTypeDiv {
   color: #20a0ff;

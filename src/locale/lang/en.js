@@ -279,6 +279,7 @@ export default {
             systemConfigTitle: "System Config",
             druidConfig: "Druid Config",
             kafkaConfig: "Kafka Config",
+            zkConfig: "Zookeeper Config",
             updateConfig: "Do you really want to update config?"
         }
     }

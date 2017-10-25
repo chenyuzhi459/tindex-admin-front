@@ -289,6 +289,7 @@ export default {
       systemConfigTitle: "系统配置",
       druidConfig: "Druid 配置",
       kafkaConfig: "Kafka 配置",
+      zkConfig: "Zookeeper 配置",
       updateConfig: "你确认要更新配置吗？"
     }
   }
