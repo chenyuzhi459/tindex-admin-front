@@ -89,9 +89,9 @@
           <el-form-item label="retry.interval">
             <el-input v-model="form.zk_properties.retry_interval"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onConfirm">{{$t('message.common.confirm')}}</el-button>
-            <el-button @click="onCancle">{{$t('message.common.cancle')}}</el-button>
+          <el-form-item style="float: right">
+            <el-button type="primary" @click="onUpdate">{{$t('message.common.update')}}</el-button>
+            <el-button @click="onReset">{{$t('message.common.reset')}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -161,11 +161,10 @@ export default {
       this.form.zk_properties.retry_time = zkProperties["retry.time"]
       this.form.zk_properties.retry_interval = zkProperties["retry.interval"]
     },
-
-    onCancle() {
+    onReset() {
       this.getIps();
     },
-    async onConfirm() {
+    async onUpdate() {
       const remindMessage = `${this.$t("message.systemConfig.updateConfig")}`;
       try {
         const response = await this.$confirm(
