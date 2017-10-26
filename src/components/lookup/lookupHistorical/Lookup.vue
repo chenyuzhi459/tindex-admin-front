@@ -57,13 +57,18 @@
           <div style="line-height: 1;font-size: 16px; font-weight: 700; color: #1f2d3d;">
             {{dialogTitle}}
           </div>
-</template>
-        <el-input :placeholder="$t('message.lookup.lookupNameIndex')" v-model="lookupNameInput">
+        </template>
+      <el-form :inline="true" class="demo-form-inline"> 
+        <el-form-item :label="$t('message.lookup.lookupName')">
+          <el-input v-model="lookupNameInput" :placeholder="$t('message.lookup.lookupNameIndex')" size="small"></el-input>
+        </el-form-item>
+      </el-form>
+        <!-- <el-input :placeholder="$t('message.lookup.lookupNameIndex')" v-model="lookupNameInput">
           <template slot="prepend">
    {{$t('message.lookup.lookupName')}}
 </template>
         </el-input>
-        <br/><br/>
+        <br/><br/> -->
         <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
         </el-input>
         <span slot="footer" class="dialog-footer">
@@ -80,35 +85,35 @@ export default {
   data() {
     return {
       historicalIps: [],
-      historicalIp: '',
+      historicalIp: "",
       lookups: [],
       pageSize: 15,
       currentPage: 1,
       formInline: {
-        name: '',
+        name: ""
       },
       showTableData: [],
-      confirmType: '',
-      lookupNameInput: '',
-      dialogMessage: '',
-      dialogTitle: '',
-      dialogSize: 'large',
+      confirmType: "",
+      lookupNameInput: "",
+      dialogMessage: "",
+      dialogTitle: "",
+      dialogSize: "large",
       dialogInputAutosize: {},
       dialogVisible: false,
       showCancle: false
-    }
+    };
   },
   created: function() {
-    this.init()
+    this.init();
   },
   methods: {
     async init() {
-      await this.getHistoricalIps()
-      this.getLookups(this.isDescending, this.formInline.name)
+      await this.getHistoricalIps();
+      this.getLookups(this.isDescending, this.formInline.name);
     },
     refresh() {
-      this.formInline.name = ''
-      this.getLookups(this.isDescending, this.formInline.name)
+      this.formInline.name = "";
+      this.getLookups(this.isDescending, this.formInline.name);
     },
 
     // async getLookupsByIp() {
@@ -116,157 +121,220 @@ export default {
     //   this.getLookups(this.isDescending, this.formInline.name)
     // },
     async getLookups(isDescending, searchValue) {
-      const url = `${this.$common.apis.lookupsHis}/sortAndSearch`
+      const url = `${this.$common.apis.lookupsHis}/sortAndSearch`;
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
           searchValue: searchValue,
           ip: this.historicalIp
         }
-      })
-      this.lookups = []
+      });
+      this.lookups = [];
       for (let i = 0; i < response.data.length; i++) {
         for (var key in response.data[i]) {
-          response.data[i]["lookup"] = key
-          response.data[i]["dataLoader"] = response.data[i][key]["dataLoader"]
-          response.data[i]["version"] = response.data[i][key]["version"]
+          response.data[i]["lookup"] = key;
+          response.data[i]["dataLoader"] = response.data[i][key]["dataLoader"];
+          response.data[i]["version"] = response.data[i][key]["version"];
         }
       }
-      this.$common.methods.pushData(response.data, this.lookups)
-      this.showTableData = this.$common.methods.fillShowTableData(this.lookups, this.currentPage, this.pageSize)
+      this.$common.methods.pushData(response.data, this.lookups);
+      this.showTableData = this.$common.methods.fillShowTableData(
+        this.lookups,
+        this.currentPage,
+        this.pageSize
+      );
     },
     async getLookupByName(lookupName) {
-      const url = `${this.$common.apis.lookupsHis}/${lookupName}`
+      const url = `${this.$common.apis.lookupsHis}/${lookupName}`;
       const response = await this.$http.get(url, {
         params: {
           ip: this.historicalIp
         }
-      })
-      return response.data
+      });
+      return response.data;
     },
     async updataLookup(lookupName) {
-      const info = await this.getLookupByName(lookupName)
-      const title = this.$t('message.lookup.lookupInfo')
-      const infoJSON = this.$common.methods.JSONUtils.toString(info)
-      this.showCancle = true
-      this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "updateLookup", lookupName)
+      const info = await this.getLookupByName(lookupName);
+      const title = this.$t("message.lookup.lookupInfo");
+      const infoJSON = this.$common.methods.JSONUtils.toString(info);
+      this.showCancle = true;
+      this.configDialog(
+        title,
+        infoJSON,
+        true,
+        "small",
+        { minRows: 15, maxRows: 25 },
+        "updateLookup",
+        lookupName
+      );
     },
     async deleteLookup(lookupName) {
-      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${lookupName}`
+      const remindMessage = `${this.$t(
+        "message.common.deleteWarning"
+      )}\n${lookupName}`;
       try {
-        const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
-          cancelButtonText: this.$t('message.common.cancle'),
-          confirmButtonText: this.$t('message.common.confirm'),
-          closeOnClickModal: false,
-          type: 'warning'
-        })
+        const response = await this.$confirm(
+          remindMessage,
+          this.$t("message.common.warning"),
+          {
+            cancelButtonText: this.$t("message.common.cancle"),
+            confirmButtonText: this.$t("message.common.confirm"),
+            closeOnClickModal: false,
+            type: "warning"
+          }
+        );
         try {
-          const url = `${this.$common.apis.lookupsHis}/${lookupName}`
+          const url = `${this.$common.apis.lookupsHis}/${lookupName}`;
           const addResponse = await this.$http.delete(url, {
             params: {
               ip: this.historicalIp
             }
-          })
-          window.setTimeout(this.getLookups(this.isDescending, this.formInline.name), 500)
+          });
+          window.setTimeout(
+            this.getLookups(this.isDescending, this.formInline.name),
+            500
+          );
           this.$message({
-            type: 'success',
-            message: this.$t('message.common.deleteSuccess')
-          })
+            type: "success",
+            message: this.$t("message.common.deleteSuccess")
+          });
         } catch (err) {
           this.$message({
-            type: 'warning',
-            message: this.$t('message.common.deleteFail')
-          })
+            type: "warning",
+            message: this.$t("message.common.deleteFail")
+          });
         }
-      } catch (e) {
-
-      }
+      } catch (e) {}
     },
     onSearch() {
-      this.getLookups(this.isDescending, this.formInline.name)
+      this.getLookups(this.isDescending, this.formInline.name);
     },
     async getHistoricalIps() {
-      const url = `${this.$common.apis.historicalIps}`
-      const response = await this.$http.get(url)
-      this.historicalIps = response.data
-      this.historicalIp = this.historicalIps[0]
-      console.log(this.historicalIps[0], "init ip")
+      const url = `${this.$common.apis.historicalIps}`;
+      const response = await this.$http.get(url);
+      this.historicalIps = response.data;
+      this.historicalIp = this.historicalIps[0];
+      console.log(this.historicalIps[0], "init ip");
     },
-    configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize, confirmType, lookupNameInput) {
-      this.dialogTitle = dialogTitle
-      this.dialogMessage = dialogMessage
-      this.dialogVisible = dialogVisible
-      this.dialogSize = dialogSize
-      this.dialogInputAutosize = dialogInputAutosize
-      this.confirmType = confirmType
-      this.lookupNameInput = lookupNameInput
+    configDialog(
+      dialogTitle,
+      dialogMessage,
+      dialogVisible,
+      dialogSize,
+      dialogInputAutosize,
+      confirmType,
+      lookupNameInput
+    ) {
+      this.dialogTitle = dialogTitle;
+      this.dialogMessage = dialogMessage;
+      this.dialogVisible = dialogVisible;
+      this.dialogSize = dialogSize;
+      this.dialogInputAutosize = dialogInputAutosize;
+      this.confirmType = confirmType;
+      this.lookupNameInput = lookupNameInput;
     },
     handleSort(column) {
-      this.isDescending = column.order === "descending" ? true : false
-      this.getLookups(this.isDescending, '')
+      this.isDescending = column.order === "descending" ? true : false;
+      this.getLookups(this.isDescending, "");
     },
     clickIp(tab, event) {
-      this.historicalIp = tab.name
-      this.getLookups(this.isDescending, '')
+      this.historicalIp = tab.name;
+      this.getLookups(this.isDescending, "");
     },
     addLookup() {
-      this.confirmType = "addLookup"
-      const title = this.$t('message.lookup.addLookup')
-      this.showCancle = true
-      this.configDialog(title, '', true, "small", { minRows: 15, maxRows: 25 }, "addLookup", '')
+      this.confirmType = "addLookup";
+      const title = this.$t("message.lookup.addLookup");
+      this.showCancle = true;
+      this.configDialog(
+        title,
+        "",
+        true,
+        "small",
+        { minRows: 15, maxRows: 25 },
+        "addLookup",
+        ""
+      );
     },
     async getInfo(lookupName) {
-      const info = await this.getLookupByName(lookupName)
-      const title = this.$t('message.lookup.lookupInfo')
-      const infoJSON = this.$common.methods.JSONUtils.toString(info)
-      this.showCancle = false
-      this.configDialog(title, infoJSON, true, "small", { minRows: 15, maxRows: 25 }, "confirm", lookupName)
+      const info = await this.getLookupByName(lookupName);
+      const title = this.$t("message.lookup.lookupInfo");
+      const infoJSON = this.$common.methods.JSONUtils.toString(info);
+      this.showCancle = false;
+      this.configDialog(
+        title,
+        infoJSON,
+        true,
+        "small",
+        { minRows: 15, maxRows: 25 },
+        "confirm",
+        lookupName
+      );
     },
     handleCurrentChange(newValue) {
-      this.currentPage = newValue
-      this.showTableData = this.$common.methods.fillShowTableData(this.lookups, this.currentPage, this.pageSize)
+      this.currentPage = newValue;
+      this.showTableData = this.$common.methods.fillShowTableData(
+        this.lookups,
+        this.currentPage,
+        this.pageSize
+      );
     },
     handleSizeChange(newValue) {
-      this.pageSize = newValue
-      this.showTableData = this.$common.methods.fillShowTableData(this.lookups, this.currentPage, this.pageSize)
+      this.pageSize = newValue;
+      this.showTableData = this.$common.methods.fillShowTableData(
+        this.lookups,
+        this.currentPage,
+        this.pageSize
+      );
     },
     clickConfirm() {
       if (this.confirmType === "addLookup") {
-        this.postLookup(this.$t('message.lookup.addLookupWarning'), this.$t('message.common.addSuccess'), this.$t('message.common.addFail'))
+        this.postLookup(
+          this.$t("message.lookup.addLookupWarning"),
+          this.$t("message.common.addSuccess"),
+          this.$t("message.common.addFail")
+        );
       } else if (this.confirmType === "updateLookup") {
-        this.postLookup(this.$t('message.lookup.updateLookupWarning'), this.$t('message.common.updateSuccess'), this.$t('message.common.updateFail'))
+        this.postLookup(
+          this.$t("message.lookup.updateLookupWarning"),
+          this.$t("message.common.updateSuccess"),
+          this.$t("message.common.updateFail")
+        );
       }
-      this.dialogVisible = false
+      this.dialogVisible = false;
     },
     async postLookup(warningMessage, successMessage, failMessage) {
-      const remindMessage = `${warningMessage}\n${this.lookupNameInput}`
-      const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
-        confirmButtonText: this.$t('message.common.confirm'),
-        cancelButtonText: this.$t('message.common.cancle'),
-        closeOnClickModal: false,
-        type: 'warning'
-      })
+      const remindMessage = `${warningMessage}\n${this.lookupNameInput}`;
+      const response = await this.$confirm(
+        remindMessage,
+        this.$t("message.common.warning"),
+        {
+          confirmButtonText: this.$t("message.common.confirm"),
+          cancelButtonText: this.$t("message.common.cancle"),
+          closeOnClickModal: false,
+          type: "warning"
+        }
+      );
       try {
-        const url = `${this.$common.apis.lookupsHis}/${this.lookupNameInput}`
+        const url = `${this.$common.apis.lookupsHis}/${this.lookupNameInput}`;
         const addResponse = await this.$http.post(url, this.dialogMessage, {
           params: {
             ip: this.historicalIp
           }
-        })
-        window.setTimeout(this.init, 500)
+        });
+        window.setTimeout(this.init, 500);
         this.$message({
-          type: 'success',
+          type: "success",
           message: successMessage
-        })
+        });
       } catch (err) {
         this.$message({
-          type: 'warning',
+          type: "warning",
           message: failMessage
-        })
+        });
       }
-    },
+    }
   }
-}
+};
 </script>
 
 <style>

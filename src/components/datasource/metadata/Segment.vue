@@ -91,7 +91,7 @@ export default {
       },
       showEnable: true,
       isDescending: true,
-      createdShowEnable: false,
+      // createdShowEnable: false,
       switchDisabled: false
     }
   },
@@ -101,7 +101,8 @@ export default {
     this.preLocation = this.$route.query.preLocation
     if (this.$route.query.showEnable !== undefined) {
       this.showEnable = eval(this.$route.query.showEnable)
-      this.createdShowEnable = this.showEnable
+      // this.createdShowEnable = this.showEnable
+      this.switchDisabled = !this.showEnable
     }
     this.init()
   },
@@ -109,7 +110,6 @@ export default {
     init() {
       if (this.preLocation === "dataSource") {
         this.showIntervalName = false
-        this.switchDisabled = true
       } else if (this.preLocation === "interval") {
         this.showIntervalName = true
       }
