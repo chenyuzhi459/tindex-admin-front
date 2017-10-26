@@ -269,7 +269,8 @@ export default {
             enable: 'enable',
             state: 'state',
             requestTimeout: 'request time out',
-            none: 'none'
+            none: 'none',
+            reset: 'reset'
         },
         error: {
           chooseAction: 'Action can not be null! Please choose an action',

@@ -279,7 +279,8 @@ export default {
       enable: '恢复',
       state: '状态',
       requestTimeout: '请求超时',
-      none: '无'
+      none: '无',
+      reset: '重置'
     },
     error: {
       chooseAction: '操作不能为空! 请选择一种操作',
