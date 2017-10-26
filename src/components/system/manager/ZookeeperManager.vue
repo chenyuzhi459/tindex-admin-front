@@ -1,7 +1,30 @@
 <template>
-    <el-tree :data="treeData" :props="props"  
-    node-key="path"    @node-click="handleNodeClick" :render-content="renderContent">
-    </el-tree>
+    <el-row :gutter="20">
+        <el-col :span="12">
+            <el-form label-position="top" label-width="80px" >
+               
+                <el-form-item :label="$t('message.zkManager.treeSubTitile')">
+                      <el-tree :data="treeData" :props="props" node-key="path" @node-expand="handleNodeExpand" 
+                        :render-content="renderContent" @node-collapse="handleNodeCollapse">
+                        </el-tree>
+                </el-form-item>
+
+            </el-form>
+        </el-col>
+        <el-col :span="12">
+            <el-form label-position="top" label-width="80px" >
+                <el-form-item :label="$t('message.zkManager.path')">
+                    <el-input v-model="currPath"></el-input>
+                </el-form-item>
+                <el-form-item :label="$t('message.zkManager.dataSubTitle')">
+                     <el-input type="textarea" :autosize="{ minRows: 12.7, maxRows: 25 }" v-model="currData">
+                    </el-input>
+                </el-form-item>
+
+            </el-form>
+
+        </el-col>
+    </el-row>
 </template>
 
 <script>
@@ -11,12 +34,15 @@ export default {
     data() {
         return {
             treeData: [],
+
             props: {
                 label: 'name',
                 children: 'children'
             },
             count: 1,
-            rootData:''
+            rootData: '',
+            currData: '',
+            currPath:''
         };
     },
 
@@ -28,141 +54,69 @@ export default {
             this.getHeadChildrenAndData()
         },
         async getHeadChildrenAndData() {
-           
-            this.rootData = await this.getData("/")
-
+            this.currData = (await this.getSummaryInfo("/")).sourceData
+            this.currPath = "/"
             const children = await this.getChildren("/")
             const len = children.length
-            for(let i=0; i<len; i++){
-                // children[i].children = await this.getChildren(children[i].path)
+            for (let i = 0; i < len; i++) {
                 children[i].children = [{}]
                 this.treeData.push(children[i])
             }
-            // console.log("first data:",data);
-            console.log("first list:",children);
         },
 
-        async getData(path){
-            const url = `${this.$common.apis.zk}/data`
-            const {data} = await this.$http.get(url, {
+        async getSummaryInfo(path) {
+            const url = `${this.$common.apis.zk}/summary/info`
+            const { data } = await this.$http.get(url, {
                 params: {
                     path: path
                 }
             })
-            console.log("getData:",data.sourceData);
-            return data.sourceData
+            console.log("data:", data);
+            return data
         },
 
-        async getChildren(path){
+        async getChildren(path) {
             const url = `${this.$common.apis.zk}/children`
             const { data } = await this.$http.get(url, {
                 params: {
                     path: path
                 }
             })
-            let retVal  = []
-            path = path.lastIndexOf("/") == path.length -1 ? path.substring(0,path.length -1) : path
+            let retVal = []
+            path = path.lastIndexOf("/") === path.length - 1 ? path.substring(0, path.length - 1) : path
             const len = data.length
-            for(let i=0; i<len; i++){
+            for (let i = 0; i < len; i++) {
                 let obj = {}
                 obj.path = `${path}/${data[i]}`
                 obj.name = data[i]
-                obj.zkData = ''
-                obj.children = []
+                obj.nodeType = ''
+                obj.children = [{}]
                 retVal.push(obj)
 
             }
             return retVal
         },
 
-        async handleNodeClick(data){
-            
-            data.zkData = await this.getData(data.path)
-            console.log("name:",data.name);
-            console.log("data.zkData:",data.zkData);
-            console.log("treeData:",this.treeData);
-            // const childrenUrl = `${this.$common.apis.zk}/children`
-            // const childrenResponse = await this.$http.get(childrenUrl, {
-            //     params: {
-            //         path: data.path
-            //     }
-            // })
+        async handleNodeExpand(data) {
+            this.currPath = data.path
+
+            const summaryInfo = await this.getSummaryInfo(data.path)
+            this.currData = summaryInfo.sourceData
+            data.nodeType = summaryInfo.nodeType
             data.children = await this.getChildren(data.path)
-            if(data.children.length === 0){
-                data.children = ''
-            }
-            // const children = data.children
-            // const len = children.length
-            // for(let i=0; i<len; i++){
-            //     children[i].children = await this.getChildren(children[i].path)
-            //     let obj = {}
-            //     obj.path = `${data.path}/${children[i]}`
-            //     obj.name = children[i]
-            //     obj.zkData = ''
-            //     obj.children = [
-                    
-            //     ]
-            //     node.data.children.push(obj)
-            //      console.log("item:",obj);
-            // }
+            console.log("node:", data);
+
+        },
+
+        handleNodeCollapse(data, node, ref){
+            data.children=[{}]
+            console.log(node, 'node====', ref);
         },
 
         async loadNode(node, resolve) {
-
-
-            console.log("11111111111");
-            node.data.zkData = await this.getData(node.data.path)
-            console.log("path:",node.data.path);
-            console.log("node:",node.data);
-            console.log("treeData:",this.treeData);
+            node.data.zkData = await this.getSummaryInfo(node.data.path)
             node.data.children = await this.getChildren(node.data.path)
-            // const childrenUrl = `${this.$common.apis.zk}/children`
-            // const childrenResponse = await this.$http.get(childrenUrl, {
-            //     params: {
-            //         path: node.data.path
-            //     }
-            // })
-            // const children = childrenResponse.data
-            // const len = children.length
-            // for(let i=0; i<len; i++){
-            //     let obj = {}
-            //     obj.path = `${node.data.path}/${children[i]}`
-            //     obj.name = children[i]
-            //     obj.data = ''
-            //     obj.children = []
-            //     node.data.children.push(obj)
-            //     //  console.log("item:",obj);
-            // }
             resolve(node.data.children)
-            // if (node.level === 0) {
-            //     return resolve([{ name: 'region1' }, { name: 'region2' }]);
-            // }
-            // if (node.level > 3) return resolve([]);
-
-            // var hasChild;
-            // if (node.data.name === 'region1') {
-            //     hasChild = true
-            // } else if (node.data.name === 'region2') {
-            //     hasChild = false
-            // } else {
-            //     hasChild = Math.random() > 0.5
-            // }
-
-            // setTimeout(() => {
-            //     var data;
-            //     if (hasChild) {
-            //         data = [{
-            //             name: 'zone' + this.count++
-            //         }, {
-            //             name: 'zone' + this.count++
-            //         }]
-            //     } else {
-            //         data = []
-            //     }
-
-            //     resolve(data)
-            //     console.log("treeData", this.treeData);
-            // }, 500)
         },
 
         append(store, data) {
@@ -177,14 +131,18 @@ export default {
             return (
                 <span>
                     <span>
-                        <span>{node.label}</span>
-                    </span>
-                    <span style="float: right; margin-right: 20px">
-                        <el-button size="mini" on-click={() => this.append(store, data)}>Append</el-button>
-                        <el-button size="mini" on-click={() => this.remove(store, data)}>Delete</el-button>
+                        <span>{node.label}  
+                        {node.data.nodeType==='ephemeral' ? <el-badge  is-dot class="item"></el-badge> : null}
+                        </span>
                     </span>
                 </span>)
         }
     }
 }
 </script>
+<style>
+.item {
+  margin-top: 2px;
+  margin-right: 40px;
+}
+</style>

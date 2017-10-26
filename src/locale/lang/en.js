@@ -63,6 +63,11 @@ export default {
             segments: 'segments',
             searchTips: 'please input name'
         },
+        zkManager:{
+            treeSubTitile: 'ZooKeeper Structure Tree',
+            dataSubTitle: 'Data',
+            path: 'Path'
+        },
         tasks: {
             runningTasksTitle: 'Running Tasks',
             pendingTasksTitle: 'Pending Tasks - Tasks waiting to be assigned to a worker',
