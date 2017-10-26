@@ -4,8 +4,8 @@
             <el-form label-position="top" label-width="80px" >
                
                 <el-form-item :label="$t('message.zkManager.treeSubTitile')">
-                      <el-tree :data="treeData" :props="props" node-key="path" @node-expand="handleNodeExpand" 
-                        :render-content="renderContent" @node-collapse="handleNodeCollapse">
+                      <el-tree :data="treeData" :props="props" node-key="path" @node-click="handleNodeClick"
+                        :render-content="renderContent" >
                         </el-tree>
                 </el-form-item>
 
@@ -71,7 +71,6 @@ export default {
                     path: path
                 }
             })
-            console.log("data:", data);
             return data
         },
 
@@ -86,6 +85,7 @@ export default {
             path = path.lastIndexOf("/") === path.length - 1 ? path.substring(0, path.length - 1) : path
             const len = data.length
             for (let i = 0; i < len; i++) {
+                console.log("4554");
                 let obj = {}
                 obj.path = `${path}/${data[i]}`
                 obj.name = data[i]
@@ -97,20 +97,27 @@ export default {
             return retVal
         },
 
-        async handleNodeExpand(data) {
+        async handleNodeClick(data, node, ref){
+            if(node.expanded){
+                await this.handleNodeExpand(data, node, ref)
+            }else{
+                await this.handleNodeCollapse(data, node, ref)
+            }
+            
+        },
+
+        async handleNodeExpand(data, node, ref) {
             this.currPath = data.path
 
             const summaryInfo = await this.getSummaryInfo(data.path)
             this.currData = summaryInfo.sourceData
             data.nodeType = summaryInfo.nodeType
             data.children = await this.getChildren(data.path)
-            console.log("node:", data);
 
         },
 
         handleNodeCollapse(data, node, ref){
             data.children=[{}]
-            console.log(node, 'node====', ref);
         },
 
         async loadNode(node, resolve) {
