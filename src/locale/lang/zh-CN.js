@@ -56,13 +56,13 @@ export default {
       statusItem3: '失败',
       duration: '运行时长',
       topic: 'topic',
-      offsets:'offsets',
+      offsets: 'offsets',
       currOffset: 'currOffset',
       taskOffsetTitle: 'Offset',
       metrics: '指标',
       period: '阶段',
       datasource: '数据源',
-      startOffset:'startOffset',
+      startOffset: 'startOffset',
       topicOffsets: 'Topic Offsets',
     },
     supervisors: {
@@ -155,6 +155,11 @@ export default {
       maxSize: '最大大小',
       segments: '数据段',
       searchTips: '请输入名称'
+    },
+    zkManager: {
+      treeSubTitile: 'ZooKeeper结构树',
+      dataSubTitle: '数据',
+      path: '路径'
     },
     dataSource: {
       dataSourceTitle: "数据源",
