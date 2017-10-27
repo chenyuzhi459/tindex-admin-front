@@ -1,12 +1,9 @@
 <style>
+@import "../../../../static/css/link.css";
+@import "../../../../static/css/popover.css";
+
 .el-progress-circle svg path:first-child {
   stroke: #c6c6c6;
-}
-.popoverDiv {
-  color: #20a0ff;
-  font-size: 15px;
-  line-height: 22px;
-  font-weight: 550;
 }
 .ruleTypeDiv {
   color: #20a0ff;
@@ -215,6 +212,7 @@ export default {
       const newRuleItem = {
         id: this.ruleItemNextId++,
         inputPrompt: "",
+
         actionOptions: [
           {
             value: "drop",
@@ -263,17 +261,22 @@ export default {
     changeGranularitySelect(id) {
       for (let i = 0; i < this.addRuleForm.length; i++) {
         const item = this.addRuleForm[i];
+
+
         if (item["id"] === id) {
+          item.inputMessage = "";
           if (item.granularityValue === "period") {
+            item.inputMessage = "P1M"
             item.showInput = true;
             item.inputPrompt = this.$t("message.dataSource.periodInputInfo");
           } else if (item.granularityValue === "interval") {
+            item.inputMessage = moment().subtract(1,'months').format() + "/" + moment().format()
             item.showInput = true;
             item.inputPrompt = this.$t("message.dataSource.intervalInputInfo");
           } else {
             item.showInput = false;
           }
-          item.inputMessage = "";
+          
           item.type = this.getRuleTypeBySelect(
             item.actionValue,
             item.granularityValue
@@ -300,7 +303,7 @@ export default {
         params: {
           simple: true,
           isDescending: isDescending,
-          searchValue: searchValue
+          searchValue: this.$common.methods.trim(searchValue)
         }
       });
       for (let i = 0; i < response.data.length; i++) {
@@ -335,7 +338,7 @@ export default {
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
-          searchValue: searchValue
+          searchValue: this.$common.methods.trim(searchValue)
         }
       });
       this.dataSources = [];
@@ -757,7 +760,3 @@ export default {
   }
 };
 </script>
-
-<style>
-@import "../../../../static/css/link.css";
-</style>
