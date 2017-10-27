@@ -19,6 +19,7 @@ export default {
       runningTasksTitle: '运行任务',
       pendingTasksTitle: '队列任务 - 等待分配资源的任务',
       waitingTasksTitle: '阻塞任务 - 等待获取锁的任务 ',
+      workersTitile:'Remote Workers',
       completeTasksTitle: '已完成任务',
       createTask: '创建新任务',
       taskSpec: '任务说明',
@@ -64,6 +65,15 @@ export default {
       datasource: '数据源',
       startOffset: 'startOffset',
       topicOffsets: 'Topic Offsets',
+      wokerHost:'host',
+      wokerIp:'ip',
+      workerCapacity:'容量',
+      workerVersion: '版本',
+      currCapacityUsed: '已用容量',
+      availabilityGroups:'活动组',
+      workerRunningTaks: '运行任务',
+      lastCompletedTaskTime:'上个任务完成时间',
+      blacklistedUntil:'blacklistedUntil'
     },
     supervisors: {
       supervisorManager: 'Supervisor管理',
@@ -129,9 +139,6 @@ export default {
         lookupCoordinator: '用户分群（Coordinator）',
         lookupHistorical: '用户分群（Historical）'
       },
-      // systemConfig: {
-      //   title: '系统配置'
-      // }
     },
     status: {
       version: '版本:',
@@ -159,7 +166,8 @@ export default {
     zkManager: {
       treeSubTitile: 'ZooKeeper结构树',
       dataSubTitle: '数据',
-      path: '路径'
+      path: '路径',
+      checkMore: '查看更多'
     },
     dataSource: {
       dataSourceTitle: "数据源",

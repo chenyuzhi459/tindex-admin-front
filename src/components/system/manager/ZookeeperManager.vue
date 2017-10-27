@@ -39,10 +39,9 @@ export default {
                 label: 'name',
                 children: 'children'
             },
-            count: 1,
-            rootData: '',
             currData: '',
-            currPath:''
+            currPath:'',
+            maxShowNum:100
         };
     },
 
@@ -56,12 +55,7 @@ export default {
         async getHeadChildrenAndData() {
             this.currData = (await this.getSummaryInfo("/")).sourceData
             this.currPath = "/"
-            const children = await this.getChildren("/")
-            const len = children.length
-            for (let i = 0; i < len; i++) {
-                children[i].children = [{}]
-                this.treeData.push(children[i])
-            }
+            this.treeData = await this.getChildren("/")
         },
 
         async getSummaryInfo(path) {
@@ -74,7 +68,8 @@ export default {
             return data
         },
 
-        async getChildren(path) {
+        async getChildren(path,currNode) {
+
             const url = `${this.$common.apis.zk}/children`
             const { data } = await this.$http.get(url, {
                 params: {
@@ -83,9 +78,8 @@ export default {
             })
             let retVal = []
             path = path.lastIndexOf("/") === path.length - 1 ? path.substring(0, path.length - 1) : path
-            const len = data.length
+            const len = currNode!==undefined && data.length > this.maxShowNum ? this.maxShowNum : data.length
             for (let i = 0; i < len; i++) {
-                console.log("4554");
                 let obj = {}
                 obj.path = `${path}/${data[i]}`
                 obj.name = data[i]
@@ -94,10 +88,25 @@ export default {
                 retVal.push(obj)
 
             }
+            if( currNode!==undefined && data.length > len ){
+                currNode.data.allChildrenList = data
+                currNode.data.allChildrenSize = data.length
+    
+                let checkMoreNode = {}
+                checkMoreNode.nodeType = 'checkMoreNode'
+                checkMoreNode.offset = len
+                checkMoreNode.path = `${path}/checkMoreNode`
+                checkMoreNode.name = this.$t('message.zkManager.checkMore')
+                retVal.push(checkMoreNode)
+            }
             return retVal
         },
 
         async handleNodeClick(data, node, ref){
+            if(data.nodeType === 'checkMoreNode'){
+                this.addMoreChildren(data,node,ref)
+                return
+            }
             if(node.expanded){
                 await this.handleNodeExpand(data, node, ref)
             }else{
@@ -112,12 +121,43 @@ export default {
             const summaryInfo = await this.getSummaryInfo(data.path)
             this.currData = summaryInfo.sourceData
             data.nodeType = summaryInfo.nodeType
-            data.children = await this.getChildren(data.path)
+            data.children = await this.getChildren(data.path,node)
 
         },
 
         handleNodeCollapse(data, node, ref){
             data.children=[{}]
+        },
+
+        addMoreChildren(data,node,ref){
+            console.log("add more:",node);
+
+            if((data.offset + this.maxShowNum)  <= node.parent.data.allChildrenSize){
+                node.parent.data.children.splice(data.offset,1)
+                const len = data.offset + this.maxShowNum
+                for(let i = data.offset; i < len; i++){
+                    let obj = {}
+                    obj.path = `${node.parent.data.path}/${node.parent.data.allChildrenList[i]}`
+                    obj.name = node.parent.data.allChildrenList[i]
+                    obj.nodeType = ''
+                    obj.children = [{}]
+                    node.parent.data.children.push(obj)
+                }
+                data.offset = len
+                node.parent.data.children.push(data)
+            }else{
+                node.parent.data.children.splice(data.offset,1)
+                const len = node.parent.data.allChildrenSize
+                for(let i = data.offset; i < len; i++){
+                    let obj = {}
+                    obj.path = `${node.parent.data.path}/${node.parent.data.allChildrenList[i]}`
+                    obj.name = node.parent.data.allChildrenList[i]
+                    obj.nodeType = ''
+                    obj.children = [{}]
+                    node.parent.data.children.push(obj)
+                }
+            }
+
         },
 
         async loadNode(node, resolve) {
@@ -135,14 +175,18 @@ export default {
         },
 
         renderContent(h, { node, data, store }) {
+            const template = ''
             return (
                 <span>
                     <span>
-                        <span>{node.label}  
-                        {node.data.nodeType==='ephemeral' ? <el-badge  is-dot class="item"></el-badge> : null}
+                        <span>
+                            {node.label === this.$t('message.zkManager.checkMore') ? <i  class="el-icon-plus"></i> : node.label}
+                            {node.data.nodeType==='ephemeral' ? <el-badge  is-dot class="item"></el-badge> : null}
+                            
                         </span>
                     </span>
-                </span>)
+                </span>
+                )
         }
     }
 }
@@ -151,5 +195,8 @@ export default {
 .item {
   margin-top: 2px;
   margin-right: 40px;
+}
+.page {
+    margin-left: 10px;
 }
 </style>

@@ -21,7 +21,7 @@
                 <el-table :data="completeSupervisors" border stripe style="width: 100%" @sort-change="sortChange">
                     <el-table-column label="id" min-width="350">
                         <template scope="scope">
-                            <!-- <el-button type="text" style=" font-size: 14px;color: #1f2d3d;" @click="getTasks(scope.row.id)">{{scope.row.id}}</el-button> -->
+                            
                             <a class="click-link" @click="getTasks(scope.row.id)">{{scope.row.id}}</a>
                         </template>
                     </el-table-column>

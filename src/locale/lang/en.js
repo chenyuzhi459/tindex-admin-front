@@ -63,16 +63,18 @@ export default {
             segments: 'segments',
             searchTips: 'please input name'
         },
-        zkManager:{
+        zkManager: {
             treeSubTitile: 'ZooKeeper Structure Tree',
             dataSubTitle: 'Data',
-            path: 'Path'
+            path: 'Path',
+            checkMore: 'check more'
         },
         tasks: {
             runningTasksTitle: 'Running Tasks',
             pendingTasksTitle: 'Pending Tasks - Tasks waiting to be assigned to a worker',
             waitingTasksTitle: 'Waiting Tasks - Tasks waiting on locks ',
             completeTasksTitle: 'Complete Tasks - Tasks recently completed',
+            workersTitile: 'Remote Workers',
             createTask: 'Create Task',
             taskSpec: 'Task Spec',
             format: 'format',
@@ -109,14 +111,23 @@ export default {
             statusItem3: 'FAILED',
             duration: 'duration',
             topic: 'topic',
-            offsets:'offsets',
+            offsets: 'offsets',
             currOffset: 'currOffset',
             taskOffsetTitle: 'Offset',
             metrics: 'metrics',
             period: 'period',
             datasource: 'datasource',
-            startOffset:'startOffset',
-            topicOffsets: 'Topic Offsets',   
+            startOffset: 'startOffset',
+            topicOffsets: 'Topic Offsets',
+            wokerHost: 'host',
+            wokerIp: 'ip',
+            workerCapacity: 'capacity',
+            workerVersion: 'version',
+            currCapacityUsed: 'currCapacityUsed',
+            availabilityGroups: 'Availability Groups',
+            workerRunningTaks: 'Running Tasks',
+            lastCompletedTaskTime: 'lastCompletedTaskTime',
+            blacklistedUntil: 'blacklistedUntil'
         },
         supervisors: {
             supervisorManager: 'Supervisor Manager',
@@ -278,9 +289,9 @@ export default {
             reset: 'reset'
         },
         error: {
-          chooseAction: 'Action can not be null! Please choose an action',
-          chooseGranularity: 'Granularity can not be null! Please choose a granularity',
-          canNotBeNull: ' can not be null!'
+            chooseAction: 'Action can not be null! Please choose an action',
+            chooseGranularity: 'Granularity can not be null! Please choose a granularity',
+            canNotBeNull: ' can not be null!'
         },
         systemConfig: {
             systemConfigTitle: "System Config",
