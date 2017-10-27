@@ -7,6 +7,7 @@
     <complete-tasks></complete-tasks>
     <pending-tasks></pending-tasks>
     <waiting-tasks></waiting-tasks>
+    <remote-workers></remote-workers>
 
 
     <el-dialog  :visible.sync="createTaskDialogVisible" size="small" :title="$t('message.tasks.taskSpec')" :close-on-click-modal="false">
@@ -27,6 +28,7 @@ import RunningTasks from './taskmanager/RunningTasks'
 import CompleteTasks from './taskmanager/CompleteTasks'
 import PendingTasks from './taskmanager/PendingTasks'
 import WaitingTasks from './taskmanager/WaitingTasks'
+import RemoteWorkers from './taskmanager/RemoteWorkers'
 export default {
     data() {
         return {
@@ -39,7 +41,8 @@ export default {
         'running-tasks': RunningTasks,
         'complete-tasks': CompleteTasks,
         'pending-tasks': PendingTasks,
-        'waiting-tasks': WaitingTasks
+        'waiting-tasks': WaitingTasks,
+        'remote-workers': RemoteWorkers
     },
     methods: {
         format() {
