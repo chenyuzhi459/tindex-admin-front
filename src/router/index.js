@@ -73,7 +73,7 @@ export default new Router({
         },
         {
           path: '/systemConfig',
-          component: resolve => require(['../components/systemConfig/SystemConfig.vue'], resolve)    // 拖拽列表组件
+          component: resolve => require(['../components/system/SystemConfig.vue'], resolve)    // 拖拽列表组件
         }
       ]
     },

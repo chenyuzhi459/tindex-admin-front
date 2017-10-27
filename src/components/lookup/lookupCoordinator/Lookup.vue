@@ -26,7 +26,7 @@
           <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="addLookup">{{$t('message.lookup.addLookup')}}</el-button>
+          <el-button type="success" size="small" @click="addLookup">{{$t('message.lookup.addLookup')}}</el-button>
         </el-form-item>
 
       </el-form>
