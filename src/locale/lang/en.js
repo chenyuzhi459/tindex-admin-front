@@ -124,8 +124,8 @@ export default {
             workerCapacity: 'capacity',
             workerVersion: 'version',
             currCapacityUsed: 'currCapacityUsed',
-            availabilityGroups: 'Availability Groups',
-            workerRunningTaks: 'Running Tasks',
+            availabilityGroups: 'groups',
+            workerRunningTaks: 'tasks',
             lastCompletedTaskTime: 'lastCompletedTaskTime',
             blacklistedUntil: 'blacklistedUntil'
         },
@@ -167,7 +167,8 @@ export default {
             jsonSyntaxError: 'wrong json syntax',
             creatSuccess: 'create successfully, id',
             createFailedFront: 'request failed with status',
-            createFailedLast: 'please check overlord logs'
+            createFailedLast: 'please check overlord logs',
+            activeTasksNum: 'activeTasksNum'
         },
         dataSource: {
             dataSourceTitle: "DataSources",
