@@ -4,24 +4,41 @@
       <span style="color: #242f42;font-size:20px;">
         <el-breadcrumb separator=">">
           <el-breadcrumb-item :to="{ path: '/dataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
-          <el-breadcrumb-item v-if="showIntervalName" :to="{ path: '/interval', query: { showEnable: this.showEnable, dataSourceName: dataSourceName}}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
-          <el-breadcrumb-item :to="{ path: '/segment', query: { showEnable: this.showEnable}  }">{{$t('message.segment.segmentTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item v-if="showIntervalName" :to="{ path: '/interval', query: { showEnable: this.showEnable, dataSourceName: dataSourceMessage.dataSourceName,
+            dataSourceSize: dataSourceMessage.dataSourceSize,segmentCount: dataSourceMessage.segmentCount, dataSourceSpan: dataSourceMessage.dataSourceSpan
+          , showSwitch: this.showSwitch}}">{{$t('message.interval.intervalTitle')}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/segment', query: { showEnable: this.showEnable}}">{{$t('message.segment.segmentTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
       <br/>
 
-      <el-tag type="primary">{{$t('message.dataSource.dataSource')}} : {{this.dataSourceName}}</el-tag>
-      <el-tag v-if="showIntervalName" type="primary">{{$t('message.interval.interval')}} : {{this.intervalName}}</el-tag>
-      <br></br>
+      <el-tag type="success">{{$t('message.dataSource.dataSource')}} : {{this.dataSourceMessage.dataSourceName}}</el-tag>
+      <template v-if="showEnable">
+        &nbsp;
+        <el-tag type="primary">
+          {{this.dataSourceMessage.dataSourceSize}}&emsp;&emsp;{{this.dataSourceMessage.dataSourceSpan}}
+          &emsp;&emsp;{{this.dataSourceMessage.segmentCount}} segments
+        </el-tag>
+      </template>
 
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+      <div v-if="showIntervalName" style="position: relative; top: 5px">
+        <el-tag type="success">{{$t('message.interval.interval')}} : {{this.intervalMessage.intervalName}}</el-tag>
+        <template v-if="showEnable">
+          &nbsp;
+          <el-tag type="primary">
+            {{this.intervalMessage.intervalSize}}&emsp;&emsp;{{this.intervalMessage.segmentCount}} segments
+          </el-tag>
+        </template>
+      </div>
+
+      <el-form :inline="true" :model="formInline" class="demo-form-inline" style="position: relative; top: 15px" >
         <el-form-item :label="$t('message.common.name')">
           <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
           <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
-          <el-switch v-model="showEnable" :disabled="switchDisabled" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px; " @change="switchChange">
+          <el-switch v-model="showEnable" v-if="showSwitch" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px; " @change="switchChange">
           </el-switch>
         </el-form-item>
       </el-form>
@@ -92,8 +109,18 @@ export default {
       dialogVisible: false,
       pageSize: 15,
       currentPage: 1,
-      dataSourceName: "",
-      intervalName: "",
+      dataSourceMessage: {
+        dataSourceName: "",
+        dataSourceSize: "",
+        dataSourceSpan: "",
+        segmentCount: 0,
+        intervalCount: 0
+      },
+      intervalMessage: {
+        intervalName: "",
+        intervalSize: "",
+        segmentCount: 0
+      },
       preLocation: "",
       showCancle: false,
       showIntervalName: false,
@@ -102,18 +129,28 @@ export default {
       },
       showEnable: true,
       isDescending: true,
-      switchDisabled: false,
+      showSwitch: true,
       dimensions: [],
       metrics: []
     };
   },
   created: function() {
-    this.dataSourceName = this.$route.query.dataSourceName;
-    this.intervalName = this.$route.query.intervalName;
+    this.dataSourceMessage.dataSourceName = this.$route.query.dataSourceName;
     this.preLocation = this.$route.query.preLocation;
     if (this.$route.query.showEnable !== undefined) {
       this.showEnable = eval(this.$route.query.showEnable);
-      this.switchDisabled = !this.showEnable;
+      this.showSwitch = this.showEnable;
+    }
+    if (this.showEnable) {
+      this.dataSourceMessage.dataSourceSize = this.$route.query.dataSourceSize
+      this.dataSourceMessage.segmentCount = this.$route.query.segmentCount
+      this.dataSourceMessage.dataSourceSpan = this.$route.query.dataSourceSpan
+    }
+    if (this.preLocation === "interval") {
+      this.intervalMessage.intervalName = this.$route.query.intervalName
+      this.intervalMessage.segmentCount = this.$route.query.intervalSegmentCount
+      this.intervalMessage.intervalSize = this.$route.query.intervalSize
+      console.log(this.intervalMessage.segmentCount)
     }
     this.init();
   },
@@ -141,10 +178,10 @@ export default {
     async getSegmentsByDataSource(isDescending, searchValue) {
       let url;
       if (this.showEnable) {
-        url = `${this.$common.apis.dataSource}/${this
+        url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
           .dataSourceName}/segments?full`;
       } else {
-        url = `${this.$common.apis.dataSource}/${this
+        url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
           .dataSourceName}/disableSegments`;
       }
       let data = [];
@@ -185,14 +222,14 @@ export default {
     async getSegmentsByInterval(isDescending, searchValue) {
       let url;
       if (this.showEnable) {
-        url = `${this.$common.apis.dataSource}/${this
+        url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
           .dataSourceName}/segments?full`;
       } else {
-        url = `${this.$common.apis.dataSource}/${this
+        url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
           .dataSourceName}/disableSegments`;
       }
       let intervals = new Array();
-      intervals.push(this.intervalName);
+      intervals.push(this.intervalMessage.intervalName);
       const response = await this.$http.post(url, intervals, {
         params: {
           isDescending: isDescending,
@@ -231,7 +268,7 @@ export default {
       );
     },
     async getSegmentInfo(segmentName) {
-      const url = `${this.$common.apis.dataSource}/${this
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
         .dataSourceName}/segments/${segmentName}?full`;
       const response = await this.$http.get(url);
       this.segmentInfo = response.data;
@@ -246,31 +283,32 @@ export default {
       );
     },
     async getDimensions(segmentName) {
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}?full`;
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
+        .dataSourceName}/segments/${segmentName}?full`;
       const response = await this.$http.get(url);
-      this.dimensions = this.stringToArray(response.data['dimensions'])
+      this.dimensions = this.stringToArray(response.data["dimensions"]);
     },
     async getMetrics(segmentName) {
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}?full`;
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
+        .dataSourceName}/segments/${segmentName}?full`;
       const response = await this.$http.get(url);
-      this.metrics = this.stringToArray(response.data['metrics'])
+      this.metrics = this.stringToArray(response.data["metrics"]);
     },
     stringToArray(str) {
-      let arr = new Array()
-      if(str.length === 0) {
+      let arr = new Array();
+      if (str.length === 0) {
         arr[0] = this.$t("message.common.none");
       } else {
-        arr = str.split(",")
+        arr = str.split(",");
       }
       return arr;
     },
-
 
     async enableSegment(segmentName) {
       const remindMessage = `${this.$t(
         "message.common.enableWarning"
       )}\n${segmentName}`;
-      const url = `${this.$common.apis.dataSource}/${this
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
         .dataSourceName}/segments/${segmentName}/enable`;
       const successMessage = this.$t("message.common.enableSuccess");
       const failMessage = this.$t("message.common.enableFail");
@@ -286,7 +324,7 @@ export default {
       const remindMessage = `${this.$t(
         "message.common.disableWarning"
       )}\n${segmentName}`;
-      const url = `${this.$common.apis.dataSource}/${this
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
         .dataSourceName}/segments/${segmentName}/disable`;
       const successMessage = this.$t("message.common.disableSuccess");
       const failMessage = this.$t("message.common.disableFail");
@@ -302,7 +340,7 @@ export default {
       const remindMessage = `${this.$t(
         "message.common.deleteWarning"
       )}\n${segmentName}`;
-      const url = `${this.$common.apis.dataSource}/${this
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceMessage
         .dataSourceName}/segments/${segmentName}/delete`;
       const successMessage = this.$t("message.common.deleteSuccess");
       const failMessage = this.$t("message.common.deleteFail");

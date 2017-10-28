@@ -41,29 +41,26 @@
         <el-table-column :label="$t('message.common.name')" sortable="custom" :width="330">
           <template scope="scope">
             <el-progress v-if="showEnable" type="circle" :percentage="scope.row.loadstatus" :width="10" :show-text="false" :stroke-width="2" :status="scope.row.statusType"></el-progress>
-            <a class="click-link" @click="getIntervals(scope.row.name)">{{scope.row.name}}</a>
+            <a class="click-link" @click="getIntervals(scope.row)">{{scope.row.name}}</a>
           </template>
         </el-table-column>
         <!-- <el-table-column :label="$t('message.dataSource.segments')" align="center"> -->
         <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.interval.segmentCount')" width="140"></el-table-column>
         <el-table-column v-if="showEnable" prop="properties.segments.size" :label="$t('message.common.size')" width="105"></el-table-column>
-        <el-table-column v-if="showEnable" prop="properties.segments.maxTime" :label="$t('message.dataSource.maxTime')" width="210"></el-table-column>
-        <el-table-column v-if="showEnable" prop="properties.segments.minTime" :label="$t('message.dataSource.minTime')" width="210"></el-table-column>
+        <el-table-column v-if="showEnable" prop="properties.segments.span" :label="$t('message.dataSource.span')" width="280"></el-table-column>
         <!-- </el-table-column> -->
         <el-table-column :label="$t('message.dataSource.rules')" width="100">
           <template scope="scope">
             <el-button size="mini" @click="editRule(scope.row.name)" icon="edit" type="info">
-              <!-- {{$t('message.dataSource.add')}} -->
             </el-button>
             <el-button size="mini" @click="getRuleHistory(scope.row.name)" icon="time" type="info">
-              <!-- {{$t('message.dataSource.history')}} -->
             </el-button>
           </template>
         </el-table-column>
 
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
-            <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.dataSource.segments')}}</el-button>
+            <el-button size="mini" type="info" @click="getSegments(scope.row)">{{$t('message.dataSource.segments')}}</el-button>
 
             <template v-if="showEnable">
               <el-popover ref="popoverServer" placement="right" width="150" trigger="click">
@@ -127,9 +124,9 @@
             <!-- <el-input v-if="showInput" v-model="form.inputMessage" :placeholder="form.inputPrompt" size="40"></el-input> -->
           </el-form-item>
         </div>
-        <el-form-item>
-          <div style="color: red">{{ruleItem.errorMessage}}</div>
-        </el-form-item>
+        <div >
+          <div style="color: red; position: relative; top: -15px; font-size:13px">{{ruleItem.errorMessage}}</div>
+        </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button v-if="isAddRule()" type="warning" icon="plus" @click="addARule">
@@ -164,7 +161,13 @@ export default {
       isSearching: false,
       confirmType: "",
       ruleDataSource: "",
-      dataSourceName: "",
+      dataSourceMessage: {
+        dataSourceName: "",
+        dataSourceSize: "",
+        dataSourceSpan: "",
+        segmentCount: 0,
+        intervalCount: 0
+      },
       preLocation: "",
       showCancle: false,
       showEnable: true,
@@ -262,21 +265,25 @@ export default {
       for (let i = 0; i < this.addRuleForm.length; i++) {
         const item = this.addRuleForm[i];
 
-
         if (item["id"] === id) {
           item.inputMessage = "";
           if (item.granularityValue === "period") {
-            item.inputMessage = "P1M"
+            item.inputMessage = "P1M";
             item.showInput = true;
             item.inputPrompt = this.$t("message.dataSource.periodInputInfo");
           } else if (item.granularityValue === "interval") {
-            item.inputMessage = moment().subtract(1,'months').format() + "/" + moment().format()
+            item.inputMessage =
+              moment()
+                .subtract(1, "months")
+                .format() +
+              "/" +
+              moment().format();
             item.showInput = true;
             item.inputPrompt = this.$t("message.dataSource.intervalInputInfo");
           } else {
             item.showInput = false;
           }
-          
+
           item.type = this.getRuleTypeBySelect(
             item.actionValue,
             item.granularityValue
@@ -308,10 +315,21 @@ export default {
       });
       for (let i = 0; i < response.data.length; i++) {
         const size = response.data[i]["properties"]["segments"]["size"];
-        const name = response.data[i]["name"];
         response.data[i]["properties"]["segments"][
           "size"
         ] = this.$common.methods.conver(size);
+        const name = response.data[i]["name"];
+        const minTime = response.data[i]["properties"]["segments"]["minTime"];
+        const maxTime = response.data[i]["properties"]["segments"]["maxTime"];
+        const date1 = new Date(minTime);
+        const date2 = new Date(maxTime);
+        response.data[i]["properties"]["segments"]["span"] =
+          minTime.substring(0, 10) +
+          " / " +
+          maxTime.substring(0, 10) +
+          " ( " +
+          this.getDateDiff(date1, date2) +
+          " )";
         if (loadstatus[name] == 100) {
           response.data[i].statusType = "success";
         } else {
@@ -584,25 +602,79 @@ export default {
       this.dialogSize = dialogSize;
       this.dialogInputAutosize = dialogInputAutosize;
     },
-    getSegments(dataSourceName) {
+    getSegments(row) {
+      this.getDataSourceMessageFromRow(row)
       this.$router.push({
         path: "/segment",
         query: {
           preLocation: "dataSource",
-          dataSourceName: dataSourceName,
-          showEnable: this.showEnable
+          showEnable: this.showEnable,
+          dataSourceName: this.dataSourceMessage.dataSourceName,
+          dataSourceSize: this.dataSourceMessage.dataSourceSize,
+          segmentCount: this.dataSourceMessage.segmentCount,
+          dataSourceSpan: this.dataSourceMessage.dataSourceSpan
         }
       });
     },
-    getIntervals(dataSourceName) {
+    getIntervals(row) {
+      this.getDataSourceMessageFromRow(row)
       this.$router.push({
         path: "/interval",
         query: {
           showEnable: this.showEnable,
           preLocation: "dataSource",
-          dataSourceName: dataSourceName
+          dataSourceName: this.dataSourceMessage.dataSourceName,
+          dataSourceSize: this.dataSourceMessage.dataSourceSize,
+          segmentCount: this.dataSourceMessage.segmentCount,
+          dataSourceSpan: this.dataSourceMessage.dataSourceSpan
         }
       });
+    },
+    getDataSourceMessageFromRow(row) {
+      this.dataSourceMessage.dataSourceName = row.name;
+      if (this.showEnable) {
+        this.dataSourceMessage.dataSourceSize = row.properties.segments.size;
+        this.dataSourceMessage.segmentCount = row.properties.segments.count;
+        this.dataSourceMessage.dataSourceSpan = row.properties.segments.span;
+        // this.dataSourceMessage.intervalCount = this.getIntervalCount(row.name)
+      }
+    },
+    async getIntervalCount(dataSourceName) {},
+    getDateDiff(date1, date2) {
+      const millis = date2.getTime() - date1.getTime();
+      const yearCount = Math.floor(millis / (365 * 24 * 3600 * 1000));
+      if (yearCount > 0) {
+        return yearCount + this.addS(yearCount, " year");
+      } else {
+        const monthCount = Math.floor(millis / (30.5 * 24 * 3600 * 1000));
+        if (monthCount > 0) {
+          return monthCount + this.addS(monthCount, " month");
+        } else {
+          const dayCount = Math.floor(millis / (24 * 3600 * 1000));
+          if (dayCount > 0) {
+            return dayCount + this.addS(dayCount, " day");
+          } else {
+            const hourCount = Math.floor(millis / (3600 * 1000));
+            if (hourCount > 0) {
+              return hourCount + this.addS(hourCount, " hour");
+            } else {
+              const minuteCount = Math.floor(millis / (60 * 1000));
+              if (minuteCount > 0) {
+                return minuteCount + this.addS(minuteCount, " minute");
+              } else {
+                const secondCount = Math.floor(millis / 1000);
+                return secondCount + this.addS(secondCount, " second");
+              }
+            }
+          }
+        }
+      }
+    },
+    addS(size, unit) {
+      if (size > 1) {
+        unit += "s";
+      }
+      return unit;
     },
     handleCurrentChange(newValue) {
       this.currentPage = newValue;
@@ -663,6 +735,7 @@ export default {
             item.granularityValue + this.$t("message.error.canNotBeNull");
           return false;
         }
+        item.errorMessage = ""
       }
       return true;
     },
