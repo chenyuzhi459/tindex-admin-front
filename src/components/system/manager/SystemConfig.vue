@@ -179,7 +179,6 @@ export default {
         );
         try {
           const url = `${this.$common.apis.systemConfig}`;
-          console.log(this.form,"form1")
           const updateResponse = await this.$http.post(url, this.form);
           window.setTimeout(this.init, 500);
           this.$message({

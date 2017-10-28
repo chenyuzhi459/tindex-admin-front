@@ -63,12 +63,6 @@
           <el-input v-model="lookupNameInput" :placeholder="$t('message.lookup.lookupNameIndex')" size="small"></el-input>
         </el-form-item>
       </el-form>
-        <!-- <el-input :placeholder="$t('message.lookup.lookupNameIndex')" v-model="lookupNameInput">
-          <template slot="prepend">
-   {{$t('message.lookup.lookupName')}}
-</template>
-        </el-input>
-        <br/><br/> -->
         <el-input type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage">
         </el-input>
         <span slot="footer" class="dialog-footer">
@@ -115,17 +109,12 @@ export default {
       this.formInline.name = "";
       this.getLookups(this.isDescending, this.formInline.name);
     },
-
-    // async getLookupsByIp() {
-    //   await this.getHistoricalIps()
-    //   this.getLookups(this.isDescending, this.formInline.name)
-    // },
     async getLookups(isDescending, searchValue) {
       const url = `${this.$common.apis.lookupsHis}/sortAndSearch`;
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
-          searchValue: searchValue,
+          searchValue: this.$common.methods.trim(searchValue),
           ip: this.historicalIp
         }
       });
@@ -214,7 +203,6 @@ export default {
       const response = await this.$http.get(url);
       this.historicalIps = response.data;
       this.historicalIp = this.historicalIps[0];
-      console.log(this.historicalIps[0], "init ip");
     },
     configDialog(
       dialogTitle,

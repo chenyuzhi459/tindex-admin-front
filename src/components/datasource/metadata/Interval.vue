@@ -33,7 +33,7 @@
         <el-table-column v-if="showEnable" prop="intervalSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
-            <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.interval.segments')}}</el-button>
+            <!-- <el-button size="mini" type="info" @click="getSegments(scope.row.name)">{{$t('message.interval.segments')}}</el-button> -->
             <el-button v-if="showEnable" size="mini" @click="disableInterval(scope.row.name)" type="warning">{{$t('message.common.disable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="enableInterval(scope.row.name)" type="success">{{$t('message.common.enable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="deleteInterval(scope.row.name)" type="danger">{{$t('message.common.delete')}}</el-button>
@@ -81,7 +81,7 @@ export default {
     init() {
       this.preLocation = this.$route.query.preLocation
       this.dataSourceName = this.$route.query.dataSourceName
-      this.getIntervals()
+      this.getIntervals('interval', this.formInline.name, 'interval', this.isDescending)
     },
     refresh() {
       this.formInline.name = ''
@@ -95,7 +95,6 @@ export default {
       const failMessage = this.$t('message.common.disableFail')
       let data = new Array()
       data[0] = intervalName
-      console.log(data)
       this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete', data)
     },
     async enableInterval(intervalName) {
@@ -128,7 +127,6 @@ export default {
       try {
         let handleResponse
         if (methodType === 'delete') {
-          console.log(url)
           handleResponse = await this.$http.delete(url)
         } else {
           handleResponse = await this.$http.post(url)
@@ -145,20 +143,17 @@ export default {
         })
       }
     },
-    getIntervals() {
-      this.getIntervalsByDataSourceName('interval', this.formInline.name, 'interval', this.isDescending)
-    },
     handleSort(column) {
       this.isDescending = column.order === 'descending' ? true : false
       if (column.prop === null) {
         column.prop = 'interval'
       }
-      this.getIntervalsByDataSourceName('interval', this.formInline.name, column.prop, this.isDescending)
+      this.getIntervals('interval', this.formInline.name, column.prop, this.isDescending)
     },
     onSearch() {
-      this.getIntervalsByDataSourceName('interval', this.formInline.name, 'interval', this.isDescending)
+      this.getIntervals('interval', this.formInline.name, 'interval', this.isDescending)
     },
-    async getIntervalsByDataSourceName(searchDimension, searchValue, sortDimension, isDescending) {
+    async getIntervals(searchDimension, searchValue, sortDimension, isDescending) {
       let url
       let data
       if (!this.createdShowEnable && this.showEnable) {
@@ -172,7 +167,7 @@ export default {
         const response = await this.$http.get(url, {
           params: {
             searchDimension: searchDimension,
-            searchValue: searchValue,
+            searchValue: this.$common.methods.trim(searchValue),
             sortDimension: sortDimension,
             isDescending: isDescending
           }

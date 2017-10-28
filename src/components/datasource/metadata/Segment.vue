@@ -37,8 +37,19 @@
         </el-table-column>
         <el-table-column v-if="showEnable" prop="segmentSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.common.more')">
+            
+              
           <template scope="scope">
-            <!-- <el-button size="mini" @click="getSegmentInfo(scope.row.identifier)">{{$t('message.segment.info')}}</el-button> -->
+            <template v-if="showEnable">
+              <el-popover ref="popoverDimension" placement="right" width="150" trigger="click">
+                  <div class="popoverDiv" v-for="dimension in dimensions" :key="dimension">{{dimension}}</div>
+                </el-popover>&nbsp
+                <el-button v-popover:popoverDimension size="mini" @click="getDimensions(scope.row.identifier)">{{$t('message.dataSource.dimensions')}}</el-button>
+                <el-popover ref="popoverMetric" placement="right" width="150" trigger="click">
+                  <div class="popoverDiv" v-for="metric in metrics" :key="metric">{{metric}}</div>
+                </el-popover>&nbsp
+              <el-button v-popover:popoverMetric size="mini" @click="getMetrics(scope.row.identifier)">{{$t('message.dataSource.metrics')}}</el-button>
+            </template>
             <el-button v-if="showEnable" size="mini" @click="disableSegment(scope.row.identifier)" type="warning">{{$t('message.common.disable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="enableSegment(scope.row.identifier)" type="success">{{$t('message.common.enable')}}</el-button>
             <el-button v-if="!showEnable" size="mini" @click="deleteSegment(scope.row.identifier)" type="danger">{{$t('message.common.delete')}}</el-button>
@@ -74,207 +85,306 @@ export default {
     return {
       segments: [],
       showTableData: [],
-      dialogMessage: '',
-      dialogTitle: '',
-      dialogSize: 'full',
+      dialogMessage: "",
+      dialogTitle: "",
+      dialogSize: "full",
       dialogInputAutosize: {},
       dialogVisible: false,
       pageSize: 15,
       currentPage: 1,
-      dataSourceName: '',
-      intervalName: '',
-      preLocation: '',
+      dataSourceName: "",
+      intervalName: "",
+      preLocation: "",
       showCancle: false,
       showIntervalName: false,
       formInline: {
-        name: ''
+        name: ""
       },
       showEnable: true,
       isDescending: true,
-      // createdShowEnable: false,
-      switchDisabled: false
-    }
+      switchDisabled: false,
+      dimensions: [],
+      metrics: []
+    };
   },
   created: function() {
-    this.dataSourceName = this.$route.query.dataSourceName
-    this.intervalName = this.$route.query.intervalName
-    this.preLocation = this.$route.query.preLocation
+    this.dataSourceName = this.$route.query.dataSourceName;
+    this.intervalName = this.$route.query.intervalName;
+    this.preLocation = this.$route.query.preLocation;
     if (this.$route.query.showEnable !== undefined) {
-      this.showEnable = eval(this.$route.query.showEnable)
-      // this.createdShowEnable = this.showEnable
-      this.switchDisabled = !this.showEnable
+      this.showEnable = eval(this.$route.query.showEnable);
+      this.switchDisabled = !this.showEnable;
     }
-    this.init()
+    this.init();
   },
   methods: {
     init() {
       if (this.preLocation === "dataSource") {
-        this.showIntervalName = false
+        this.showIntervalName = false;
       } else if (this.preLocation === "interval") {
-        this.showIntervalName = true
+        this.showIntervalName = true;
       }
-      this.getSegmentsForshow(this.preLocation, this.isDescending, this.formInline.name)
+      this.getSegmentsForshow(
+        this.preLocation,
+        this.isDescending,
+        this.$common.methods.trim(this.formInline.name)
+      );
     },
     getSegmentsForshow(preLocation, isDescending, searchValue) {
       if (preLocation === "dataSource") {
-        this.getSegmentsByDataSource(isDescending, searchValue)
+        this.getSegmentsByDataSource(isDescending, searchValue);
       } else {
-        this.getSegmentsByInterval(isDescending, searchValue)
+        this.getSegmentsByInterval(isDescending, searchValue);
       }
     },
 
     async getSegmentsByDataSource(isDescending, searchValue) {
-      let url
+      let url;
       if (this.showEnable) {
-        url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments?full`
+        url = `${this.$common.apis.dataSource}/${this
+          .dataSourceName}/segments?full`;
       } else {
-        url = `${this.$common.apis.dataSource}/${this.dataSourceName}/disableSegments`
+        url = `${this.$common.apis.dataSource}/${this
+          .dataSourceName}/disableSegments`;
       }
-      let data = []
+      let data = [];
       try {
         const response = await this.$http.get(url, {
           params: {
             isDescending: isDescending,
-            searchValue: searchValue
+            searchValue: this.$common.methods.trim(searchValue)
           }
-        })
-        data = response.data
-      } catch (err) {
-          
-      }
+        });
+        data = response.data;
+      } catch (err) {}
 
       if (this.showEnable) {
         for (let i = 0; i < data.length; i++) {
-          data[i]["segmentSize"] = this.$common.methods.conver(data[i]["size"])
+          data[i]["segmentSize"] = this.$common.methods.conver(data[i]["size"]);
         }
       }
-      this.segments = []
-      this.$common.methods.pushData(data, this.segments)
-      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
-
+      this.segments = [];
+      this.$common.methods.pushData(data, this.segments);
+      this.showTableData = this.$common.methods.fillShowTableData(
+        this.segments,
+        this.currentPage,
+        this.pageSize
+      );
     },
     handleSort(column) {
-      this.isDescending = column.order === 'descending' ? true : false
-      this.getSegmentsForshow(this.preLocation, this.isDescending, this.formInline.name)
+      this.isDescending = column.order === "descending" ? true : false;
+      this.getSegmentsForshow(
+        this.preLocation,
+        this.isDescending,
+        this.$common.methods.trim(this.formInline.name)
+      );
     },
     switchChange() {
-      this.init()
+      this.init();
     },
     async getSegmentsByInterval(isDescending, searchValue) {
-      let url
+      let url;
       if (this.showEnable) {
-        url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments?full`
+        url = `${this.$common.apis.dataSource}/${this
+          .dataSourceName}/segments?full`;
       } else {
-        url = `${this.$common.apis.dataSource}/${this.dataSourceName}/disableSegments`
+        url = `${this.$common.apis.dataSource}/${this
+          .dataSourceName}/disableSegments`;
       }
-      let intervals = new Array()
-      intervals.push(this.intervalName)
+      let intervals = new Array();
+      intervals.push(this.intervalName);
       const response = await this.$http.post(url, intervals, {
         params: {
           isDescending: isDescending,
-          searchValue: searchValue
+          searchValue: this.$common.methods.trim(searchValue)
         }
-      })
+      });
       for (let i = 0; i < response.data.length; i++) {
         if (this.showEnable) {
-          response.data[i]["segmentSize"] = this.$common.methods.conver(response.data[i]["size"])
+          response.data[i]["segmentSize"] = this.$common.methods.conver(
+            response.data[i]["size"]
+          );
         } else {
-          const item = {}
-          item["identifier"] = response.data[i]
-          response.data[i] = item
+          const item = {};
+          item["identifier"] = response.data[i];
+          response.data[i] = item;
         }
       }
 
-      console.log(url)
-      console.log(response.data, isDescending)
-      this.segments = []
-      this.$common.methods.pushData(response.data, this.segments)
-      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
-
+      this.segments = [];
+      this.$common.methods.pushData(response.data, this.segments);
+      this.showTableData = this.$common.methods.fillShowTableData(
+        this.segments,
+        this.currentPage,
+        this.pageSize
+      );
     },
     refresh() {
-      this.formInline.name = ''
-      this.init()
+      this.formInline.name = "";
+      this.init();
     },
     onSearch() {
-      this.getSegmentsForshow(this.preLocation, this.isDescending, this.formInline.name)
+      this.getSegmentsForshow(
+        this.preLocation,
+        this.isDescending,
+        this.$common.methods.trim(this.formInline.name)
+      );
     },
     async getSegmentInfo(segmentName) {
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}?full`
-      const response = await this.$http.get(url)
-      this.segmentInfo = response.data
-      const message = this.$common.methods.JSONUtils.toString(this.segmentInfo)
-      this.showCancle = false
-      this.configDialog(this.$t('message.segment.segmentInfo'), message, true, "small", { minRows: 15, maxRows: 40 })
-
+      const url = `${this.$common.apis.dataSource}/${this
+        .dataSourceName}/segments/${segmentName}?full`;
+      const response = await this.$http.get(url);
+      this.segmentInfo = response.data;
+      const message = this.$common.methods.JSONUtils.toString(this.segmentInfo);
+      this.showCancle = false;
+      this.configDialog(
+        this.$t("message.segment.segmentInfo"),
+        message,
+        true,
+        "small",
+        { minRows: 15, maxRows: 40 }
+      );
     },
+    async getDimensions(segmentName) {
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}?full`;
+      const response = await this.$http.get(url);
+      this.dimensions = this.stringToArray(response.data['dimensions'])
+    },
+    async getMetrics(segmentName) {
+      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}?full`;
+      const response = await this.$http.get(url);
+      this.metrics = this.stringToArray(response.data['metrics'])
+    },
+    stringToArray(str) {
+      let arr = new Array()
+      if(str.length === 0) {
+        arr[0] = this.$t("message.common.none");
+      } else {
+        arr = str.split(",")
+      }
+      return arr;
+    },
+
+
     async enableSegment(segmentName) {
-      const remindMessage = `${this.$t('message.common.enableWarning')}\n${segmentName}`
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}/enable`
-      const successMessage = this.$t('message.common.enableSuccess')
-      const failMessage = this.$t('message.common.enableFail')
-      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'post')
+      const remindMessage = `${this.$t(
+        "message.common.enableWarning"
+      )}\n${segmentName}`;
+      const url = `${this.$common.apis.dataSource}/${this
+        .dataSourceName}/segments/${segmentName}/enable`;
+      const successMessage = this.$t("message.common.enableSuccess");
+      const failMessage = this.$t("message.common.enableFail");
+      this.confirmAndGetResult(
+        url,
+        remindMessage,
+        successMessage,
+        failMessage,
+        "post"
+      );
     },
     async disableSegment(segmentName) {
-      const remindMessage = `${this.$t('message.common.disableWarning')}\n${segmentName}`
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}/disable`
-      const successMessage = this.$t('message.common.disableSuccess')
-      const failMessage = this.$t('message.common.disableFail')
-      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')
+      const remindMessage = `${this.$t(
+        "message.common.disableWarning"
+      )}\n${segmentName}`;
+      const url = `${this.$common.apis.dataSource}/${this
+        .dataSourceName}/segments/${segmentName}/disable`;
+      const successMessage = this.$t("message.common.disableSuccess");
+      const failMessage = this.$t("message.common.disableFail");
+      this.confirmAndGetResult(
+        url,
+        remindMessage,
+        successMessage,
+        failMessage,
+        "delete"
+      );
     },
     async deleteSegment(segmentName) {
-      const remindMessage = `${this.$t('message.common.deleteWarning')}\n${segmentName}`
-      const url = `${this.$common.apis.dataSource}/${this.dataSourceName}/segments/${segmentName}/delete`
-      const successMessage = this.$t('message.common.deleteSuccess')
-      const failMessage = this.$t('message.common.deleteFail')
-      this.confirmAndGetResult(url, remindMessage, successMessage, failMessage, 'delete')
+      const remindMessage = `${this.$t(
+        "message.common.deleteWarning"
+      )}\n${segmentName}`;
+      const url = `${this.$common.apis.dataSource}/${this
+        .dataSourceName}/segments/${segmentName}/delete`;
+      const successMessage = this.$t("message.common.deleteSuccess");
+      const failMessage = this.$t("message.common.deleteFail");
+      this.confirmAndGetResult(
+        url,
+        remindMessage,
+        successMessage,
+        failMessage,
+        "delete"
+      );
     },
-    async confirmAndGetResult(url, remindMessage, successMessage, failMessage, methodType) {
-      const response = await this.$confirm(remindMessage, this.$t('message.common.warning'), {
-        confirmButtonText: this.$t('message.common.confirm'),
-        cancelButtonText: this.$t('message.common.cancle'),
-        closeOnClickModal: false,
-        type: 'warning'
-      })
-      try {
-        let handleResponse
-        if (methodType === 'delete') {
-          handleResponse = await this.$http.delete(url)
-        } else {
-          handleResponse = await this.$http.post(url)
+    async confirmAndGetResult(
+      url,
+      remindMessage,
+      successMessage,
+      failMessage,
+      methodType
+    ) {
+      const response = await this.$confirm(
+        remindMessage,
+        this.$t("message.common.warning"),
+        {
+          confirmButtonText: this.$t("message.common.confirm"),
+          cancelButtonText: this.$t("message.common.cancle"),
+          closeOnClickModal: false,
+          type: "warning"
         }
-        window.setTimeout(this.init, 500)
+      );
+      try {
+        let handleResponse;
+        if (methodType === "delete") {
+          handleResponse = await this.$http.delete(url);
+        } else {
+          handleResponse = await this.$http.post(url);
+        }
+        window.setTimeout(this.init, 500);
         this.$message({
-          type: 'success',
+          type: "success",
           message: successMessage
-        })
+        });
       } catch (err) {
         this.$message({
-          type: 'warning',
+          type: "warning",
           message: failMessage
-        })
+        });
       }
     },
 
-    configDialog(dialogTitle, dialogMessage, dialogVisible, dialogSize, dialogInputAutosize) {
-      this.dialogTitle = dialogTitle
-      this.dialogMessage = dialogMessage
-      this.dialogVisible = dialogVisible
-      this.dialogSize = dialogSize
-      this.dialogInputAutosize = dialogInputAutosize
+    configDialog(
+      dialogTitle,
+      dialogMessage,
+      dialogVisible,
+      dialogSize,
+      dialogInputAutosize
+    ) {
+      this.dialogTitle = dialogTitle;
+      this.dialogMessage = dialogMessage;
+      this.dialogVisible = dialogVisible;
+      this.dialogSize = dialogSize;
+      this.dialogInputAutosize = dialogInputAutosize;
     },
     handleCurrentChange(newValue) {
-      this.currentPage = newValue
-      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
+      this.currentPage = newValue;
+      this.showTableData = this.$common.methods.fillShowTableData(
+        this.segments,
+        this.currentPage,
+        this.pageSize
+      );
     },
     handleSizeChange(newValue) {
-      this.pageSize = newValue
-      this.showTableData = this.$common.methods.fillShowTableData(this.segments, this.currentPage, this.pageSize)
+      this.pageSize = newValue;
+      this.showTableData = this.$common.methods.fillShowTableData(
+        this.segments,
+        this.currentPage,
+        this.pageSize
+      );
     }
   }
-}
+};
 </script>
 
 <style>
 @import "../../../../static/css/link.css";
+@import "../../../../static/css/popover.css";
 </style>

@@ -134,7 +134,7 @@ export default {
       const response = await this.$http.get(url, {
         params: {
           isDescending: isDescending,
-          searchValue: searchValue
+          searchValue: this.$common.methods.trim(searchValue)
         }
       })
       this.lookups = []
