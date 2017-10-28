@@ -130,7 +130,6 @@ export default {
         },
 
         addMoreChildren(data,node,ref){
-            console.log("add more:",node);
 
             if((data.offset + this.maxShowNum)  <= node.parent.data.allChildrenSize){
                 node.parent.data.children.splice(data.offset,1)
@@ -182,7 +181,6 @@ export default {
                         <span>
                             {node.label === this.$t('message.zkManager.checkMore') ? <i  class="el-icon-plus"></i> : node.label}
                             {node.data.nodeType==='ephemeral' ? <el-badge  is-dot class="item"></el-badge> : null}
-                            
                         </span>
                     </span>
                 </span>
