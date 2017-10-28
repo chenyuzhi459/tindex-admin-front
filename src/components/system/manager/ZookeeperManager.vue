@@ -28,7 +28,6 @@
 </template>
 
 <script>
-let id = 1000;
 import _ from 'lodash'
 export default {
     data() {

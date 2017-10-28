@@ -25,6 +25,10 @@
                             <a class="click-link" @click="getTasks(scope.row.id)">{{scope.row.id}}</a>
                         </template>
                     </el-table-column>
+                     <el-table-column prop="type" :label="$t('message.supervisors.type')"></el-table-column>
+                     <el-table-column prop="topic" :label="$t('message.supervisors.topic')"></el-table-column>
+                     <el-table-column prop="durationSeconds" :label="$t('message.supervisors.taskDuration')"></el-table-column>
+                     <el-table-column prop="activeTasksNum" :label="$t('message.supervisors.activeTasksNum')"></el-table-column>
                     <el-table-column :label="$t('message.supervisors.operation')" width="230">
                         <template scope="scope">
                             <el-button size="mini" @click="getSpec(scope.row.id)">{{$t('message.supervisors.spec')}}</el-button>
@@ -94,17 +98,29 @@ export default {
             this.getRunningSupervisors()
         },
         async getRunningSupervisors() {
-            let { data } = await this.$http.get(this.$common.apis.supervisor)
+            let { data } = await this.$http.get(this.$common.apis.supervisor,{
+                params:{
+                    full:'true'
+                }
+            })
             if (data.length === 0) {
                 this.hasData = false
                 return
             }
             this.hasData = true
-            data = data.map(s => {
-                return { id: s }
+            let converData = []
+             data.map(s => {
+                let obj = {}
+                obj.id = s.id
+                obj.activeTasksNum = s.payload.activeTasks.length
+                obj.durationSeconds = s.payload.durationSeconds
+                obj.type = s.type
+                obj.topic = s.payload.topic
+                converData.push(obj)
+                return s
             })
             this.runningSupervisors = []
-            this.$common.methods.pushData(data, this.runningSupervisors)
+            this.$common.methods.pushData(converData, this.runningSupervisors)
             this.totalNum = this.runningSupervisors.length
             const resultData = this.$common.methods.fillShowTableData(this.runningSupervisors, this.currentPage, this.pageSize)
             this.showTableData = []

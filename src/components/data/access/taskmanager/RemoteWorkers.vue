@@ -23,13 +23,11 @@
                     <el-table-column prop="currCapacityUsed" :label="$t('message.tasks.currCapacityUsed')" width="175"></el-table-column>
                     <el-table-column prop="lastCompletedTaskTime" :label="$t('message.tasks.lastCompletedTaskTime')" width="210"></el-table-column>
                     <el-table-column prop="blacklistedUntil" :label="$t('message.tasks.blacklistedUntil')" width="175"></el-table-column>
-                    <el-table-column :label="$t('message.tasks.operation')" width="320">
+                    <el-table-column :label="$t('message.tasks.operation')" width="200">
                         <template scope="scope">
-                            <el-button size="mini" @click="getAvailabilityGroups(scope.row)">{{$t('message.tasks.payload')}}</el-button>
-                            <el-button size="mini" @click="getWorkerRunningTasks(scope.row)">{{$t('message.tasks.status')}}</el-button>
-                            <el-button size="mini" @click="getTasklog(scope.row.id,0)">{{$t('message.tasks.allLog')}}</el-button>
-                            <el-button size="mini" @click="getTasklog(scope.row.id,8192)">{{$t('message.tasks.partLog')}}</el-button>
-                            <el-button size="mini" style="width:35px" type="danger" @click="killTask(scope.row.id)">{{$t('message.tasks.delete')}}</el-button>
+                            <el-button size="mini" @click="getAvailabilityGroups(scope.row)">{{$t('message.tasks.availabilityGroups')}}</el-button>
+                            <el-button size="mini" @click="getWorkerRunningTasks(scope.row)">{{$t('message.tasks.workerRunningTaks')}}</el-button>
+            
                         </template>
                     </el-table-column>
                 </el-table>

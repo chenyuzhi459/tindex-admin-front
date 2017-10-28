@@ -114,7 +114,8 @@ export default {
       jsonSyntaxError: 'json格式错误',
       creatSuccess: '创建成功, id',
       createFailedFront: '创建失败,状态码',
-      createFailedLast: '请查看overlord日志'
+      createFailedLast: '请查看overlord日志',
+      activeTasksNum: '已启动任务数'
     },
     sideBar: {
       dataAccess: {
