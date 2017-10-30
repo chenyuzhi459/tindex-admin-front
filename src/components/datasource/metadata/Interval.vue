@@ -13,7 +13,7 @@
         &nbsp;
         <el-tag type="primary">
           {{this.dataSourceMessage.dataSourceSize}}&emsp;&emsp;{{this.dataSourceMessage.dataSourceSpan}}
-          &emsp;&emsp;{{this.dataSourceMessage.segmentCount}} segments
+          &emsp;&emsp;{{this.dataSourceMessage.segmentCount}} segments in {{this.dataSourceMessage.intervalCount}} intervals
         </el-tag>
       </template>
       <br></br>
@@ -30,13 +30,13 @@
         </el-form-item>
       </el-form>
 
-      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort" stripe>
         <el-table-column prop="interval" :label="$t('message.interval.name')" sortable="custom" width="800">
           <template scope="scope">
             <a class="click-link" @click="getSegments(scope.row)">{{scope.row.name}}</a>
           </template>
         </el-table-column>
-        <el-table-column v-if="showEnable" prop="segmentCount" :label="$t('message.interval.segmentCount')"></el-table-column>
+        <el-table-column v-if="showEnable" prop="segmentCount" :label="$t('message.dataSource.segmentCount')"></el-table-column>
         <el-table-column v-if="showEnable" prop="intervalSize" :label="$t('message.common.size')"></el-table-column>
         <el-table-column :label="$t('message.common.more')">
           <template scope="scope">
@@ -103,6 +103,7 @@ export default {
     if(this.showSwitch) {
       this.dataSourceMessage.dataSourceSize = this.$route.query.dataSourceSize
       this.dataSourceMessage.segmentCount = this.$route.query.segmentCount
+      this.dataSourceMessage.intervalCount = this.$route.query.intervalCount
       this.dataSourceMessage.dataSourceSpan = this.$route.query.dataSourceSpan
     }
     this.init();
@@ -305,6 +306,7 @@ export default {
           dataSourceName: this.dataSourceMessage.dataSourceName,
           dataSourceSize: this.dataSourceMessage.dataSourceSize,
           segmentCount: this.dataSourceMessage.segmentCount,
+          intervalCount: this.dataSourceMessage.intervalCount,
           dataSourceSpan: this.dataSourceMessage.dataSourceSpan,
 
           intervalName: this.intervalMessage.intervalName,

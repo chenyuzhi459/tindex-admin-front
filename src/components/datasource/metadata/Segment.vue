@@ -17,7 +17,7 @@
         &nbsp;
         <el-tag type="primary">
           {{this.dataSourceMessage.dataSourceSize}}&emsp;&emsp;{{this.dataSourceMessage.dataSourceSpan}}
-          &emsp;&emsp;{{this.dataSourceMessage.segmentCount}} segments
+          &emsp;&emsp;{{this.dataSourceMessage.segmentCount}} segments in {{this.dataSourceMessage.intervalCount}} intervals
         </el-tag>
       </template>
 
@@ -45,7 +45,7 @@
     </div>
 
     <div class="table" style=" margin-left:20px;">
-      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort" stripe>
         <el-table-column :label="$t('message.common.name')" width="900" sortable="custom">
           <template scope="scope">
             <a v-if="showEnable" class="click-link" @click="getSegmentInfo(scope.row.identifier)">{{scope.row.identifier}}</a>
@@ -144,6 +144,7 @@ export default {
     if (this.showEnable) {
       this.dataSourceMessage.dataSourceSize = this.$route.query.dataSourceSize
       this.dataSourceMessage.segmentCount = this.$route.query.segmentCount
+      this.dataSourceMessage.intervalCount = this.$route.query.intervalCount
       this.dataSourceMessage.dataSourceSpan = this.$route.query.dataSourceSpan
     }
     if (this.preLocation === "interval") {

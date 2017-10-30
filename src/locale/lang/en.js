@@ -209,28 +209,24 @@ export default {
             periodInputInfo: 'Please input a valid ISO 8601 duration',
             intervalInputInfo: 'Please input a valid ISO 8601 interval',
             addRule: 'Add A Rule',
-            servers: 'servers'
+            servers: 'servers',
+            segmentCount: "segment count",
+            intervalCount: "interval count",
+            clusterConfig: "Cluster Config",
+            clusterConfigHistory: "Cluster Config History"
         },
         interval: {
             intervalTitle: "Intervals",
             interval: 'Interval',
-            refresh: "Refresh",
-            name: "name",
             segments: "segments",
-            more: "more",
-            segmentCount: "segment count"
+            
         },
         segment: {
             segmentTitle: "Segments",
             segment: 'Segment',
             refresh: "Refresh",
-            name: "name",
-            info: "info",
-            more: "more",
             delete: "delete",
             segmentInfo: "Segment Info",
-            confirm: "Cofirm",
-            cancle: "Cancle",
             confirmButtonText: "Confirm",
             cancleButtonTextL: "Cancle"
         },

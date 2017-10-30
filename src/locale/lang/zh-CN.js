@@ -215,7 +215,11 @@ export default {
       periodInputInfo: '请输入一个有效的 ISO 8601 period',
       intervalInputInfo: '请输入一个有效的 ISO 8601 interval',
       addRule: '添加规则',
-      servers: '节点'
+      servers: '节点',
+      segmentCount: "数据段数量",
+      intervalCount: "区间数量",
+      clusterConfig: "集群配置",
+      clusterConfigHistory: "集群配置历史"
     },
     interval: {
       intervalTitle: "区间",
@@ -224,7 +228,7 @@ export default {
       name: "名称",
       segments: "数据段",
       more: "更多",
-      segmentCount: "数据段数量"
+      
     },
     segment: {
       segmentTitle: "数据段",

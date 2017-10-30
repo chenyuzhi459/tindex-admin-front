@@ -11,6 +11,43 @@
   line-height: 22px;
   font-weight: 700;
 }
+.el-progress.is-exception .el-progress-bar__inner {
+  background-color: #13ce66;
+}
+.el-progress-bar__outer {
+  background-color: #c6c6c6;
+}
+.progress-div {
+  width: 550px;
+  position: relative;
+  top: 9px;
+}
+.info-div {
+  position: relative;
+  top: 15px;
+  color: #20a0ff;
+  font-size: 14px;
+}
+.total-memory-span {
+  position: relative;
+  left: 265px;
+}
+.load-span {
+  position: relative;
+  left: 400px;
+}
+.drop-span {
+  position: relative;
+  left: 500px;
+}
+.edit-span {
+  position: relative;
+  left: 550px;
+}
+.search-div {
+  position: relative;
+  top: 10px;
+}
 </style>
 
 <template>
@@ -21,23 +58,40 @@
           <el-breadcrumb-item :to="{ path: '/dataSource', query: { showEnable: this.showEnable} }">{{$t('message.dataSource.dataSourceTitle')}}</el-breadcrumb-item>
         </el-breadcrumb>
       </span>
-      <br/>
+      <!-- <br/> -->
 
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item :label="$t('message.common.name')">
-          <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
-          <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
-          <el-switch v-model="showEnable" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px;" @change="switchChange">>
-          </el-switch>
-        </el-form-item>
-      </el-form>
+    <div class="info-div">
+      <span>Free Memory : {{this.freeMemory}}</span>
+      <span class="total-memory-span">Total Memory : {{this.totalMemory}}</span>
+      <span class="load-span">{{this.segmentsToLoadSize}} ({{this.segmentsToLoad}} segments) to load</span>
+      <span class="drop-span">{{this.segmentsToDropSize}} ({{this.segmentsToDrop}} segments) to drop</span>
+      <span class="edit-span">
+        <el-button size="mini" icon="edit" @click="editClusterConfig"/>
+        <el-button size="mini" icon="time" @click="getClusterHistory"/>
+      </span>
+    </div>
+
+    <div class="progress-div">
+      <el-progress :text-inside="true" :stroke-width="3" :percentage="this.freePercent * 100" status="exception"></el-progress>
+    </div>
+
+      <div class="search-div">
+        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+          <el-form-item :label="$t('message.common.name')">
+            <el-input v-model="formInline.name" :placeholder="$t('message.common.inputName')" size="small"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" size="small" @click="onSearch" icon="search">{{$t('message.common.search')}}</el-button>
+            <el-button type="primary" size="small" @click="refresh">{{$t('message.common.refresh')}}</el-button>
+            <el-switch v-model="showEnable" on-color="#13ce66" off-color="#ff4949" on-text="Enable" off-text="Disable" :width="80" style="position:absolute; left:1100px; top:18px;" @change="switchChange">>
+            </el-switch>
+          </el-form-item>
+        </el-form>
+      </div>
     </div>
     <div class="table" style=" margin-left:20px;">
 
-      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort" stripe>
         <el-table-column :label="$t('message.common.name')" sortable="custom" :width="330">
           <template scope="scope">
             <el-progress v-if="showEnable" type="circle" :percentage="scope.row.loadstatus" :width="10" :show-text="false" :stroke-width="2" :status="scope.row.statusType"></el-progress>
@@ -45,15 +99,16 @@
           </template>
         </el-table-column>
         <!-- <el-table-column :label="$t('message.dataSource.segments')" align="center"> -->
-        <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.interval.segmentCount')" width="140"></el-table-column>
+        <el-table-column v-if="showEnable" prop="properties.segments.count" :label="$t('message.dataSource.segmentCount')" width="140"></el-table-column>
+        <el-table-column v-if="showEnable" prop="properties.segments.intervalCount" :label="$t('message.dataSource.intervalCount')" width="140"></el-table-column>
         <el-table-column v-if="showEnable" prop="properties.segments.size" :label="$t('message.common.size')" width="105"></el-table-column>
         <el-table-column v-if="showEnable" prop="properties.segments.span" :label="$t('message.dataSource.span')" width="280"></el-table-column>
         <!-- </el-table-column> -->
         <el-table-column :label="$t('message.dataSource.rules')" width="100">
           <template scope="scope">
-            <el-button size="mini" @click="editRule(scope.row.name)" icon="edit" type="info">
+            <el-button size="mini" @click="editRule(scope.row.name)" icon="edit" >
             </el-button>
-            <el-button size="mini" @click="getRuleHistory(scope.row.name)" icon="time" type="info">
+            <el-button size="mini" @click="getRuleHistory(scope.row.name)" icon="time">
             </el-button>
           </template>
         </el-table-column>
@@ -97,9 +152,8 @@
           {{dialogTitle}}
         </div>
       </template>
-
-      <el-input v-if="dialogForInfo" type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage"></el-input>
-      <el-form v-if="!dialogForInfo" v-for="ruleItem in addRuleForm" :key="ruleItem.id" :inline="true" :model="ruleItem" class="demo-form-inline">
+      <el-input v-if="dialogType === 'info'" type="textarea" :autosize="dialogInputAutosize" v-model="dialogMessage"></el-input>
+      <el-form v-if="dialogType === 'editRule'" v-for="ruleItem in addRuleForm" :key="ruleItem.id" :inline="true" :model="ruleItem">
         <div class="ruleTypeDiv">
           {{ruleItem.type}}
           <el-button type="primary" icon="delete" @click="removeRule(ruleItem.id)" style="float: right"></el-button><br></br>
@@ -128,15 +182,45 @@
           <div style="color: red; position: relative; top: -15px; font-size:13px">{{ruleItem.errorMessage}}</div>
         </div>
       </el-form>
+
+      <el-form v-if="dialogType === 'clusterConfig'" :model="clusterConfigForm" label-width="200px">
+          <!-- <el-form-item label="emitBalancingStats">
+            <el-switch :width="60" on-color="#13ce66" off-color="#ff4949" v-model="clusterConfigForm.emitBalancingStats" on-text="true" off-text="false"></el-switch>
+          </el-form-item> -->
+          <el-form-item label="balancerComputeThreads">
+            <el-input-number v-model="clusterConfigForm.balancerComputeThreads" :min="1" :max="100"></el-input-number>
+          </el-form-item>
+          <el-form-item label="maxSegmentsToMove">
+            <el-input-number v-model="clusterConfigForm.maxSegmentsToMove" :min="1" :max="100"></el-input-number>
+          </el-form-item>
+          <el-form-item label="mergeBytesLimit">
+            <el-input-number v-model="clusterConfigForm.mergeBytesLimit" :min="1" :max="100"></el-input-number>
+          </el-form-item>
+          <el-form-item label="mergeSegmentsLimit">
+            <el-input-number v-model="clusterConfigForm.mergeSegmentsLimit" :min="1" :max="100"></el-input-number>
+          </el-form-item>
+          <el-form-item label="millisToWaitBeforeDeleting">
+            <el-input-number v-model="clusterConfigForm.millisToWaitBeforeDeleting" :min="1" :max="100"></el-input-number>
+          </el-form-item>
+          <el-form-item label="replicantLifetime">
+            <el-input-number v-model="clusterConfigForm.replicantLifetime" :min="1" :max="100"></el-input-number>
+          </el-form-item>
+          <!-- <el-form-item label="replicationThrottleLimit">
+            <el-input-number v-model="clusterConfigForm.replicationThrottleLimit" :min="1" :max="100"></el-input-number>
+          </el-form-item> -->
+          <!-- <el-form-item label="killDataSourceWhitelist">
+            <el-input v-model="clusterConfigForm.killDataSourceWhitelist"></el-input>
+          </el-form-item> -->
+      </el-form>
+
       <span slot="footer" class="dialog-footer">
-        <el-button v-if="isAddRule()" type="warning" icon="plus" @click="addARule">
+        <el-button v-if="dialogType === 'editRule'" type="warning" icon="plus" @click="addARule">
           <!-- {{$t('message.dataSource.addRule')}} -->
         </el-button>
-        <el-button v-if="showCancle" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
+        <el-button v-if="!(dialogType === 'info')" @click="dialogVisible = false">{{$t('message.common.cancle')}}</el-button>
         <el-button type="primary" @click="clickConfirm()">{{$t('message.common.confirm')}}</el-button>
       </span>
     </el-dialog>
-
   </div>
 </template>
 
@@ -159,7 +243,6 @@ export default {
       currentPage: 1,
       isDescending: false,
       isSearching: false,
-      confirmType: "",
       ruleDataSource: "",
       dataSourceMessage: {
         dataSourceName: "",
@@ -169,14 +252,21 @@ export default {
         intervalCount: 0
       },
       preLocation: "",
-      showCancle: false,
       showEnable: true,
-      dialogForInfo: true,
+      dialogType: "info",
       addRuleForm: [],
       ruleItemNextId: 1,
       servers: [],
       dimensions: [],
-      metrics: []
+      metrics: [],
+      totalMemory: 0,
+      freeMemory: 0,
+      freePercent: 0,
+      segmentsToLoad: 0,
+      segmentsToDrop: 0,
+      segmentsToLoadSize: 0,
+      segmentsToDropSize: 0,
+      clusterConfigForm: {}
     };
   },
   created: function() {
@@ -188,6 +278,9 @@ export default {
   },
   methods: {
     init() {
+      this.getMemory();
+      this.getLoadAndDrop();
+
       if (this.showEnable) {
         this.getDataSources(this.isDescending, "name", this.formInline.name);
       } else {
@@ -197,6 +290,60 @@ export default {
           this.formInline.name
         );
       }
+    },
+    async getClusterConfig() {
+      const url = `${this.$common.apis.clusterConfig}`
+      const response = await this.$http.get(url);
+      this.clusterConfigForm = response.data
+      // this.clusterConfigForm.emitBalancingStats = String(response.data.emitBalancingStats)
+    },
+    editClusterConfig() {
+      this.getClusterConfig();
+      this.dialogType = "clusterConfig";
+      this.configDialog(
+        this.$t("message.dataSource.clusterConfig"),
+        "",
+        true,
+        "small",
+        { minRows: 15, maxRows: 25 }
+      );
+    },
+    async getLoadAndDrop() {
+      let segmentsToDropSizeResult = 0,
+        segmentsToLoadSizeResult = 0,
+        segmentsToLoadResult = 0,
+        segmentsToDropResult = 0;
+      const url = `${this.$common.apis.loadqueue}`;
+      const response = await this.$http.get(url);
+      for (const key in response.data) {
+        segmentsToLoadSizeResult += response.data[key]["segmentsToLoadSize"];
+        segmentsToDropSizeResult += response.data[key]["segmentsToDropSize"];
+        segmentsToLoadResult += response.data[key]["segmentsToLoad"];
+        segmentsToDropResult += response.data[key]["segmentsToDrop"];
+      }
+      this.segmentsToLoad = segmentsToLoadResult;
+      this.segmentsToDrop = segmentsToDropResult;
+      this.segmentsToLoadSize = this.$common.methods.conver(
+        segmentsToLoadSizeResult
+      );
+      this.segmentsToDropSize = this.$common.methods.conver(
+        segmentsToDropSizeResult
+      );
+    },
+    async getMemory() {
+      let useMemoryResult = 0,
+        totalMemoryResult = 0,
+        freeMemoryResult = 0;
+      const url = `${this.$common.apis.serversInfo}?simple`;
+      const response = await this.$http.get(url);
+      for (let i = 0; i < response.data.length; i++) {
+        totalMemoryResult += response.data[i].maxSize;
+        useMemoryResult += response.data[i].currSize;
+      }
+      freeMemoryResult = totalMemoryResult - useMemoryResult;
+      this.freeMemory = this.$common.methods.conver(freeMemoryResult);
+      this.totalMemory = this.$common.methods.conver(totalMemoryResult);
+      this.freePercent = freeMemoryResult / totalMemoryResult;
     },
     removeRule(id) {
       for (let i = 0; i < this.addRuleForm.length; i++) {
@@ -484,12 +631,14 @@ export default {
       const url = `${this.$common.apis.rules}/${dataSourceName}/history`;
       this.getInfoFromUrl(url, this.$t("message.dataSource.rulesHistory"));
     },
+    getClusterHistory() {
+      const url = `${this.$common.apis.clusterConfig}/history`;
+      this.getInfoFromUrl(url, this.$t("message.dataSource.clusterConfigHistory"));
+    },
     async getInfoFromUrl(url, title) {
       const response = await this.$http.get(url);
       const message = this.$common.methods.JSONUtils.toString(response.data);
-      this.showCancle = false;
-      this.confirmType = "confirmInfo";
-      this.dialogForInfo = true;
+      this.dialogType = "info";
       this.configDialog(title, message, true, "small", {
         minRows: 15,
         maxRows: 25
@@ -578,9 +727,7 @@ export default {
       this.getRuleInfo(dataSourceName);
 
       this.ruleDataSource = dataSourceName;
-      this.showCancle = true;
-      this.dialogForInfo = false;
-      this.confirmType = "addRule";
+      this.dialogType = "editRule";
       this.configDialog(
         this.$t("message.dataSource.rulesInfo"),
         "",
@@ -603,7 +750,7 @@ export default {
       this.dialogInputAutosize = dialogInputAutosize;
     },
     getSegments(row) {
-      this.getDataSourceMessageFromRow(row)
+      this.getDataSourceMessageFromRow(row);
       this.$router.push({
         path: "/segment",
         query: {
@@ -612,12 +759,13 @@ export default {
           dataSourceName: this.dataSourceMessage.dataSourceName,
           dataSourceSize: this.dataSourceMessage.dataSourceSize,
           segmentCount: this.dataSourceMessage.segmentCount,
+          intervalCount: this.dataSourceMessage.intervalCount,
           dataSourceSpan: this.dataSourceMessage.dataSourceSpan
         }
       });
     },
     getIntervals(row) {
-      this.getDataSourceMessageFromRow(row)
+      this.getDataSourceMessageFromRow(row);
       this.$router.push({
         path: "/interval",
         query: {
@@ -626,6 +774,7 @@ export default {
           dataSourceName: this.dataSourceMessage.dataSourceName,
           dataSourceSize: this.dataSourceMessage.dataSourceSize,
           segmentCount: this.dataSourceMessage.segmentCount,
+          intervalCount: this.dataSourceMessage.intervalCount,
           dataSourceSpan: this.dataSourceMessage.dataSourceSpan
         }
       });
@@ -635,6 +784,8 @@ export default {
       if (this.showEnable) {
         this.dataSourceMessage.dataSourceSize = row.properties.segments.size;
         this.dataSourceMessage.segmentCount = row.properties.segments.count;
+        this.dataSourceMessage.intervalCount =
+          row.properties.segments.intervalCount;
         this.dataSourceMessage.dataSourceSpan = row.properties.segments.span;
         // this.dataSourceMessage.intervalCount = this.getIntervalCount(row.name)
       }
@@ -710,14 +861,19 @@ export default {
     },
 
     clickConfirm() {
-      if (this.confirmType === "addRule") {
+      if (this.dialogType === "editRule") {
         if (this.checkRuleInfo()) {
           this.addRule();
           this.dialogVisible = false;
         }
+      } else if(this.dialogType === "clusterConfig") {
+        this.updateClusterConfig()
       } else {
         this.dialogVisible = false;
       }
+    },
+    updateClusterConfig() {
+      console.log(this.clusterConfigForm)
     },
     checkRuleInfo() {
       for (let i = 0; i < this.addRuleForm.length; i++) {
@@ -735,7 +891,7 @@ export default {
             item.granularityValue + this.$t("message.error.canNotBeNull");
           return false;
         }
-        item.errorMessage = ""
+        item.errorMessage = "";
       }
       return true;
     },
@@ -823,12 +979,6 @@ export default {
         this.currentPage,
         this.pageSize
       );
-    },
-    isAddRule() {
-      if (this.confirmType === "addRule") {
-        return true;
-      }
-      return false;
     }
   }
 };

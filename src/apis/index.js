@@ -31,7 +31,9 @@ export default {
     historicalIps: `${base}/system/ip/historical`,
     lookupsHis: `${base}/druid/listen/v1/lookups`,
     systemConfig: `${base}/druid/systemConfig`,
+    clusterConfig: `${base}/druid/coordinator/v1/config`,
     loadstatus: `${base}/druid/coordinator/v1/loadstatus`,
+    loadqueue: `${base}/druid/coordinator/v1/loadqueue?simple`,
     kafka: `${base}/kafka`,
     zk: `${base}/zk`
 }
