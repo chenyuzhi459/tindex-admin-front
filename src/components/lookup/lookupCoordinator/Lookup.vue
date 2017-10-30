@@ -34,7 +34,7 @@
 
     <div class="table" style=" margin-left:20px;">
 
-      <el-table :data="showTableDataLookup" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+      <el-table :data="showTableDataLookup" border style="width: 100%" ref="multipleTable" @sort-change="handleSort" stripe>
 
         <el-table-column :label="$t('message.lookup.userGroupLookup')" sortable="custom">
           <template scope="scope">

@@ -31,7 +31,7 @@
 
     <div class="table" style=" margin-left:20px;">
 
-      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort">
+      <el-table :data="showTableData" border style="width: 100%" ref="multipleTable" @sort-change="handleSort" stripe>
         <el-table-column :label="$t('message.lookup.userGroupLookup')" sortable="custom">
           <template scope="scope">
             <a class="click-link" @click="getInfo(scope.row.lookup)">{{scope.row.lookup}}</a>

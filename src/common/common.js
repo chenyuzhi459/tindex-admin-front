@@ -70,14 +70,16 @@ const fillObject = (source, target) => {
 //this.$common.methods.conver(10000)
 const conver = (limit) => {
   let size
-  if (limit < 1 * 1024) { //如果小于0.1KB转化成B  
+  if (limit < 1 * 1024) {
     size = limit.toFixed(2) + "B"
-  } else if (limit < 1 * 1024 * 1024) {//如果小于0.1MB转化成KB  
+  } else if (limit < 1 * 1024 * 1024) {
     size = (limit / 1024).toFixed(2) + "KB"
-  } else if (limit < 1 * 1024 * 1024 * 1024) { //如果小于0.1GB转化成MB  
+  } else if (limit < 1 * 1024 * 1024 * 1024) { 
     size = (limit / (1024 * 1024)).toFixed(2) + "MB"
-  } else { //其他转化成GB  
+  } else if (limit < 1 * 1024 * 1024 * 1024 * 1024) {   
     size = (limit / (1024 * 1024 * 1024)).toFixed(2) + "GB"
+  } else {
+    size = (limit / (1024 * 1024 * 1024 * 1024)).toFixed(2) + "TB"
   }
   const sizestr = size + "";
   const len = sizestr.indexOf("\.");
