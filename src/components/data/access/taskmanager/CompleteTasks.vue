@@ -11,10 +11,10 @@
                 <el-input size="small" v-model="formInline.searchValue1" :placeholder="$t('message.tasks.searchTips')"></el-input>
             </el-form-item>
             <el-form-item label="topic">
-                <el-input size="small" v-model="formInline.searchValue3" :placeholder="$t('message.tasks.searchTopicTips')"></el-input>
+                <el-input size="small" v-model="formInline.searchValue2" :placeholder="$t('message.tasks.searchTopicTips')"></el-input>
             </el-form-item>
-            <el-form-item label="status">
-                <el-select size="small" v-model="formInline.searchValue2" :placeholder="$t('message.tasks.selectStatus')">
+            <el-form-item :label="$t('message.tasks.status')">
+                <el-select size="small" v-model="formInline.searchValue3" :placeholder="$t('message.tasks.selectStatus')">
                     <el-option :label="$t('message.tasks.statusItem1')" value="ALL"></el-option>
                     <el-option :label="$t('message.tasks.statusItem2')" value="SUCCESS"></el-option>
                     <el-option :label="$t('message.tasks.statusItem3')" value="FAILED"></el-option>
@@ -86,8 +86,8 @@ export default {
             totalNum: 0,
             formInline: {
                 searchValue1: '',
-                searchValue2: 'ALL',
-                searchValue3: ''
+                searchValue2: '',
+                searchValue3: 'ALL'
             },
             isSearching: false
         }
@@ -103,8 +103,8 @@ export default {
             this.sortDimension = 'createdTime'
             this.isDescending = true
             this.formInline.searchValue1 = ''
-            this.formInline.searchValue2 = 'ALL'
-            this.formInline.searchValue3 = ''
+            this.formInline.searchValue2 = ''
+            this.formInline.searchValue3 = 'ALL'
             this.getCompleteTasks()
         },
         async getTaskInfo(taskId) {
@@ -166,12 +166,12 @@ export default {
                     paramsData.searchDimension1 = 'id'
                     paramsData.searchValue1 = this.formInline.searchValue1
                 }
-                if (!_.isEqual(this.formInline.searchValue2, 'ALL')) {
-                    paramsData.searchDimension2 = 'status_payload'
+                if (!_.isEqual(this.formInline.searchValue2, '')) {
+                    paramsData.searchDimension2 = 'payload'
                     paramsData.searchValue2 = this.formInline.searchValue2
                 }
-                if (!_.isEqual(this.formInline.searchValue3, '')) {
-                    paramsData.searchDimension3 = 'payload'
+                if (!_.isEqual(this.formInline.searchValue3, 'ALL')) {
+                    paramsData.searchDimension3 = 'status_payload'
                     paramsData.searchValue3 = this.formInline.searchValue3
                 }
             }
@@ -190,12 +190,12 @@ export default {
                 paramsData.searchDimension1 = 'id'
                 paramsData.searchValue1 = this.formInline.searchValue1
             }
-            if (!_.isEqual(this.formInline.searchValue2, 'ALL')) {
-                paramsData.searchDimension2 = 'status_payload'
+            if (!_.isEqual(this.formInline.searchValue2, '')) {
+                paramsData.searchDimension2 = 'payload'
                 paramsData.searchValue2 = this.formInline.searchValue2
             }
-            if (!_.isEqual(this.formInline.searchValue3, '')) {
-                paramsData.searchDimension3 = 'payload'
+            if (!_.isEqual(this.formInline.searchValue3, 'ALL')) {
+                paramsData.searchDimension3 = 'status_payload'
                 paramsData.searchValue3 = this.formInline.searchValue3
             }
             const countUrl = `${this.$common.apis.completeTasks}/custom/count`

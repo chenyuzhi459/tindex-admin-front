@@ -19,7 +19,7 @@ export default {
       runningTasksTitle: '运行任务',
       pendingTasksTitle: '队列任务 - 等待分配资源的任务',
       waitingTasksTitle: '阻塞任务 - 等待获取锁的任务 ',
-      workersTitile:'Remote Workers',
+      workersTitile: 'Remote Workers',
       completeTasksTitle: '已完成任务',
       createTask: '创建新任务',
       taskSpec: '任务说明',
@@ -65,15 +65,15 @@ export default {
       datasource: '数据源',
       startOffset: 'startOffset',
       topicOffsets: 'Topic Offsets',
-      wokerHost:'host',
-      wokerIp:'ip',
-      workerCapacity:'容量',
+      wokerHost: 'host',
+      wokerIp: 'ip',
+      workerCapacity: '容量',
       workerVersion: '版本',
       currCapacityUsed: '已用容量',
-      availabilityGroups:'活动组',
+      availabilityGroups: '活动组',
       workerRunningTaks: '运行任务',
-      lastCompletedTaskTime:'上个任务完成时间',
-      blacklistedUntil:'blacklistedUntil'
+      lastCompletedTaskTime: '上个任务完成时间',
+      blacklistedUntil: 'blacklistedUntil'
     },
     supervisors: {
       supervisorManager: 'Supervisor管理',
@@ -115,7 +115,13 @@ export default {
       creatSuccess: '创建成功, id',
       createFailedFront: '创建失败,状态码',
       createFailedLast: '请查看overlord日志',
-      activeTasksNum: '已启动任务数'
+      activeTasksNum: '已启动任务数',
+      selectType: {
+        tips: '请选择类型', 
+        item1: 'ALL',
+        item2: 'lucene_supervisor',
+        item3: 'default_supervisor'
+      }
     },
     sideBar: {
       dataAccess: {

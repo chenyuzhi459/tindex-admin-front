@@ -15,7 +15,7 @@
         </el-form>
         <template v-if="hasData">
             <div class="table" style=" margin-left:20px;">
-                <el-table :data="showTableData" border stripe style="width: 100%" @sort-change="sortChange">
+                <el-table :data="showTableData" border stripe style="width: 100%" >
                     <el-table-column prop="worker.host" :label="$t('message.tasks.wokerHost')"  min-width="150"></el-table-column>
                     <el-table-column  prop="worker.ip" :label="$t('message.tasks.wokerIp')" width="207"></el-table-column>
                     <el-table-column prop="worker.capacity" :label="$t('message.tasks.workerCapacity')"></el-table-column>

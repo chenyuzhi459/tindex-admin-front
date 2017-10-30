@@ -10,7 +10,7 @@
             <el-form-item label="id">
                 <el-input size="small" v-model="formInline.searchValue1" :placeholder="$t('message.tasks.searchTips')"></el-input>
             </el-form-item>
-            <el-form-item label="status">
+            <el-form-item :label="$t('message.tasks.status')">
                 <el-select size="small" v-model="formInline.searchValue2" :placeholder="$t('message.tasks.selectStatus')">
                     <el-option :label="$t('message.tasks.statusItem1')" value="ALL"></el-option>
                     <el-option :label="$t('message.tasks.statusItem2')" value="SUCCESS"></el-option>

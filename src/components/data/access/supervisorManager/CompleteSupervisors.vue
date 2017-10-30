@@ -10,9 +10,16 @@
             <el-form-item label="id">
                 <el-input size="small" v-model="formInline.searchValue1" :placeholder="$t('message.tasks.searchTips')"></el-input>
             </el-form-item>
+            <el-form-item :label="$t('message.supervisors.type')">
+                <el-select size="small" v-model="formInline.searchValue2" :placeholder="$t('message.supervisors.selectType.tips')">
+                    <el-option :label="$t('message.supervisors.selectType.item1')" value="ALL"></el-option>
+                    <el-option :label="$t('message.supervisors.selectType.item2')" value="lucene_supervisor"></el-option>
+                    <el-option :label="$t('message.supervisors.selectType.item3')" value="default_supervisor"></el-option>
+                </el-select>
+            </el-form-item>
             <el-form-item>
-                <el-button size="small" type="primary" @click="onSearch">{{$t('message.tasks.search')}}</el-button>
-                <el-button type="primary" size="small" @click="init">{{$t('message.tasks.refresh')}}</el-button>
+                <el-button size="small" type="primary" @click="onSearch">{{$t('message.common.search')}}</el-button>
+                <el-button type="primary" size="small" @click="init">{{$t('message.common.refresh')}}</el-button>
             </el-form-item>
         </el-form>
 
@@ -96,7 +103,8 @@ export default {
             pageSize: 10,
             totalNum: 0,
             formInline: {
-                searchValue1: ''
+                searchValue1: '',
+                searchValue2: ''
             },
             isSearching: false,
             jsonSyntaxError: false,
@@ -114,7 +122,39 @@ export default {
             this.isSearching = false
             this.sortDimension = 'version'
             this.isDescending = true
+            this.formInline.searchValue1 = ''
+            this.formInline.searchValue2 = ''
             this.getCompleteSupervisors()
+        },
+        async getCompleteSupervisors() {
+            const countUrl = `${this.$common.apis.supervisor}/history/count`
+            const countResponse = await this.$http.get(countUrl)
+            this.totalNum = countResponse.data.total
+            if (this.totalNum === 0) {
+                this.hasData = false
+                return
+            }
+            this.hasData = true
+            const url = `${this.$common.apis.supervisor}/history/part`
+            const { data } = await this.$http.get(url, {
+                params: {
+                    offset: (this.currentPage - 1) * this.pageSize,
+                    size: this.pageSize
+                }
+            })
+            let _data = data.map(s => {
+                let supervisor = {
+                    id: s.id,
+                    version: s.detail.version,
+                    type: s.detail.spec.type,
+                    topic: s.detail.spec.ioConfig.topic,
+                    taskDuration: s.detail.spec.ioConfig.taskDuration
+                }
+                return supervisor
+            })
+
+            this.completeSupervisors = []
+            this.$common.methods.pushData(_data, this.completeSupervisors)
         },
         getTasks(id) {
             this.$router.push({
@@ -202,36 +242,7 @@ export default {
                 })
             }
         },
-        async getCompleteSupervisors() {
-            const countUrl = `${this.$common.apis.supervisor}/history/count`
-            const countResponse = await this.$http.get(countUrl)
-            this.totalNum = countResponse.data.total
-            if (this.totalNum === 0) {
-                this.hasData = false
-                return
-            }
-            this.hasData = true
-            const url = `${this.$common.apis.supervisor}/history/part`
-            const { data } = await this.$http.get(url, {
-                params: {
-                    offset: (this.currentPage - 1) * this.pageSize,
-                    size: this.pageSize
-                }
-            })
-            let _data = data.map(s => {
-                let supervisor = {
-                    id: s.id,
-                    version: s.detail.version,
-                    type: s.detail.spec.type,
-                    topic: s.detail.spec.ioConfig.topic,
-                    taskDuration: s.detail.spec.ioConfig.taskDuration
-                }
-                return supervisor
-            })
-
-            this.completeSupervisors = []
-            this.$common.methods.pushData(_data, this.completeSupervisors)
-        },
+        
         async getShowSupervisors(currentPage, pageSize, sortDimension, isDescending) {
             let paramsData = {
                 offset: (currentPage - 1) * pageSize,
@@ -245,6 +256,10 @@ export default {
                 if (!_.isEqual(this.formInline.searchValue1, '')) {
                     paramsData.searchDimension1 = 'spec_id'
                     paramsData.searchValue1 = this.formInline.searchValue1
+                }
+                if (!_.isEqual(this.formInline.searchValue2, 'ALL')) {
+                    paramsData.searchDimension2 = 'payload'
+                    paramsData.searchValue2 = this.formInline.searchValue2
                 }
             }
 
@@ -272,6 +287,11 @@ export default {
             if (!_.isEqual(this.formInline.searchValue1, '')) {
                 paramsData.searchDimension1 = 'spec_id'
                 paramsData.searchValue1 = this.formInline.searchValue1
+            }
+
+            if (!_.isEqual(this.formInline.searchValue2, 'ALL')) {
+                paramsData.searchDimension2 = 'payload'
+                paramsData.searchValue2 = this.formInline.searchValue2
             }
 
             const countUrl = `${this.$common.apis.supervisor}/history/count`

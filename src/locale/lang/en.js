@@ -168,7 +168,13 @@ export default {
             creatSuccess: 'create successfully, id',
             createFailedFront: 'request failed with status',
             createFailedLast: 'please check overlord logs',
-            activeTasksNum: 'activeTasksNum'
+            activeTasksNum: 'activeTasksNum',
+            selectType:{
+                tips: 'please select type',
+                item1: 'ALL',
+                item2: 'lucene_supervisor',
+                item3: 'default_supervisor'
+            }
         },
         dataSource: {
             dataSourceTitle: "DataSources",
@@ -286,7 +292,8 @@ export default {
             state: 'state',
             requestTimeout: 'request time out',
             none: 'none',
-            reset: 'reset'
+            reset: 'reset',
+            
         },
         error: {
             chooseAction: 'Action can not be null! Please choose an action',
