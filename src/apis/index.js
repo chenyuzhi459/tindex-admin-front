@@ -2,8 +2,8 @@
 let base = ''
 console.log('NODE_ENV:', process.env.NODE_ENV)
 if (process.env.NODE_ENV === 'development') {
-     base = 'http://localhost:6660/api'
-    // base = 'http://192.168.0.42:6660/api'
+    //  base = 'http://localhost:6660/api'
+    base = 'http://192.168.0.56:6660/api'
 
 } else {
     base = 'api'
